@@ -83,10 +83,10 @@ Las pruebas incluyen validación, contrato HTTP, aislamiento de demo, perfil ini
 
 ## Ramas y commits
 
-`dev` nace de `main`. Las ramas `feature/base-interfaz`, `feature/usuarios`, `feature/entrenamiento`, `feature/dashboard`, `feature/predicciones` y `feature/verificacion` separan el trabajo. Cada rama se integra en `dev` conservando los commits individuales, con descripciones breves en español. `main` conserva su contenido inicial hasta una revisión y publicación posterior.
+`dev` nace de `main`. Las ramas `feature/base-interfaz`, `feature/usuarios`, `feature/entrenamiento`, `feature/dashboard`, `feature/predicciones` y `feature/verificacion` separan el trabajo. Cada rama se integra mediante un pull request hacia `dev`, conservando los commits individuales y sus descripciones breves en español. Después de integrar las funciones y superar las verificaciones, un pull request de `dev` hacia `main` incorpora la versión estable. La rama `backup/dev-antes-pull-requests` conserva la integración original como respaldo.
 
 ## Publicar en Vercel
 
-Importa este repositorio, selecciona `dev` para revisar la versión desarrollada y utiliza el preset Vite: comando `npm run build`, directorio `dist`. Agrega `VITE_API_URL` con la dirección **HTTPS** de FastAPI y vuelve a desplegar si cambias esa variable. `vercel.json` permite abrir directamente las rutas `/perfil`, `/entrenamiento` y `/analisis`.
+Importa este repositorio, selecciona `main` para producción o `dev` para revisar cambios en desarrollo y utiliza el preset Vite: comando `npm run build`, directorio `dist`. Agrega `VITE_API_URL` con la dirección **HTTPS** de FastAPI y vuelve a desplegar si cambias esa variable. `vercel.json` permite abrir directamente las rutas `/perfil`, `/entrenamiento` y `/analisis`.
 
 En FastAPI configura CORS con el origen exacto del frontend. Nunca coloques contraseñas de PostgreSQL, secretos de JWT o claves privadas en variables `VITE_*`: se incluyen en el JavaScript público. El despliegue no se ejecuta como parte de la generación de este repositorio.
