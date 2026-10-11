@@ -11,18 +11,19 @@ import Icon from '../../components/Icon';
 export default function RecordForm({
   exercises,
   onSaved,
+  onStart,
 }: {
   exercises: Exercise[];
   onSaved: () => void;
+  onStart: () => void;
 }) {
   const [rows, setRows] = useState([crypto.randomUUID()]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const [saved, setSaved] = useState(false);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError('');
-    setSaved(false);
+    onStart();
     const element = event.currentTarget;
     const form = new FormData(element);
     const input = {
@@ -44,7 +45,6 @@ export default function RecordForm({
       await recordService.create(input);
       element.reset();
       setRows([crypto.randomUUID()]);
-      setSaved(true);
       onSaved();
     } catch (e) {
       setError(errorMessage(e));
@@ -126,7 +126,7 @@ export default function RecordForm({
           <Button
             variant="secondary"
             onClick={() => {
-              setSaved(false);
+              onStart();
               setRows((values) => [...values, crypto.randomUUID()]);
             }}
           >
@@ -142,11 +142,6 @@ export default function RecordForm({
       {error && (
         <div className="feedback feedback-error inline-status" role="alert">
           {error}
-        </div>
-      )}
-      {saved && (
-        <div className="feedback feedback-success inline-status" role="status">
-          Sesión guardada correctamente. Ya puedes consultar tu progreso.
         </div>
       )}
     </form>

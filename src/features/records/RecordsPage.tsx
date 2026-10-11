@@ -48,6 +48,7 @@ export default function RecordsPage() {
                 {resource.data.exercises.length ? (
                   <RecordForm
                     exercises={resource.data.exercises}
+                    onStart={() => setSaved(false)}
                     onSaved={() => {
                       setSaved(true);
                       resource.reload();
