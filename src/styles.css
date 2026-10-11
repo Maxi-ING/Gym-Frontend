@@ -636,7 +636,7 @@ input[type='checkbox'] {
   margin-right: 5px;
 }
 .page {
-  padding: 28px 30px;
+  padding: 22px 26px;
   max-width: 1380px;
   margin: auto;
   outline: none;
@@ -659,7 +659,7 @@ input[type='checkbox'] {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 24px;
+  padding: 20px;
   min-width: 0;
   box-shadow: 0 4px 22px #00000008;
 }
@@ -668,7 +668,7 @@ input[type='checkbox'] {
   align-items: flex-start;
   justify-content: space-between;
   gap: 15px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 .panel-header p {
   color: var(--muted);
@@ -707,7 +707,7 @@ input[type='checkbox'] {
 .prediction-result {
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 18px;
 }
 .page-stack > .page-heading {
   margin-bottom: 0;
@@ -723,7 +723,7 @@ input[type='checkbox'] {
 }
 .metric {
   padding: 20px;
-  min-height: 148px;
+  min-height: 130px;
 }
 .metric-top {
   display: flex;
@@ -748,7 +748,7 @@ input[type='checkbox'] {
   font-family: 'Manrope', sans-serif;
   font-weight: 800;
   letter-spacing: -0.8px;
-  margin: 15px 0 8px;
+  margin: 12px 0 6px;
   overflow-wrap: anywhere;
 }
 .metric-value span {
@@ -1616,7 +1616,7 @@ tbody tr:last-child td {
   }
   .metric {
     padding: 16px;
-    min-height: 146px;
+    min-height: 132px;
   }
   .metric-value {
     font-size: 26px;
@@ -1867,5 +1867,87 @@ tbody tr:last-child td {
   :is(.history-table, .mobile-cards) .session-name > div {
     min-width: 0;
     overflow-wrap: anywhere;
+  }
+}
+
+/* A shared first row keeps the charts and the main totals within view on desktop. */
+.dashboard-charts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+.dashboard-charts .panel {
+  border-top: 2px solid var(--accent);
+}
+.dashboard-charts .chart-container {
+  height: 230px;
+}
+.dashboard-charts .panel-header > svg {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.dashboard-charts .panel-header h2 {
+  font-size: 17px;
+}
+.dashboard-charts .chart-summary {
+  margin-top: 10px;
+  line-height: 1.6;
+}
+.dashboard-charts .chart-values {
+  margin-top: 7px;
+}
+.chart-filters {
+  border-top: 1px solid var(--line);
+  margin-top: 10px;
+  padding-top: 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.chart-filters summary {
+  cursor: pointer;
+  color: var(--accent);
+  font-weight: 600;
+}
+.chart-filters .filter-bar {
+  margin: 14px 0 0;
+  gap: 10px;
+}
+.dashboard-page .section-heading {
+  margin-bottom: 12px;
+}
+.dashboard-page .metrics {
+  margin-bottom: 0;
+}
+.dashboard-page .metric {
+  padding: 16px;
+  min-height: 118px;
+}
+.dashboard-page .metric-value {
+  margin: 9px 0 5px;
+}
+.dashboard-page .chart-heading {
+  gap: 8px;
+}
+@media (min-width: 1200px) {
+  .dashboard-charts {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  }
+  .dashboard-page .metrics {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .profile-grid {
+    grid-template-columns: minmax(250px, 0.8fr) minmax(0, 1.6fr);
+    align-items: start;
+    gap: 18px;
+  }
+}
+@media (max-width: 480px) {
+  .dashboard-charts .chart-container {
+    height: 210px;
+  }
+  .dashboard-charts .chart-heading {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }

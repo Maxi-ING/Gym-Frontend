@@ -79,12 +79,14 @@ export default function TrainingDaysChart({ sessions }: { sessions: TrainingSess
         />
       </div>
       <figcaption className="chart-summary">
-        Semanas de lunes a domingo; la última incluye solo los días transcurridos hasta hoy. Varias
-        sesiones en una fecha cuentan como un día. Una barra en cero indica que no hay registros, no
-        confirma que hayas descansado.
+        Un día por fecha registrada, aunque haya varias sesiones. Semana actual hasta hoy.
       </figcaption>
       <details className="chart-values">
         <summary>Ver días registrados por semana</summary>
+        <p className="chart-summary">
+          Semanas de lunes a domingo. Cero indica falta de registros, no confirma un día de
+          descanso.
+        </p>
         <div className="table-wrap">
           <table>
             <thead>
