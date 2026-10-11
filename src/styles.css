@@ -1898,9 +1898,10 @@ tbody tr:last-child td {
 }
 .dashboard-charts .panel {
   border-top: 2px solid var(--accent);
+  padding: 18px;
 }
 .dashboard-charts .chart-container {
-  height: 230px;
+  height: 200px;
 }
 .dashboard-charts .panel-header > svg {
   color: var(--accent);
@@ -1908,6 +1909,18 @@ tbody tr:last-child td {
 }
 .dashboard-charts .panel-header h2 {
   font-size: 17px;
+}
+.dashboard-charts .panel-header {
+  margin-bottom: 12px;
+}
+.dashboard-page .page-heading .eyebrow {
+  margin-bottom: 6px;
+}
+.dashboard-page .page-heading h1 {
+  font-size: 28px;
+}
+.dashboard-page .page-heading p {
+  margin-top: 5px;
 }
 .dashboard-charts .chart-summary {
   margin-top: 10px;
@@ -1940,7 +1953,7 @@ tbody tr:last-child td {
 }
 .dashboard-page .metric {
   padding: 16px;
-  min-height: 118px;
+  min-height: 108px;
 }
 .dashboard-page .metric-value {
   margin: 9px 0 5px;

@@ -44,7 +44,7 @@ export default function DashboardPage() {
         <div>
           <div className="eyebrow">TU ENTRENAMIENTO, EN PERSPECTIVA</div>
           <h1>Inicio, {user?.nombre.split(' ')[0]}.</h1>
-          <p>Tu punto de partida, tu rendimiento y el siguiente paso hacia tus objetivos.</p>
+          <p>Tus gráficos, indicadores y próximos pasos.</p>
         </div>
         <Link className="button button-primary" to="/entrenamiento" viewTransition>
           <Icon name="plus" size={17} />
@@ -158,7 +158,6 @@ export default function DashboardPage() {
                 <span className="section-index">01</span>
                 <div>
                   <h2>Tu resumen</h2>
-                  <p>Los indicadores principales de tu historial.</p>
                 </div>
               </div>
               <MetricsCards progress={overview.data.progreso} scope="historial" />
