@@ -1405,16 +1405,6 @@ tbody tr:last-child td {
     opacity: 0;
   }
 }
-[data-density='compact'] .page-stack,
-[data-density='compact'] .form-stack {
-  gap: 14px;
-}
-[data-density='compact'] .panel {
-  padding: 18px;
-}
-[data-density='compact'] .page {
-  padding-block: 22px;
-}
 .nav-backdrop {
   position: fixed;
   inset: 0;

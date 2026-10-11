@@ -63,22 +63,6 @@ export default function SettingsPage() {
             aria-label="Activar animaciones"
           />
         </label>
-        <label className="setting-row">
-          <div>
-            <h3>Espaciado compacto</h3>
-            <p>Reduce el espacio entre los bloques para ver más información.</p>
-          </div>
-          <input
-            type="checkbox"
-            role="switch"
-            checked={preferences.compacto}
-            onChange={(e) => {
-              update({ compacto: e.target.checked });
-              setMessage('Espaciado actualizado.');
-            }}
-            aria-label="Espaciado compacto"
-          />
-        </label>
       </section>
       <section className="panel">
         <h2>Mi cuenta</h2>

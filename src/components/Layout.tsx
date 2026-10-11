@@ -173,10 +173,6 @@ export default function Layout() {
                 <Icon name="profile" />
                 Mi perfil
               </NavLink>
-              <NavLink to="/configuracion" viewTransition>
-                <Icon name="settings" />
-                Configuración de cuenta
-              </NavLink>
               <button onClick={signOut}>
                 <Icon name="logout" />
                 Cerrar sesión
