@@ -153,6 +153,10 @@ test('se adapta al ancho de pantalla y dibuja el dashboard sin errores', async (
   page.on('pageerror', (e) => errors.push(e.message));
   await demo(page);
   await expect(page.getByRole('img', { name: /Volumen de entrenamiento/ })).toBeVisible();
+  const navigation = page.getByRole('navigation', { name: 'Navegación principal' });
+  for (const label of ['Mi progreso', 'Entrenamiento', 'Análisis IA', 'Mi perfil']) {
+    await expect(navigation.getByRole('link', { name: label, exact: true })).toBeInViewport();
+  }
   const widths = await page.evaluate(() => ({
     page: document.documentElement.scrollWidth,
     viewport: window.innerWidth,

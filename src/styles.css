@@ -1346,3 +1346,19 @@ fieldset {
 .chart-values table {
   margin-top: 10px;
 }
+@media (max-width: 800px) {
+  .nav {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    overflow: visible;
+    gap: 4px;
+  }
+  .nav a {
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px 2px;
+    font-size: 10px;
+    white-space: normal;
+    text-align: center;
+  }
+}
