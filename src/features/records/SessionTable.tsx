@@ -17,7 +17,7 @@ export default function SessionTable({
     );
   const sorted = [...sessions].sort((a, b) => b.fecha.localeCompare(a.fecha));
   return (
-    <div className="table-wrap">
+    <div className="table-wrap history-table">
       <table>
         <caption className="sr-only">Historial de sesiones de entrenamiento</caption>
         <thead>
@@ -50,9 +50,11 @@ export default function SessionTable({
                   </div>
                 </div>
               </td>
-              <td>{dateLabel(s.fecha)}</td>
-              <td>{s.registros.length}</td>
-              <td className="table-value">{number(s.volumen_kg)} kg</td>
+              <td data-label="Fecha">{dateLabel(s.fecha)}</td>
+              <td data-label="Registros">{s.registros.length}</td>
+              <td className="table-value" data-label="Volumen total">
+                {number(s.volumen_kg)} kg
+              </td>
             </tr>
           ))}
         </tbody>

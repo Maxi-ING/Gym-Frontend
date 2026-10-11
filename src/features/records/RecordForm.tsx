@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { recordService } from './recordService';
+import { limits } from '../../lib/validation';
 import { validateSession } from './recordValidation';
 import { errorMessage } from '../../lib/api';
 import { today } from '../../lib/format';
@@ -26,6 +27,10 @@ export default function RecordForm({
     onStart();
     const element = event.currentTarget;
     const form = new FormData(element);
+    if (rows.some((id) => String(form.get(`load_${id}`) ?? '').trim() === '')) {
+      setError('Ingresa la carga de cada ejercicio; usa 0 para una carga externa nula.');
+      return;
+    }
     const input = {
       fecha: String(form.get('fecha')),
       registros: rows.map((id) => ({
@@ -36,8 +41,11 @@ export default function RecordForm({
       })),
     };
     const validation = validateSession(input);
-    if (validation) {
-      setError(validation);
+    if (
+      validation ||
+      input.registros.some((r) => !exercises.some((e) => e.id === r.ejercicio_id))
+    ) {
+      setError(validation || 'El ejercicio no pertenece al catálogo disponible.');
       return;
     }
     setBusy(true);
@@ -55,11 +63,16 @@ export default function RecordForm({
   return (
     <form onSubmit={submit}>
       <fieldset disabled={busy}>
+        <p className="muted">
+          Hasta 20 registros por sesión · 1–20 series · 1–100 repeticiones · carga de 0–600 kg. El
+          límite de carga es operativo y no indica qué peso levantar.
+        </p>
         <div className="record-date">
           <Input
             label="Fecha del entrenamiento"
             name="fecha"
             type="date"
+            min={limits.fechaMinima}
             max={today()}
             defaultValue={today()}
             required
@@ -87,7 +100,7 @@ export default function RecordForm({
               name={`series_${id}`}
               type="number"
               min={1}
-              max={100}
+              max={limits.series.max}
               step={1}
               defaultValue={3}
               required
@@ -97,7 +110,7 @@ export default function RecordForm({
               name={`reps_${id}`}
               type="number"
               min={1}
-              max={500}
+              max={limits.repeticiones.max}
               step={1}
               defaultValue={8}
               required
@@ -107,7 +120,7 @@ export default function RecordForm({
               name={`load_${id}`}
               type="number"
               min={0}
-              max={1000}
+              max={limits.carga.max}
               step={0.1}
               placeholder="32"
               required
@@ -125,6 +138,7 @@ export default function RecordForm({
         <div className="form-actions">
           <Button
             variant="secondary"
+            disabled={rows.length >= limits.registros}
             onClick={() => {
               onStart();
               setRows((values) => [...values, crypto.randomUUID()]);

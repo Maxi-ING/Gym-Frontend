@@ -29,7 +29,7 @@ VITE_API_URL=http://localhost:8000
 npm run dev
 ```
 
-Abre `http://localhost:5173`. El botón **Explorar demo** permite revisar la interfaz sin instalar Python ni tener un backend funcionando.
+Abre `http://localhost:5173`. Los botones **Explorar demo** y **Explorar demo de administrador** permiten revisar ambos roles sin instalar Python ni tener un backend funcionando.
 
 ## Funciones
 
@@ -37,14 +37,17 @@ Abre `http://localhost:5173`. El botón **Explorar demo** permite revisar la int
 - Modal obligatorio para completar edad, talla, peso y objetivo tras el primer acceso.
 - Perfil editable y nuevas mediciones de peso.
 - Registro de sesiones con varios ejercicios, series, repeticiones y cargas en kg.
-- Dashboard con indicadores, gráficos y filtros por ejercicio y fecha.
-- Metas de carga y análisis solicitado mediante un botón.
+- Inicio vertical con IMC orientativo, rendimiento por ejercicio, metas, recomendaciones y gráficos filtrables.
+- Metas de carga y análisis solicitado mediante un botón, con interpretación detallada por estado.
+- Administrador: resumen del gimnasio, gestión de usuarios, revisión de sesiones y metas, catálogo de ejercicios.
+- Menú plegable, perfil desde la cuenta y configuración de tema azul noche/claro, movimiento y espaciado.
+- Filtros numéricos y límites compartidos: hasta 600 kg de carga y 20 registros por sesión.
 - Estados de carga, vacío, error y reintento; navegación adaptable a móvil.
 - Gráficos con resumen y tabla de valores para consultar sin depender del canvas.
 
 ## Modo API y demostración
 
-**API** es el modo predeterminado: los datos se solicitan a `VITE_API_URL`. No cambia a datos de ejemplo si falla el servidor. El token se conserva en `sessionStorage` en la pestaña; se elimina al cerrar sesión o recibir un 401 autenticado. Las rutas no envían un `usuario_id` como autorización.
+**API** es el modo predeterminado: los datos se solicitan a `VITE_API_URL`. No cambia a datos de ejemplo si falla el servidor. FastAPI debe autorizar cada endpoint y obtener el rol de la cuenta: ocultar una ruta en React no protege por sí solo los datos. El token se conserva en `sessionStorage` en la pestaña; se elimina al cerrar sesión o recibir un 401 autenticado. Las rutas no envían un `usuario_id` como autorización.
 
 **Demo** se activa expresamente desde el acceso. Usa un adaptador local con datos ficticios. Los cambios se reinician al recargar la aplicación; no se envían a PostgreSQL. La predicción de Press de banca es el ejemplo fijo de ocho semanas del informe y no se recalcula al añadir sesiones o metas. Los demás ejercicios muestran un mensaje informativo.
 
@@ -61,6 +64,8 @@ src/
     records/        # RecordForm, historial y recordService
     dashboard/      # DashboardPage, MetricsCards y ProgressChart
     predictions/    # PredictionPage, PredictionChart y predictionService
+    admin/          # roles, resumen global, usuarios, sesiones y ejercicios
+    settings/       # preferencias de apariencia por cuenta
   components/       # Button, Input, Select, navegación y estados
   hooks/            # consultas cancelables y ciclo de vida de gráficos
   lib/              # api, sesión, formato y adaptador de demostración
@@ -79,11 +84,11 @@ npx playwright install chromium --only-shell
 npm run test:e2e
 ```
 
-Las pruebas incluyen validación, contrato HTTP, aislamiento de demo, perfil inicial, guardado y gráficos en escritorio y móvil. Para revisar una compilación local: `npm run preview` y abre `http://localhost:4173`.
+Las pruebas incluyen validación y precisión numérica, contrato HTTP, separación de roles, gestión administrativa, configuración, perfil inicial, guardado, encuadre y gráficos en escritorio y móvil. Para revisar una compilación local: `npm run preview` y abre `http://localhost:4173`.
 
 ## Ramas y commits
 
-`dev` nace de `main`. Las ramas `feature/base-interfaz`, `feature/usuarios`, `feature/entrenamiento`, `feature/dashboard`, `feature/predicciones` y `feature/verificacion` separan el trabajo. Cada rama se integra mediante un pull request hacia `dev`, conservando los commits individuales y sus descripciones breves en español. Después de integrar las funciones y superar las verificaciones, un pull request de `dev` hacia `main` incorpora la versión estable. La rama `backup/dev-antes-pull-requests` conserva la integración original como respaldo.
+`dev` nace de `main`. Las ramas `feature/base-interfaz`, `feature/usuarios`, `feature/entrenamiento`, `feature/dashboard`, `feature/predicciones` y `feature/verificacion` separan el trabajo. Cada rama se integra mediante un pull request hacia `dev`, conservando los commits individuales y sus descripciones breves en español. Después de integrar las funciones y superar las verificaciones, un pull request de `dev` hacia `main` incorpora la versión estable. La rama `backup/dev-antes-pull-requests` conserva la integración original como respaldo. Los retoques posteriores usan `feature/roles-administracion`, `feature/interfaz-azul`, `feature/resumen-progreso` y `feature/validacion-verificacion`, con PR hacia `dev` y después de `dev` hacia `main`.
 
 ## Publicar en Vercel
 

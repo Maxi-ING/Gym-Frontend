@@ -7,6 +7,7 @@ import { useResource } from '../../hooks/useResource';
 import { errorMessage } from '../../lib/api';
 import { number } from '../../lib/format';
 import { useAuth } from '../users/AuthProvider';
+import { limits, validRange } from '../../lib/validation';
 import type { Prediction } from '../../types';
 import Select from '../../components/Select';
 import Input from '../../components/Input';
@@ -58,9 +59,7 @@ export default function PredictionPage() {
     setGoalMessage('');
     if (
       !input.ejercicio_id ||
-      !Number.isFinite(input.carga_objetivo_kg) ||
-      input.carga_objetivo_kg <= 0 ||
-      input.carga_objetivo_kg > 600
+      !validRange(input.carga_objetivo_kg, { ...limits.carga, min: 0.1 })
     ) {
       setGoalError('Selecciona un ejercicio y una carga objetivo entre 0.1 y 600 kg.');
       return;

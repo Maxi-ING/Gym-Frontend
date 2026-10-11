@@ -1806,3 +1806,72 @@ tbody tr:last-child td {
   color: var(--muted);
   font-size: 13px;
 }
+.record-date {
+  margin-top: 18px;
+}
+@media (max-width: 650px) {
+  :is(.history-table, .mobile-cards) {
+    overflow: visible;
+  }
+  :is(.history-table, .mobile-cards) table,
+  :is(.history-table, .mobile-cards) tbody {
+    display: block;
+  }
+  :is(.history-table, .mobile-cards) thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  :is(.history-table, .mobile-cards) tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 16px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  :is(.history-table, .mobile-cards) tr:last-child {
+    border: 0;
+  }
+  :is(.history-table, .mobile-cards) td {
+    padding: 0;
+    border: 0;
+    font-size: 12px;
+  }
+  :is(.history-table, .mobile-cards) td:first-child {
+    grid-column: 1/-1;
+    padding-bottom: 6px;
+  }
+  :is(.history-table, .mobile-cards) td:last-child {
+    grid-column: 1/-1;
+  }
+  :is(.history-table, .mobile-cards) td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 10px;
+    color: var(--muted);
+    font-weight: 400;
+    margin-bottom: 5px;
+  }
+  :is(.history-table, .mobile-cards) .session-name {
+    min-width: 0;
+  }
+}
+.button {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 650px) {
+  :is(.history-table, .mobile-cards) td {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  :is(.history-table, .mobile-cards) .table-subtext {
+    overflow-wrap: anywhere;
+  }
+  :is(.history-table, .mobile-cards) .session-name > div {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+}

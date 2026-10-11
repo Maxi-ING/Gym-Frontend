@@ -79,7 +79,7 @@ export default function AdminRecordsPage() {
           resource.data && (
             <>
               {resource.data.items.length ? (
-                <div className="table-wrap">
+                <div className="table-wrap mobile-cards">
                   <table>
                     <caption className="sr-only">Sesiones de todos los usuarios</caption>
                     <thead>
@@ -99,8 +99,8 @@ export default function AdminRecordsPage() {
                               {s.usuario_nombre}
                             </Link>
                           </td>
-                          <td>{dateLabel(s.fecha)}</td>
-                          <td>
+                          <td data-label="Fecha">{dateLabel(s.fecha)}</td>
+                          <td data-label="Detalle">
                             <details className="session-details">
                               <summary>{s.registros.length} registros</summary>
                               <ul>
@@ -114,8 +114,8 @@ export default function AdminRecordsPage() {
                               </ul>
                             </details>
                           </td>
-                          <td>{number(s.volumen_kg)} kg</td>
-                          <td>
+                          <td data-label="Volumen">{number(s.volumen_kg)} kg</td>
+                          <td data-label="Gestión">
                             <Button variant="ghost" onClick={() => setPending(s.id)}>
                               Eliminar sesión
                             </Button>

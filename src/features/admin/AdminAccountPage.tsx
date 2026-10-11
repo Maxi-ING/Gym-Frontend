@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { useAuth } from '../users/AuthProvider';
 import { adminService } from './adminService';
+import { validName } from '../../lib/validation';
 import { errorMessage } from '../../lib/api';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
@@ -15,8 +16,8 @@ export default function AdminAccountPage() {
     if (!user) return;
     const f = new FormData(e.currentTarget);
     const nombre = String(f.get('nombre')).trim();
-    if (nombre.length < 2) {
-      setError('Ingresa un nombre de al menos 2 caracteres.');
+    if (!validName(nombre)) {
+      setError('Usa un nombre de 2 a 100 caracteres con letras, espacios o guiones.');
       return;
     }
     setBusy(true);

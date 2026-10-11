@@ -2,6 +2,7 @@ import { useCallback, useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { adminService } from './adminService';
 import { useResource } from '../../hooks/useResource';
+import { validName } from '../../lib/validation';
 import { errorMessage } from '../../lib/api';
 import Input from '../../components/Input';
 import Select from '../../components/Select';
@@ -24,8 +25,8 @@ export default function UsersPage() {
     setError('');
     setMessage('');
     const nombre = String(form.get('nombre')).trim();
-    if (nombre.length < 2) {
-      setError('El nombre debe tener entre 2 y 100 caracteres.');
+    if (!validName(nombre)) {
+      setError('Usa un nombre de 2 a 100 caracteres con letras, espacios o guiones.');
       setBusy(false);
       return;
     }
@@ -102,7 +103,7 @@ export default function UsersPage() {
           resource.data && (
             <>
               {resource.data.items.length ? (
-                <div className="table-wrap">
+                <div className="table-wrap mobile-cards">
                   <table>
                     <caption className="sr-only">Directorio de usuarios</caption>
                     <thead>
@@ -121,14 +122,18 @@ export default function UsersPage() {
                             <strong>{u.nombre}</strong>
                             <small className="table-subtext">{u.correo}</small>
                           </td>
-                          <td>{u.rol === 'admin' ? 'Administrador' : 'Usuario'}</td>
-                          <td>
+                          <td data-label="Rol">
+                            {u.rol === 'admin' ? 'Administrador' : 'Usuario'}
+                          </td>
+                          <td data-label="Estado">
                             <span className={`tag ${u.activo ? '' : 'tag-inactive'}`}>
                               {u.activo ? 'Activo' : 'Inactivo'}
                             </span>
                           </td>
-                          <td>{u.perfil_completo ? 'Completo' : 'Pendiente'}</td>
-                          <td>
+                          <td data-label="Perfil">
+                            {u.perfil_completo ? 'Completo' : 'Pendiente'}
+                          </td>
+                          <td data-label="Gestión">
                             <Link
                               className="button button-secondary"
                               to={`/usuarios/${u.id}`}

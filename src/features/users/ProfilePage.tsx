@@ -5,6 +5,7 @@ import UserForm from './UserForm';
 import { api, errorMessage } from '../../lib/api';
 import { useResource } from '../../hooks/useResource';
 import { number, today } from '../../lib/format';
+import { limits, validDate, validRange } from '../../lib/validation';
 import type { Progress } from '../../types';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
@@ -21,14 +22,19 @@ export default function ProfilePage() {
     event.preventDefault();
     const element = event.currentTarget;
     const form = new FormData(element);
+    const input = { fecha: String(form.get('fecha')), peso_kg: Number(form.get('peso')) };
+    if (!validDate(input.fecha, today()) || !validRange(input.peso_kg, limits.peso)) {
+      setError(
+        'Usa una fecha entre el 01/01/2000 y hoy y un peso de 20 a 400 kg, con una decimal.',
+      );
+      setSaved(false);
+      return;
+    }
     setBusy(true);
     setError('');
     setSaved(false);
     try {
-      await userService.measurement({
-        fecha: String(form.get('fecha')),
-        peso_kg: Number(form.get('peso')),
-      });
+      await userService.measurement(input);
       element.reset();
       resource.reload();
       setSaved(true);
@@ -112,6 +118,7 @@ export default function ProfilePage() {
                     name="fecha"
                     label="Fecha de medición"
                     type="date"
+                    min={limits.fechaMinima}
                     max={today()}
                     defaultValue={today()}
                     required
@@ -120,9 +127,7 @@ export default function ProfilePage() {
                     name="peso"
                     label="Peso (kg)"
                     type="number"
-                    min={20}
-                    max={400}
-                    step={0.1}
+                    {...limits.peso}
                     placeholder="80.0"
                     required
                   />

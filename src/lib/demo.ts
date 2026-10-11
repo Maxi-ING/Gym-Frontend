@@ -54,7 +54,7 @@ let goals: Goal[] = [{ id: 1, ejercicio_id: 1, carga_objetivo_kg: 50, estado: 'p
 let admin: User = {
   ...user,
   id: 99,
-  nombre: 'Max · Administración',
+  nombre: 'Max Huamán',
   correo: 'admin@example.com',
   rol: 'admin',
 };

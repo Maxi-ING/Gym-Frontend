@@ -5,6 +5,7 @@ import { adminService } from './adminService';
 import SessionTable from '../records/SessionTable';
 import MetricsCards from '../dashboard/MetricsCards';
 import { useResource } from '../../hooks/useResource';
+import { validName } from '../../lib/validation';
 import { errorMessage } from '../../lib/api';
 import { number } from '../../lib/format';
 import Input from '../../components/Input';
@@ -46,8 +47,8 @@ export default function AdminUserDetail() {
       rol: form.get('rol') === 'admin' ? ('admin' as const) : ('usuario' as const),
       activo: form.get('activo') === 'true',
     };
-    if (input.nombre.length < 2) {
-      setError('Ingresa un nombre de al menos 2 caracteres.');
+    if (!validName(input.nombre)) {
+      setError('Usa un nombre de 2 a 100 caracteres con letras, espacios o guiones.');
       return;
     }
     setPending({ input });
@@ -178,7 +179,7 @@ export default function AdminUserDetail() {
           Los datos corporales se actualizan desde el perfil personal del usuario.
         </p>
       </section>
-      <MetricsCards progress={progreso} />
+      <MetricsCards progress={progreso} scope="historial" />
       <section className="panel">
         <div className="panel-header">
           <div>
