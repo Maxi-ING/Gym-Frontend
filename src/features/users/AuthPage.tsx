@@ -4,6 +4,7 @@ import Input from '../../components/Input';
 import Icon from '../../components/Icon';
 import { useAuth } from './AuthProvider';
 import { userService } from './userService';
+import { validName } from '../../lib/validation';
 import { errorMessage } from '../../lib/api';
 
 export default function AuthPage() {
@@ -22,6 +23,11 @@ export default function AuthPage() {
       correo: String(values.get('correo')).trim(),
       clave: String(values.get('clave')),
     };
+    if (register && !validName(String(values.get('nombre')))) {
+      setError('Usa un nombre de 2 a 100 caracteres, con letras, espacios, apóstrofes o guiones.');
+      setBusy(false);
+      return;
+    }
     try {
       if (register) {
         await userService.register({ ...input, nombre: String(values.get('nombre')).trim() });
@@ -37,11 +43,11 @@ export default function AuthPage() {
       setBusy(false);
     }
   }
-  async function demo() {
+  async function demo(rol: 'admin' | 'usuario' = 'usuario') {
     setBusy(true);
     setError('');
     try {
-      await signIn('demo', true);
+      await signIn('demo', true, rol);
     } catch (e) {
       setError(errorMessage(e));
     } finally {
@@ -77,8 +83,8 @@ export default function AuthPage() {
             >
               <defs>
                 <linearGradient id="auth-fill" x1="0" y1="0" x2="0" y2="1">
-                  <stop stopColor="#d4f573" stopOpacity=".25" />
-                  <stop offset="1" stopColor="#d4f573" stopOpacity="0" />
+                  <stop stopColor="#5ab7ff" stopOpacity=".25" />
+                  <stop offset="1" stopColor="#5ab7ff" stopOpacity="0" />
                 </linearGradient>
               </defs>
               <path
@@ -88,7 +94,7 @@ export default function AuthPage() {
               <path
                 d="M0 90L45 83 90 65 135 69 180 48 225 38 270 42 315 18 360 8"
                 fill="none"
-                stroke="#d4f573"
+                stroke="#5ab7ff"
                 strokeWidth="3"
               />
             </svg>
@@ -143,6 +149,7 @@ export default function AuthPage() {
                 label="Nombre"
                 placeholder="¿Cómo te llamas?"
                 required
+                minLength={2}
                 maxLength={100}
                 autoComplete="name"
               />
@@ -182,9 +189,22 @@ export default function AuthPage() {
             </Button>
           </form>
           <div className="auth-divider">CONOCE FITANALYTICS</div>
-          <Button variant="secondary" className="button-wide" onClick={demo} disabled={busy}>
+          <Button
+            variant="secondary"
+            className="button-wide"
+            onClick={() => demo()}
+            disabled={busy}
+          >
             Explorar demo
             <Icon name="spark" size={16} />
+          </Button>
+          <Button
+            variant="ghost"
+            className="button-wide"
+            onClick={() => demo('admin')}
+            disabled={busy}
+          >
+            Explorar demo de administrador
           </Button>
           <p className="auth-note">
             Demo con datos de ejemplo. No requiere una cuenta.

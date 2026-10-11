@@ -2,10 +2,18 @@ import { test, expect, type Page } from '@playwright/test';
 test.beforeEach(async ({ page }) => {
   await page.route('https://fonts.googleapis.com/**', (route) => route.abort());
 });
+async function navigate(page: Page, label: string) {
+  const menu = page.getByRole('button', { name: 'Abrir menú', exact: true });
+  if (await menu.isVisible()) await menu.click();
+  await page
+    .getByRole('navigation', { name: 'Navegación principal' })
+    .getByRole('link', { name: label, exact: true })
+    .click();
+}
 async function demo(page: Page) {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Explorar demo' }).click();
-  await expect(page.getByRole('heading', { name: 'Tu progreso, Alex.' })).toBeVisible();
+  await page.getByRole('button', { name: 'Explorar demo', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Inicio, Alex.' })).toBeVisible();
 }
 test('la demo recorre entrenamiento, progreso y análisis sin usar la API', async ({ page }) => {
   let apiCalls = 0;
@@ -13,20 +21,23 @@ test('la demo recorre entrenamiento, progreso y análisis sin usar la API', asyn
     if (request.url().startsWith('http://localhost:8000')) apiCalls++;
   });
   await demo(page);
-  await page.getByRole('link', { name: 'Entrenamiento', exact: true }).click();
+  await navigate(page, 'Entrenamiento');
   await page.getByLabel('Ejercicio 1', { exact: true }).selectOption('1');
   await page.getByLabel('Carga (kg)', { exact: true }).fill('52');
   await page.getByRole('button', { name: 'Guardar sesión' }).click();
   await expect(page.getByRole('status').filter({ hasText: 'Sesión guardada' })).toBeVisible();
   await expect(page.getByText('9 sesiones', { exact: true })).toBeVisible();
-  await page.getByRole('link', { name: 'Mi progreso', exact: true }).click();
+  await navigate(page, 'Inicio');
   await page.getByLabel('Ejercicio', { exact: true }).selectOption('1');
   await expect(page.getByRole('heading', { name: 'Evolución de la carga' })).toBeVisible();
-  await page.getByRole('link', { name: 'Análisis IA', exact: true }).click();
+  await navigate(page, 'Análisis IA');
   await page.getByLabel('Ejercicio para analizar').selectOption('1');
   await page.getByRole('button', { name: 'Analizar mi progreso', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Tu tendencia de carga' })).toBeVisible();
   await expect(page.getByText('48 kg', { exact: true })).toBeVisible();
+  const menu = page.getByRole('button', { name: 'Abrir menú', exact: true });
+  if (await menu.isVisible()) await menu.click();
+  await page.getByLabel('Abrir menú de cuenta', { exact: true }).click();
   await page.getByRole('button', { name: 'Cerrar sesión' }).click();
   await expect(page.getByRole('heading', { name: 'Bienvenido de nuevo' })).toBeVisible();
   expect(apiCalls).toBe(0);
@@ -102,6 +113,20 @@ test('completa el perfil, guarda en la API y representa historial insuficiente',
         ultima_medicion: null,
         puntos: [],
       };
+    if (path === '/inicio')
+      body = {
+        progreso: {
+          total_sesiones: 0,
+          volumen_total_kg: 0,
+          carga_maxima_kg: null,
+          ultima_medicion: null,
+          puntos: [],
+        },
+        rendimiento: [],
+        metas: [],
+        ultimo_analisis: null,
+        recomendaciones: [],
+      };
     if (path === '/metas') body = [];
     if (path === '/analisis')
       body = {
@@ -135,14 +160,14 @@ test('completa el perfil, guarda en la API y representa historial insuficiente',
   await dialog.getByLabel('Objetivo', { exact: true }).selectOption('Ganar fuerza');
   await dialog.getByRole('button', { name: 'Guardar perfil' }).click();
   await expect(dialog).not.toBeVisible();
-  await page.getByRole('link', { name: 'Entrenamiento', exact: true }).click();
+  await navigate(page, 'Entrenamiento');
   await page.getByLabel('Ejercicio 1', { exact: true }).selectOption('2');
   await page.getByLabel('Carga (kg)', { exact: true }).fill('50');
   await page.getByRole('button', { name: 'Guardar sesión' }).click();
   await expect(page.getByRole('status').filter({ hasText: 'Sesión guardada' })).toBeVisible();
   expect(authenticated).toBe(true);
   expect(sessionBody).not.toHaveProperty('usuario_id');
-  await page.getByRole('link', { name: 'Análisis IA', exact: true }).click();
+  await navigate(page, 'Análisis IA');
   await page.getByLabel('Ejercicio para analizar').selectOption('2');
   await page.getByRole('button', { name: 'Analizar mi progreso', exact: true }).click();
   await expect(page.getByText('Aún faltan semanas de entrenamiento.')).toBeVisible();
@@ -153,10 +178,14 @@ test('se adapta al ancho de pantalla y dibuja el dashboard sin errores', async (
   page.on('pageerror', (e) => errors.push(e.message));
   await demo(page);
   await expect(page.getByRole('img', { name: /Volumen de entrenamiento/ })).toBeVisible();
+  const menu = page.getByRole('button', { name: 'Abrir menú', exact: true });
+  if (await menu.isVisible()) await menu.click();
   const navigation = page.getByRole('navigation', { name: 'Navegación principal' });
-  for (const label of ['Mi progreso', 'Entrenamiento', 'Análisis IA', 'Mi perfil']) {
+  for (const label of ['Inicio', 'Entrenamiento', 'Análisis IA', 'Configuración']) {
     await expect(navigation.getByRole('link', { name: label, exact: true })).toBeInViewport();
   }
+  const close = page.getByRole('button', { name: 'Cerrar navegación', exact: true });
+  if (await close.isVisible()) await close.click();
   const widths = await page.evaluate(() => ({
     page: document.documentElement.scrollWidth,
     viewport: window.innerWidth,

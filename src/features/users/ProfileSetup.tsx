@@ -8,10 +8,10 @@ export default function ProfileSetup() {
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const el = ref.current;
-    if (!user?.perfil_completo && !el?.open) el?.showModal();
+    if (user?.rol !== 'admin' && !user?.perfil_completo && !el?.open) el?.showModal();
     return () => el?.close();
-  }, [user?.perfil_completo]);
-  if (!user || user.perfil_completo) return null;
+  }, [user?.perfil_completo, user?.rol]);
+  if (!user || user.perfil_completo || user.rol === 'admin') return null;
   return (
     <dialog
       ref={ref}

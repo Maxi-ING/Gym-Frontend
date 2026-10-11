@@ -1,13 +1,19 @@
 import type { Progress } from '../../types';
 import { number } from '../../lib/format';
 import Icon, { type IconName } from '../../components/Icon';
-export default function MetricsCards({ progress }: { progress: Progress }) {
+export default function MetricsCards({
+  progress,
+  scope = 'filtro',
+}: {
+  progress: Progress;
+  scope?: 'historial' | 'filtro';
+}) {
   const metrics: { label: string; value: string; unit: string; note: string; icon: IconName }[] = [
     {
       label: 'Sesiones registradas',
       value: number(progress.total_sesiones),
       unit: '',
-      note: 'En el período seleccionado',
+      note: scope === 'historial' ? 'En todo tu historial' : 'En el período seleccionado',
       icon: 'calendar',
     },
     {
@@ -21,7 +27,7 @@ export default function MetricsCards({ progress }: { progress: Progress }) {
       label: 'Carga máxima registrada',
       value: progress.carga_maxima_kg !== null ? number(progress.carga_maxima_kg, 1) : '—',
       unit: 'kg',
-      note: 'En los registros seleccionados',
+      note: scope === 'historial' ? 'En todos tus registros' : 'En los registros seleccionados',
       icon: 'trend',
     },
     {

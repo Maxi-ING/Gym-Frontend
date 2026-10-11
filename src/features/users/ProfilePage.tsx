@@ -5,6 +5,7 @@ import UserForm from './UserForm';
 import { api, errorMessage } from '../../lib/api';
 import { useResource } from '../../hooks/useResource';
 import { number, today } from '../../lib/format';
+import { limits, validDate, validRange } from '../../lib/validation';
 import type { Progress } from '../../types';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
@@ -21,14 +22,19 @@ export default function ProfilePage() {
     event.preventDefault();
     const element = event.currentTarget;
     const form = new FormData(element);
+    const input = { fecha: String(form.get('fecha')), peso_kg: Number(form.get('peso')) };
+    if (!validDate(input.fecha, today()) || !validRange(input.peso_kg, limits.peso)) {
+      setError(
+        'Usa una fecha entre el 01/01/2000 y hoy y un peso de 20 a 400 kg, con una decimal.',
+      );
+      setSaved(false);
+      return;
+    }
     setBusy(true);
     setError('');
     setSaved(false);
     try {
-      await userService.measurement({
-        fecha: String(form.get('fecha')),
-        peso_kg: Number(form.get('peso')),
-      });
+      await userService.measurement(input);
       element.reset();
       resource.reload();
       setSaved(true);
@@ -54,66 +60,10 @@ export default function ProfilePage() {
         <ErrorState message={resource.error} retry={resource.reload} />
       ) : (
         <div className="profile-grid">
-          <section className="panel">
-            <div className="panel-header">
-              <div>
-                <h2>Datos personales</h2>
-                <p>Tu perfil y tu medición se guardan juntos.</p>
-              </div>
-            </div>
-            <UserForm
-              key={user.id}
-              user={user}
-              initialWeight={resource.data?.ultima_medicion?.peso_kg}
-              onSaved={(updated) => {
-                setUser(updated);
-                resource.reload();
-              }}
-            />
-            <form className="measurement-form" onSubmit={measurement}>
-              <h3>Agregar una medición de peso</h3>
-              <fieldset disabled={busy}>
-                <div className="form-grid">
-                  <Input
-                    name="fecha"
-                    label="Fecha de medición"
-                    type="date"
-                    max={today()}
-                    defaultValue={today()}
-                    required
-                  />
-                  <Input
-                    name="peso"
-                    label="Peso (kg)"
-                    type="number"
-                    min={20}
-                    max={400}
-                    step={0.1}
-                    placeholder="80.0"
-                    required
-                  />
-                </div>
-                <div className="form-actions">
-                  <Button type="submit" loading={busy}>
-                    Guardar medición
-                  </Button>
-                </div>
-              </fieldset>
-              {error && (
-                <div className="feedback feedback-error inline-status" role="alert">
-                  {error}
-                </div>
-              )}
-              {saved && (
-                <div className="feedback feedback-success inline-status" role="status">
-                  Medición guardada correctamente.
-                </div>
-              )}
-            </form>
-          </section>
           <aside className="panel profile-overview">
             <div className="avatar">{user.nombre.slice(0, 2).toUpperCase()}</div>
             <h2>{user.nombre}</h2>
+            <span className="tag">Cuenta personal</span>
             <p>{user.correo}</p>
             <div className="profile-stat">
               <span>Objetivo</span>
@@ -144,6 +94,62 @@ export default function ProfilePage() {
               evaluación de tu entrenador.
             </div>
           </aside>
+          <section className="panel">
+            <div className="panel-header">
+              <div>
+                <h2>Datos personales</h2>
+                <p>Tu perfil y tu medición se guardan juntos.</p>
+              </div>
+            </div>
+            <UserForm
+              key={user.id}
+              user={user}
+              initialWeight={resource.data?.ultima_medicion?.peso_kg}
+              onSaved={(updated) => {
+                setUser(updated);
+                resource.reload();
+              }}
+            />
+            <form className="measurement-form" onSubmit={measurement}>
+              <h3>Agregar una medición de peso</h3>
+              <fieldset disabled={busy}>
+                <div className="form-grid">
+                  <Input
+                    name="fecha"
+                    label="Fecha de medición"
+                    type="date"
+                    min={limits.fechaMinima}
+                    max={today()}
+                    defaultValue={today()}
+                    required
+                  />
+                  <Input
+                    name="peso"
+                    label="Peso (kg)"
+                    type="number"
+                    {...limits.peso}
+                    placeholder="80.0"
+                    required
+                  />
+                </div>
+                <div className="form-actions">
+                  <Button type="submit" loading={busy}>
+                    Guardar medición
+                  </Button>
+                </div>
+              </fieldset>
+              {error && (
+                <div className="feedback feedback-error inline-status" role="alert">
+                  {error}
+                </div>
+              )}
+              {saved && (
+                <div className="feedback feedback-success inline-status" role="status">
+                  Medición guardada correctamente.
+                </div>
+              )}
+            </form>
+          </section>
         </div>
       )}
     </>

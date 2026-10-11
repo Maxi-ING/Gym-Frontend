@@ -1,9 +1,11 @@
 import { useMemo } from 'react';
+import { usePreferences } from '../settings/PreferencesProvider';
 import type { ChartConfiguration } from 'chart.js';
 import type { Prediction } from '../../types';
 import { useChart } from '../../hooks/useChart';
 import { number } from '../../lib/format';
 export default function PredictionChart({ result }: { result: Prediction }) {
+  const { dark, reducedMotion } = usePreferences();
   const config = useMemo<ChartConfiguration<'line'>>(
     () => ({
       type: 'line',
@@ -12,8 +14,8 @@ export default function PredictionChart({ result }: { result: Prediction }) {
           {
             label: 'Carga registrada',
             data: result.historial.map((p) => ({ x: p.semana, y: p.carga_kg })),
-            borderColor: '#567b3b',
-            backgroundColor: '#567b3b',
+            borderColor: '#449aff',
+            backgroundColor: '#449aff',
             pointRadius: 4,
             borderWidth: 2,
             tension: 0,
@@ -21,8 +23,8 @@ export default function PredictionChart({ result }: { result: Prediction }) {
           {
             label: 'Proyección',
             data: result.proyeccion.map((p) => ({ x: p.semana, y: p.carga_kg })),
-            borderColor: '#8bb554',
-            backgroundColor: '#b9dc86',
+            borderColor: '#64d5e9',
+            backgroundColor: '#64d5e9',
             borderDash: [5, 5],
             borderWidth: 2,
             pointRadius: 4,
@@ -33,7 +35,7 @@ export default function PredictionChart({ result }: { result: Prediction }) {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        animation: false,
+        animation: reducedMotion ? false : { duration: 350 },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -52,12 +54,12 @@ export default function PredictionChart({ result }: { result: Prediction }) {
             title: {
               display: true,
               text: 'Semanas transcurridas desde el primer registro',
-              color: '#87927c',
+              color: dark ? '#a8b8cc' : '#566a83',
               font: { size: 10 },
             },
             ticks: {
               stepSize: 1,
-              color: '#929c89',
+              color: dark ? '#a8b8cc' : '#566a83',
               font: { size: 10 },
               callback: (value) => String(Number(value) + 1),
               maxTicksLimit: 10,
@@ -65,15 +67,15 @@ export default function PredictionChart({ result }: { result: Prediction }) {
           },
           y: {
             beginAtZero: true,
-            grid: { color: '#edf1e8' },
+            grid: { color: dark ? '#2b3d54' : '#d9e2ee' },
             border: { display: false },
-            ticks: { color: '#929c89', font: { size: 10 } },
+            ticks: { color: dark ? '#a8b8cc' : '#566a83', font: { size: 10 } },
             title: { display: true, text: 'Carga (kg)', font: { size: 10 } },
           },
         },
       },
     }),
-    [result],
+    [result, dark, reducedMotion],
   );
   const ref = useChart(config);
   return (
