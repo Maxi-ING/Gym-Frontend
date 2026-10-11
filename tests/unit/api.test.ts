@@ -34,13 +34,11 @@ describe('Contrato HTTP', () => {
   it('mantiene el error de validación del servidor', async () => {
     vi.stubGlobal(
       'fetch',
-      vi
-        .fn()
-        .mockResolvedValue(
-          new Response(JSON.stringify({ detail: [{ msg: 'La carga no puede ser negativa' }] }), {
-            status: 422,
-          }),
-        ),
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ detail: [{ msg: 'La carga no puede ser negativa' }] }), {
+          status: 422,
+        }),
+      ),
     );
     await expect(api('/sesiones')).rejects.toThrow('La carga no puede ser negativa');
   });
