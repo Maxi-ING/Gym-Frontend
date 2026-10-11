@@ -37,7 +37,9 @@ Abre `http://localhost:5173`. Los botones **Explorar demo** y **Explorar demo de
 - Modal obligatorio para completar edad, talla, peso y objetivo tras el primer acceso.
 - Perfil editable y nuevas mediciones de peso.
 - Registro de sesiones con varios ejercicios, series, repeticiones y cargas en kg.
-- Inicio vertical con IMC orientativo, rendimiento por ejercicio, metas, recomendaciones y gráficos filtrables.
+- Inicio con gráficos primero: evolución filtrable y días con entrenamiento registrado por semana; después, IMC orientativo, rendimiento por ejercicio, metas y recomendaciones.
+- Constancia calculada sobre ocho semanas de lunes a domingo, incluida la actual; cuenta fechas únicas del historial, sin duplicar días por varias sesiones.
+- Paleta sobria de azul y acero, con superficies neutras y temas claro y oscuro.
 - Metas de carga y análisis solicitado mediante un botón, con interpretación detallada por estado.
 - Administrador: resumen del gimnasio, gestión de usuarios, revisión de sesiones y metas, catálogo de ejercicios.
 - Menú plegable, perfil desde la cuenta y configuración de tema azul noche/claro, movimiento y espaciado.
