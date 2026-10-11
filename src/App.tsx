@@ -1,12 +1,14 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
+import { lazy } from 'react';
 import { AuthProvider, useAuth } from './features/users/AuthProvider';
 import AuthPage from './features/users/AuthPage';
 import RoleGuard from './features/admin/RoleGuard';
 import Layout from './components/Layout';
 import Button from './components/Button';
 import { ErrorState, LoadingState } from './components/Feedback';
+import { PreferencesProvider } from './features/settings/PreferencesProvider';
 import './styles.css';
+const SettingsPage = lazy(() => import('./features/settings/SettingsPage'));
 const ProfilePage = lazy(() => import('./features/users/ProfilePage'));
 const RecordsPage = lazy(() => import('./features/records/RecordsPage'));
 const DashboardPage = lazy(() => import('./features/dashboard/DashboardPage'));
@@ -33,49 +35,47 @@ function Content() {
     );
   if (!user) return <AuthPage />;
   return (
-    <Suspense fallback={<LoadingState />}>
-      <Routes>
-        <Route element={<Layout />}>
-          <Route
-            index
-            element={user.rol === 'admin' ? <AdminDashboardPage /> : <DashboardPage />}
-          />
-          <Route
-            path="/perfil"
-            element={user.rol === 'admin' ? <AdminAccountPage /> : <ProfilePage />}
-          />
-          <Route element={<RoleGuard rol="usuario" />}>
-            <Route path="/entrenamiento" element={<RecordsPage />} />
-            <Route path="/analisis" element={<PredictionPage />} />
-          </Route>
-          <Route element={<RoleGuard rol="admin" />}>
-            <Route path="/usuarios" element={<UsersPage />} />
-            <Route path="/usuarios/:id" element={<AdminUserDetail />} />
-            <Route path="/gestion-entrenamientos" element={<AdminRecordsPage />} />
-            <Route path="/ejercicios" element={<ExercisesPage />} />
-          </Route>
-          <Route
-            path="*"
-            element={
-              <section className="empty-state">
-                <h1>Página no encontrada</h1>
-                <p>La dirección no corresponde a una página de tu espacio.</p>
-                <Link to="/" className="button button-primary">
-                  Volver al progreso
-                </Link>
-              </section>
-            }
-          />
+    <Routes>
+      <Route element={<Layout />}>
+        <Route index element={user.rol === 'admin' ? <AdminDashboardPage /> : <DashboardPage />} />
+        <Route path="/configuracion" element={<SettingsPage />} />
+        <Route
+          path="/perfil"
+          element={user.rol === 'admin' ? <AdminAccountPage /> : <ProfilePage />}
+        />
+        <Route element={<RoleGuard rol="usuario" />}>
+          <Route path="/entrenamiento" element={<RecordsPage />} />
+          <Route path="/analisis" element={<PredictionPage />} />
         </Route>
-      </Routes>
-    </Suspense>
+        <Route element={<RoleGuard rol="admin" />}>
+          <Route path="/usuarios" element={<UsersPage />} />
+          <Route path="/usuarios/:id" element={<AdminUserDetail />} />
+          <Route path="/gestion-entrenamientos" element={<AdminRecordsPage />} />
+          <Route path="/ejercicios" element={<ExercisesPage />} />
+        </Route>
+        <Route
+          path="*"
+          element={
+            <section className="empty-state">
+              <h1>Página no encontrada</h1>
+              <p>La dirección no corresponde a una página de tu espacio.</p>
+              <Link to="/" className="button button-primary">
+                Volver al progreso
+              </Link>
+            </section>
+          }
+        />
+      </Route>
+    </Routes>
   );
 }
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Content />
+        <PreferencesProvider>
+          <Content />
+        </PreferencesProvider>
       </AuthProvider>
     </BrowserRouter>
   );

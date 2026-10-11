@@ -1,4 +1,11 @@
 const paths = {
+  menu: 'M4 6h16 M4 12h16 M4 18h16',
+  close: 'M6 6l12 12 M18 6L6 18',
+  chevron: 'M9 5l7 7-7 7',
+  settings:
+    'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8 M3 12h2 M19 12h2 M12 3v2 M12 19v2 M5.6 5.6L7 7 M17 17l1.4 1.4 M5.6 18.4L7 17 M17 7l1.4-1.4',
+  users:
+    'M8 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8 M2 21v-2a6 6 0 0 1 12 0v2 M16 4a4 4 0 0 1 0 8 M22 21v-2a6 6 0 0 0-4-5',
   dashboard: 'M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z',
   training: 'M3 8v8 M6 5v14 M6 12h12 M18 5v14 M21 8v8',
   trend: 'M3 18l6-6 4 3 8-10 M15 5h6v6',
