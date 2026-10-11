@@ -1377,23 +1377,38 @@ tbody tr:last-child td {
   font-size: 11px;
 }
 .route-view {
-  animation: reveal 0.24s ease-out;
+  animation: reveal 0.52s cubic-bezier(0.2, 0.7, 0.2, 1);
+  view-transition-name: page-content;
 }
 @keyframes reveal {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
-::view-transition-old(root) {
-  animation: fade-out 0.14s ease both;
-}
+::view-transition-old(root),
 ::view-transition-new(root) {
-  animation: fade-in 0.22s ease both;
+  animation: none;
+}
+::view-transition-old(page-content) {
+  animation: fade-out 0.2s ease both;
+}
+::view-transition-new(page-content) {
+  animation: enter-view 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes enter-view {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 @keyframes fade-out {
   to {
@@ -1670,7 +1685,9 @@ tbody tr:last-child td {
     scroll-behavior: auto !important;
   }
   ::view-transition-old(root),
-  ::view-transition-new(root) {
+  ::view-transition-new(root),
+  ::view-transition-old(page-content),
+  ::view-transition-new(page-content) {
     animation: none !important;
   }
 }
@@ -1682,7 +1699,9 @@ tbody tr:last-child td {
   scroll-behavior: auto !important;
 }
 [data-motion='reduced']::view-transition-old(root),
-[data-motion='reduced']::view-transition-new(root) {
+[data-motion='reduced']::view-transition-new(root),
+[data-motion='reduced']::view-transition-old(page-content),
+[data-motion='reduced']::view-transition-new(page-content) {
   animation: none !important;
 }
 .section-heading {
@@ -1950,4 +1969,128 @@ tbody tr:last-child td {
     align-items: flex-start;
     flex-direction: column;
   }
+}
+
+.panel {
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+.panel:hover {
+  border-color: color-mix(in srgb, var(--line) 65%, var(--accent));
+}
+.button:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+.nav a.active svg {
+  filter: drop-shadow(0 1px 2px #0003);
+}
+.motion-demo {
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+.motion-demo-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.motion-demo-heading p {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.motion-preview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  padding: 18px;
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.motion-preview-card {
+  display: grid;
+  gap: 6px;
+  align-content: center;
+  font-size: 12px;
+  color: var(--muted);
+  animation: reveal 0.65s ease both;
+}
+.motion-preview-card svg {
+  color: var(--accent);
+}
+.motion-preview-card strong {
+  color: var(--ink);
+  font-size: 14px;
+}
+.motion-preview-bars {
+  height: 84px;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.motion-preview-bars i {
+  flex: 1;
+  height: 25%;
+  border-radius: 4px 4px 0 0;
+  background: var(--chart-actual);
+  transform-origin: bottom;
+  animation: draw-bar 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.motion-preview-bars i:nth-child(2) {
+  height: 40%;
+  animation-delay: 0.08s;
+}
+.motion-preview-bars i:nth-child(3) {
+  height: 55%;
+  animation-delay: 0.16s;
+}
+.motion-preview-bars i:nth-child(4) {
+  height: 65%;
+  animation-delay: 0.24s;
+}
+.motion-preview-bars i:nth-child(5) {
+  height: 88%;
+  animation-delay: 0.32s;
+}
+@keyframes draw-bar {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+.setting-row input[role='switch'] {
+  appearance: none;
+  width: 44px;
+  height: 25px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface-raised);
+  position: relative;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+.setting-row input[role='switch']::after {
+  content: '';
+  position: absolute;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: var(--muted);
+  left: 3px;
+  top: 3px;
+  transition: transform 0.25s ease;
+}
+.setting-row input[role='switch']:checked {
+  background: var(--primary);
+}
+.setting-row input[role='switch']:checked::after {
+  transform: translateX(19px);
+  background: #fff;
 }

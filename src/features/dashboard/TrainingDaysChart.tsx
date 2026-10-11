@@ -29,7 +29,7 @@ export default function TrainingDaysChart({ sessions }: { sessions: TrainingSess
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        animation: reducedMotion ? false : { duration: 350 },
+        animation: reducedMotion ? false : { duration: 850, easing: 'easeOutQuart' },
         plugins: {
           legend: { display: false },
           tooltip: {
