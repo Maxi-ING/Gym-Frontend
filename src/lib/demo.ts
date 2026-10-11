@@ -49,7 +49,7 @@ let sessions: TrainingSession[] = Array.from({ length: 8 }, (_, i) => {
 let weight = 80;
 let goals: Goal[] = [{ id: 1, ejercicio_id: 1, carga_objetivo_kg: 50, estado: 'pendiente' }];
 
-const admin: User = {
+let admin: User = {
   ...user,
   id: 99,
   nombre: 'Max · Administración',
@@ -177,6 +177,7 @@ function demoAdmin(url: URL, method: string, body: Record<string, unknown>): unk
       const updated = { ...member, ...body } as User;
       members = members.map((u) => (u.id === id ? updated : u));
       if (id === 1) user = updated;
+      if (id === 99) admin = updated;
       return updated;
     }
     return {

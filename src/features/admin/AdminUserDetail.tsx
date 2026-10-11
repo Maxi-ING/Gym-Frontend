@@ -2,7 +2,6 @@ import { useCallback, useState, type FormEvent } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../users/AuthProvider';
 import { adminService } from './adminService';
-import { recordService } from '../records/recordService';
 import SessionTable from '../records/SessionTable';
 import MetricsCards from '../dashboard/MetricsCards';
 import { useResource } from '../../hooks/useResource';
@@ -24,7 +23,7 @@ export default function AdminUserDetail() {
           throw new Error('Identificador de usuario no válido.');
         const [detail, exercises] = await Promise.all([
           adminService.user(userId, signal),
-          recordService.exercises(signal),
+          adminService.exercises(signal),
         ]);
         return { ...detail, exercises };
       },
