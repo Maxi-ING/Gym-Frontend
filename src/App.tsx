@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Routes, Route, Link } from 'react-router-dom';
 import { lazy } from 'react';
 import { AuthProvider, useAuth } from './features/users/AuthProvider';
 import AuthPage from './features/users/AuthPage';
@@ -69,14 +69,18 @@ function Content() {
     </Routes>
   );
 }
-export default function App() {
-  return (
-    <BrowserRouter>
+const router = createBrowserRouter([
+  {
+    path: '*',
+    element: (
       <AuthProvider>
         <PreferencesProvider>
           <Content />
         </PreferencesProvider>
       </AuthProvider>
-    </BrowserRouter>
-  );
+    ),
+  },
+]);
+export default function App() {
+  return <RouterProvider router={router} />;
 }
