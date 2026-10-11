@@ -1,10 +1,94 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { recordService } from './recordService';
 import { useResource } from '../../hooks/useResource';
 import RecordForm from './RecordForm';
 import SessionTable from './SessionTable';
 import { EmptyState, ErrorState, LoadingState } from '../../components/Feedback';
-export default function RecordsPage(){
-  const resource=useResource(useCallback(async(signal:AbortSignal)=>{const [exercises,sessions]=await Promise.all([recordService.exercises(signal),recordService.sessions(signal)]);return {exercises,sessions};},[]));
-  return <><div className="page-heading"><div><div className="eyebrow">TU ENTRENAMIENTO</div><h1>Una sesión más cerca.</h1><p>Registra lo que hiciste. El progreso se construye sesión a sesión.</p></div><span className="tag">Cargas en kilogramos</span></div>{resource.loading?<LoadingState/>:resource.error?<ErrorState message={resource.error} retry={resource.reload}/>:resource.data&&<><div className="record-grid"><section className="panel"><div className="panel-header"><div><h2>Registrar entrenamiento</h2><p>Guarda ejercicios de una misma sesión.</p></div></div>{resource.data.exercises.length?<RecordForm exercises={resource.data.exercises} onSaved={resource.reload}/>:<EmptyState title="El catálogo aún está vacío">Necesitas ejercicios disponibles antes de registrar una sesión.</EmptyState>}</section><aside className="panel record-help"><h2>Un registro claro, un mejor historial.</h2><ul><li>Usa la carga externa que levantaste, expresada en kg.</li><li>Si cambias carga o repeticiones entre series, agrega otro registro del mismo ejercicio.</li><li>Revisa la fecha y los datos antes de guardar.</li></ul><div className="notice">Cada registro reúne series con la misma carga y repeticiones. La sesión se guarda completa.</div></aside></div><section className="panel table-panel"><div className="panel-header"><div><h2>Tu historial</h2><p>Sesiones guardadas en tu cuenta.</p></div><span className="tag">{resource.data.sessions.length} sesiones</span></div><SessionTable sessions={resource.data.sessions} exercises={resource.data.exercises}/></section></>}</>;
+export default function RecordsPage() {
+  const [saved, setSaved] = useState(false);
+  const resource = useResource(
+    useCallback(async (signal: AbortSignal) => {
+      const [exercises, sessions] = await Promise.all([
+        recordService.exercises(signal),
+        recordService.sessions(signal),
+      ]);
+      return { exercises, sessions };
+    }, []),
+  );
+  return (
+    <>
+      <div className="page-heading">
+        <div>
+          <div className="eyebrow">TU ENTRENAMIENTO</div>
+          <h1>Una sesión más cerca.</h1>
+          <p>Registra lo que hiciste. El progreso se construye sesión a sesión.</p>
+        </div>
+        <span className="tag">Cargas en kilogramos</span>
+      </div>
+      {saved && (
+        <div className="feedback feedback-success" role="status" style={{ marginBottom: 20 }}>
+          Sesión guardada correctamente. Ya puedes consultar tu progreso.
+        </div>
+      )}
+      {resource.loading ? (
+        <LoadingState />
+      ) : resource.error ? (
+        <ErrorState message={resource.error} retry={resource.reload} />
+      ) : (
+        resource.data && (
+          <>
+            <div className="record-grid">
+              <section className="panel">
+                <div className="panel-header">
+                  <div>
+                    <h2>Registrar entrenamiento</h2>
+                    <p>Guarda ejercicios de una misma sesión.</p>
+                  </div>
+                </div>
+                {resource.data.exercises.length ? (
+                  <RecordForm
+                    exercises={resource.data.exercises}
+                    onStart={() => setSaved(false)}
+                    onSaved={() => {
+                      setSaved(true);
+                      resource.reload();
+                    }}
+                  />
+                ) : (
+                  <EmptyState title="El catálogo aún está vacío">
+                    Necesitas ejercicios disponibles antes de registrar una sesión.
+                  </EmptyState>
+                )}
+              </section>
+              <aside className="panel record-help">
+                <h2>Un registro claro, un mejor historial.</h2>
+                <ul>
+                  <li>Usa la carga externa que levantaste, expresada en kg.</li>
+                  <li>
+                    Si cambias carga o repeticiones entre series, agrega otro registro del mismo
+                    ejercicio.
+                  </li>
+                  <li>Revisa la fecha y los datos antes de guardar.</li>
+                </ul>
+                <div className="notice">
+                  Cada registro reúne series con la misma carga y repeticiones. La sesión se guarda
+                  completa.
+                </div>
+              </aside>
+            </div>
+            <section className="panel table-panel">
+              <div className="panel-header">
+                <div>
+                  <h2>Tu historial</h2>
+                  <p>Sesiones guardadas en tu cuenta.</p>
+                </div>
+                <span className="tag">{resource.data.sessions.length} sesiones</span>
+              </div>
+              <SessionTable sessions={resource.data.sessions} exercises={resource.data.exercises} />
+            </section>
+          </>
+        )
+      )}
+    </>
+  );
 }

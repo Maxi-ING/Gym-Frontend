@@ -7,5 +7,8 @@ export const session = {
     sessionStorage.setItem(TOKEN, token);
     sessionStorage.setItem(MODE, demo ? 'demo' : 'api');
   },
-  clear() { sessionStorage.removeItem(TOKEN); sessionStorage.removeItem(MODE); },
+  clear() {
+    sessionStorage.removeItem(TOKEN);
+    sessionStorage.removeItem(MODE);
+  },
 };
