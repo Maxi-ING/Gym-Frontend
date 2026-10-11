@@ -3,7 +3,7 @@ import { useAuth } from '../features/users/AuthProvider';
 import Icon, { type IconName } from './Icon';
 import ProfileSetup from '../features/users/ProfileSetup';
 
-const links: { to: string; label: string; icon: IconName }[] = [
+const userLinks: { to: string; label: string; icon: IconName }[] = [
   { to: '/', label: 'Mi progreso', icon: 'dashboard' },
   { to: '/entrenamiento', label: 'Entrenamiento', icon: 'training' },
   { to: '/analisis', label: 'Análisis IA', icon: 'spark' },
@@ -11,6 +11,15 @@ const links: { to: string; label: string; icon: IconName }[] = [
 ];
 export default function Layout() {
   const { user, demo, signOut } = useAuth();
+  const links =
+    user?.rol === 'admin'
+      ? [
+          { to: '/', label: 'Inicio', icon: 'dashboard' as const },
+          { to: '/usuarios', label: 'Usuarios', icon: 'profile' as const },
+          { to: '/gestion-entrenamientos', label: 'Entrenamientos', icon: 'training' as const },
+          { to: '/ejercicios', label: 'Ejercicios', icon: 'weight' as const },
+        ]
+      : userLinks;
   return (
     <div className="app-shell">
       <a href="#main-content" className="skip-link">
@@ -38,7 +47,10 @@ export default function Layout() {
           <div className="user-mini">
             <span className="avatar">{user?.nombre.slice(0, 2).toUpperCase()}</span>
             <div>
-              <strong>{user?.nombre}</strong>
+              <NavLink to="/perfil">
+                <strong>{user?.nombre}</strong>
+                <small>Mi perfil</small>
+              </NavLink>
               <small>{demo ? 'Cuenta de demostración' : 'Mi cuenta'}</small>
             </div>
             <button className="logout" onClick={signOut} aria-label="Cerrar sesión">
@@ -67,7 +79,7 @@ export default function Layout() {
           </div>
         )}
         <main id="main-content" className="page" tabIndex={-1}>
-          {user?.perfil_completo ? (
+          {user?.perfil_completo || user?.rol === 'admin' ? (
             <Outlet />
           ) : (
             <div className="empty-state">Completa tu perfil para empezar.</div>
