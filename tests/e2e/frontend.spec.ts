@@ -1,0 +1,166 @@
+import { test, expect, type Page } from '@playwright/test';
+test.beforeEach(async ({ page }) => {
+  await page.route('https://fonts.googleapis.com/**', (route) => route.abort());
+});
+async function demo(page: Page) {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Explorar demo' }).click();
+  await expect(page.getByRole('heading', { name: 'Tu progreso, Alex.' })).toBeVisible();
+}
+test('la demo recorre entrenamiento, progreso y análisis sin usar la API', async ({ page }) => {
+  let apiCalls = 0;
+  page.on('request', (request) => {
+    if (request.url().startsWith('http://localhost:8000')) apiCalls++;
+  });
+  await demo(page);
+  await page.getByRole('link', { name: 'Entrenamiento', exact: true }).click();
+  await page.getByLabel('Ejercicio 1', { exact: true }).selectOption('1');
+  await page.getByLabel('Carga (kg)', { exact: true }).fill('52');
+  await page.getByRole('button', { name: 'Guardar sesión' }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'Sesión guardada' })).toBeVisible();
+  await expect(page.getByText('9 sesiones', { exact: true })).toBeVisible();
+  await page.getByRole('link', { name: 'Mi progreso', exact: true }).click();
+  await page.getByLabel('Ejercicio', { exact: true }).selectOption('1');
+  await expect(page.getByRole('heading', { name: 'Evolución de la carga' })).toBeVisible();
+  await page.getByRole('link', { name: 'Análisis IA', exact: true }).click();
+  await page.getByLabel('Ejercicio para analizar').selectOption('1');
+  await page.getByRole('button', { name: 'Analizar mi progreso', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Tu tendencia de carga' })).toBeVisible();
+  await expect(page.getByText('48 kg', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Cerrar sesión' }).click();
+  await expect(page.getByRole('heading', { name: 'Bienvenido de nuevo' })).toBeVisible();
+  expect(apiCalls).toBe(0);
+});
+test('muestra errores de acceso y no simula un inicio de sesión', async ({ page }) => {
+  await page.route('http://localhost:8000/**', async (route) => {
+    if (route.request().method() === 'OPTIONS')
+      return route.fulfill({
+        status: 204,
+        headers: {
+          'access-control-allow-origin': '*',
+          'access-control-allow-headers': 'content-type',
+        },
+      });
+    await route.fulfill({
+      status: 401,
+      contentType: 'application/json',
+      headers: { 'access-control-allow-origin': '*' },
+      body: JSON.stringify({ detail: 'Credenciales incorrectas' }),
+    });
+  });
+  await page.goto('/');
+  await page.getByLabel('Correo electrónico').fill('persona@example.com');
+  await page.getByLabel('Contraseña').fill('incorrecta');
+  await page.getByRole('button', { name: 'Entrar a mi espacio' }).click();
+  await expect(page.getByRole('alert')).toContainText('Credenciales incorrectas');
+  await expect(page.getByRole('heading', { name: 'Bienvenido de nuevo' })).toBeVisible();
+});
+test('completa el perfil, guarda en la API y representa historial insuficiente', async ({
+  page,
+}) => {
+  let completed = false;
+  let sessionBody: unknown;
+  let authenticated = false;
+  const user = {
+    id: 8,
+    nombre: 'Max',
+    correo: 'max@example.com',
+    edad: null,
+    talla_m: null,
+    objetivo: null,
+    perfil_completo: false,
+  };
+  const headers = {
+    'access-control-allow-origin': '*',
+    'access-control-allow-headers': 'content-type,authorization',
+    'access-control-allow-methods': 'GET,POST,PATCH,OPTIONS',
+  };
+  await page.route('http://localhost:8000/**', async (route) => {
+    const request = route.request();
+    const path = new URL(request.url()).pathname;
+    const method = request.method();
+    let body: unknown = {};
+    if (method === 'OPTIONS') return route.fulfill({ status: 204, headers });
+    if (path === '/auth/login') body = { access_token: 'test-token', token_type: 'bearer' };
+    if (path === '/me' && method === 'GET') body = { ...user, perfil_completo: completed };
+    if (path === '/me' && method === 'PATCH') {
+      completed = true;
+      body = { ...user, ...request.postDataJSON(), perfil_completo: true };
+    }
+    if (path === '/ejercicios') body = [{ id: 2, nombre: 'Sentadilla', unidad: 'kg' }];
+    if (path === '/sesiones' && method === 'GET') body = [];
+    if (path === '/sesiones' && method === 'POST') {
+      sessionBody = request.postDataJSON();
+      authenticated = request.headers().authorization === 'Bearer test-token';
+      body = { id: 9, ...request.postDataJSON(), volumen_kg: 1200 };
+    }
+    if (path === '/progreso')
+      body = {
+        total_sesiones: 0,
+        volumen_total_kg: 0,
+        carga_maxima_kg: null,
+        ultima_medicion: null,
+        puntos: [],
+      };
+    if (path === '/metas') body = [];
+    if (path === '/analisis')
+      body = {
+        estado: 'historial_insuficiente',
+        mensaje: 'Aún faltan semanas de entrenamiento.',
+        semanas_observadas: 1,
+        pendiente_kg_semana: null,
+        siguiente_carga_kg: null,
+        semanas_hasta_meta: null,
+        historial: [],
+        proyeccion: [],
+      };
+    await route.fulfill({
+      status: 200,
+      headers,
+      contentType: 'application/json',
+      body: JSON.stringify(body),
+    });
+  });
+  await page.goto('/');
+  await page.getByLabel('Correo electrónico').fill(user.correo);
+  await page.getByLabel('Contraseña').fill('password123');
+  await page.getByRole('button', { name: 'Entrar a mi espacio' }).click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(dialog).toBeVisible();
+  await dialog.getByLabel('Edad', { exact: true }).fill('20');
+  await dialog.getByLabel('Talla (m)').fill('1.75');
+  await dialog.getByLabel('Peso actual (kg)').fill('80');
+  await dialog.getByLabel('Objetivo', { exact: true }).selectOption('Ganar fuerza');
+  await dialog.getByRole('button', { name: 'Guardar perfil' }).click();
+  await expect(dialog).not.toBeVisible();
+  await page.getByRole('link', { name: 'Entrenamiento', exact: true }).click();
+  await page.getByLabel('Ejercicio 1', { exact: true }).selectOption('2');
+  await page.getByLabel('Carga (kg)', { exact: true }).fill('50');
+  await page.getByRole('button', { name: 'Guardar sesión' }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'Sesión guardada' })).toBeVisible();
+  expect(authenticated).toBe(true);
+  expect(sessionBody).not.toHaveProperty('usuario_id');
+  await page.getByRole('link', { name: 'Análisis IA', exact: true }).click();
+  await page.getByLabel('Ejercicio para analizar').selectOption('2');
+  await page.getByRole('button', { name: 'Analizar mi progreso', exact: true }).click();
+  await expect(page.getByText('Aún faltan semanas de entrenamiento.')).toBeVisible();
+  await expect(page.getByText('Siguiente estimación', { exact: true })).toHaveCount(0);
+});
+test('se adapta al ancho de pantalla y dibuja el dashboard sin errores', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await demo(page);
+  await expect(page.getByRole('img', { name: /Volumen de entrenamiento/ })).toBeVisible();
+  const widths = await page.evaluate(() => ({
+    page: document.documentElement.scrollWidth,
+    viewport: window.innerWidth,
+  }));
+  expect(widths.page).toBeLessThanOrEqual(widths.viewport);
+  await page.screenshot({
+    path: `test-results/dashboard-${test.info().project.name}.png`,
+    fullPage: true,
+  });
+  expect(errors).toEqual([]);
+});
