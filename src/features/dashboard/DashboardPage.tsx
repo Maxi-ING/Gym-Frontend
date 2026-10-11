@@ -6,6 +6,7 @@ import { dashboardService } from './dashboardService';
 import { recordService } from '../records/recordService';
 import MetricsCards from './MetricsCards';
 import ProgressChart from './ProgressChart';
+import TrainingDaysChart from './TrainingDaysChart';
 import SessionTable from '../records/SessionTable';
 import Select from '../../components/Select';
 import Input from '../../components/Input';
@@ -119,6 +120,22 @@ export default function DashboardPage() {
               />
             </>
           )
+        )}
+      </section>
+      <section className="panel">
+        <div className="panel-header">
+          <div>
+            <h2>Tu constancia en el gimnasio</h2>
+            <p>Días con sesiones registradas en las últimas ocho semanas, incluida la actual.</p>
+          </div>
+          <Icon name="calendar" />
+        </div>
+        {history.loading ? (
+          <LoadingState />
+        ) : history.error ? (
+          <ErrorState message={history.error} retry={history.reload} />
+        ) : (
+          history.data && <TrainingDaysChart sessions={history.data} />
         )}
       </section>
       {overview.loading ? (
