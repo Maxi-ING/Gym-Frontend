@@ -190,6 +190,7 @@ export default function PredictionPage() {
                     {demo ? 'Ejemplo ilustrativo' : 'Análisis del historial'}
                   </span>
                 </div>
+                {result.estado === 'estimado' && <PredictionChart result={result} />}
                 <p className="prediction-message" role="status">
                   {result.mensaje}
                 </p>
@@ -221,7 +222,6 @@ export default function PredictionPage() {
                         </strong>
                       </div>
                     </div>
-                    <PredictionChart result={result} />
                   </>
                 )}
               </>
