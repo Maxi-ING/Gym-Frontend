@@ -4,7 +4,7 @@ test.beforeEach(async ({ page }) => {
 });
 async function demo(page: Page) {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Explorar demo' }).click();
+  await page.getByRole('button', { name: 'Explorar demo', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Tu progreso, Alex.' })).toBeVisible();
 }
 test('la demo recorre entrenamiento, progreso y análisis sin usar la API', async ({ page }) => {
