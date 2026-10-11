@@ -113,3 +113,30 @@ export interface AdminUserInput {
   rol: Role;
   activo: boolean;
 }
+export interface ExercisePerformance {
+  ejercicio_id: number;
+  nombre: string;
+  sesiones: number;
+  primera_carga_kg: number | null;
+  ultima_carga_kg: number | null;
+  mejor_carga_kg: number | null;
+  variacion_porcentaje: number | null;
+}
+export interface OverviewGoal extends Goal {
+  ejercicio_nombre: string;
+  ultima_carga_kg: number | null;
+  avance_porcentaje: number | null;
+}
+export interface Recommendation {
+  titulo: string;
+  mensaje: string;
+  origen: 'regla' | 'modelo';
+  accion: 'registro' | 'perfil' | 'analisis';
+}
+export interface UserOverview {
+  progreso: Progress;
+  rendimiento: ExercisePerformance[];
+  metas: OverviewGoal[];
+  ultimo_analisis: { ejercicio_nombre: string; fecha: string; resultado: Prediction } | null;
+  recomendaciones: Recommendation[];
+}

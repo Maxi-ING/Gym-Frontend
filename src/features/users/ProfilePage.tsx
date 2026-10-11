@@ -54,6 +54,40 @@ export default function ProfilePage() {
         <ErrorState message={resource.error} retry={resource.reload} />
       ) : (
         <div className="profile-grid">
+          <aside className="panel profile-overview">
+            <div className="avatar">{user.nombre.slice(0, 2).toUpperCase()}</div>
+            <h2>{user.nombre}</h2>
+            <span className="tag">Cuenta personal</span>
+            <p>{user.correo}</p>
+            <div className="profile-stat">
+              <span>Objetivo</span>
+              <strong>{user.objetivo}</strong>
+            </div>
+            <div className="profile-stat">
+              <span>Talla</span>
+              <strong>{user.talla_m ? `${number(user.talla_m, 2)} m` : '—'}</strong>
+            </div>
+            <div className="profile-stat">
+              <span>Último peso</span>
+              <strong>
+                {resource.data?.ultima_medicion
+                  ? `${number(resource.data.ultima_medicion.peso_kg, 1)} kg`
+                  : '—'}
+              </strong>
+            </div>
+            <div className="profile-stat">
+              <span>IMC orientativo</span>
+              <strong>
+                {resource.data?.ultima_medicion?.imc != null
+                  ? number(resource.data.ultima_medicion.imc, 1)
+                  : '—'}
+              </strong>
+            </div>
+            <div className="notice">
+              El IMC es un indicador general. Tus decisiones de entrenamiento deben considerar la
+              evaluación de tu entrenador.
+            </div>
+          </aside>
           <section className="panel">
             <div className="panel-header">
               <div>
@@ -111,39 +145,6 @@ export default function ProfilePage() {
               )}
             </form>
           </section>
-          <aside className="panel profile-overview">
-            <div className="avatar">{user.nombre.slice(0, 2).toUpperCase()}</div>
-            <h2>{user.nombre}</h2>
-            <p>{user.correo}</p>
-            <div className="profile-stat">
-              <span>Objetivo</span>
-              <strong>{user.objetivo}</strong>
-            </div>
-            <div className="profile-stat">
-              <span>Talla</span>
-              <strong>{user.talla_m ? `${number(user.talla_m, 2)} m` : '—'}</strong>
-            </div>
-            <div className="profile-stat">
-              <span>Último peso</span>
-              <strong>
-                {resource.data?.ultima_medicion
-                  ? `${number(resource.data.ultima_medicion.peso_kg, 1)} kg`
-                  : '—'}
-              </strong>
-            </div>
-            <div className="profile-stat">
-              <span>IMC orientativo</span>
-              <strong>
-                {resource.data?.ultima_medicion?.imc != null
-                  ? number(resource.data.ultima_medicion.imc, 1)
-                  : '—'}
-              </strong>
-            </div>
-            <div className="notice">
-              El IMC es un indicador general. Tus decisiones de entrenamiento deben considerar la
-              evaluación de tu entrenador.
-            </div>
-          </aside>
         </div>
       )}
     </>
