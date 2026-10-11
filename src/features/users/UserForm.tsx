@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { limits, objectives, validateProfile } from '../../lib/validation';
 import type { User } from '../../types';
 import { userService } from './userService';
 import { errorMessage } from '../../lib/api';
@@ -23,14 +24,20 @@ export default function UserForm({
     const form = new FormData(event.currentTarget);
     setError('');
     setSaved(false);
+    const input = {
+      edad: Number(form.get('edad')),
+      talla_m: Number(form.get('talla_m')),
+      peso_kg: Number(form.get('peso_kg')),
+      objetivo: String(form.get('objetivo')),
+    };
+    const invalid = validateProfile(input);
+    if (invalid) {
+      setError(invalid);
+      return;
+    }
     setBusy(true);
     try {
-      const updated = await userService.update({
-        edad: Number(form.get('edad')),
-        talla_m: Number(form.get('talla_m')),
-        peso_kg: Number(form.get('peso_kg')),
-        objetivo: String(form.get('objetivo')),
-      });
+      const updated = await userService.update(input);
       onSaved(updated);
       setSaved(true);
     } catch (e) {
@@ -41,14 +48,12 @@ export default function UserForm({
   }
   return (
     <form onSubmit={submit} className="form-stack">
-      <div className="form-grid">
+      <fieldset disabled={busy} className="form-grid">
         <Input
           label="Edad"
           name="edad"
           type="number"
-          min={18}
-          max={120}
-          step={1}
+          {...limits.edad}
           defaultValue={user.edad ?? ''}
           required
           hint="Solo personas adultas"
@@ -57,9 +62,7 @@ export default function UserForm({
           label="Talla (m)"
           name="talla_m"
           type="number"
-          min={0.5}
-          max={2.5}
-          step={0.01}
+          {...limits.talla}
           defaultValue={user.talla_m ?? ''}
           placeholder="1.75"
           required
@@ -68,9 +71,7 @@ export default function UserForm({
           label="Peso actual (kg)"
           name="peso_kg"
           type="number"
-          min={20}
-          max={400}
-          step={0.1}
+          {...limits.peso}
           defaultValue={initialWeight ?? ''}
           placeholder="80.0"
           required
@@ -79,16 +80,11 @@ export default function UserForm({
           <option value="" disabled>
             Selecciona tu objetivo
           </option>
-          {[
-            'Ganar fuerza',
-            'Ganar masa muscular',
-            'Mejorar condición física',
-            'Mantener actividad física',
-          ].map((x) => (
+          {objectives.map((x) => (
             <option key={x}>{x}</option>
           ))}
         </Select>
-      </div>
+      </fieldset>
       <small className="muted">
         El peso se guardará como una medición. El IMC es orientativo y no representa un diagnóstico.
       </small>

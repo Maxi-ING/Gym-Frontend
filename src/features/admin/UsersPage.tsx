@@ -2,6 +2,7 @@ import { useCallback, useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { adminService } from './adminService';
 import { useResource } from '../../hooks/useResource';
+import { validName } from '../../lib/validation';
 import { errorMessage } from '../../lib/api';
 import Input from '../../components/Input';
 import Select from '../../components/Select';
@@ -24,8 +25,8 @@ export default function UsersPage() {
     setError('');
     setMessage('');
     const nombre = String(form.get('nombre')).trim();
-    if (nombre.length < 2) {
-      setError('El nombre debe tener entre 2 y 100 caracteres.');
+    if (!validName(nombre)) {
+      setError('Usa un nombre de 2 a 100 caracteres con letras, espacios o guiones.');
       setBusy(false);
       return;
     }
