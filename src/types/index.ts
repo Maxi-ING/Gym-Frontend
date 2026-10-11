@@ -1,4 +1,7 @@
+export type Role = 'admin' | 'usuario';
 export interface User {
+  rol: Role;
+  activo: boolean;
   id: number;
   nombre: string;
   correo: string;
@@ -23,6 +26,7 @@ export interface Exercise {
   id: number;
   nombre: string;
   unidad: 'kg';
+  activo?: boolean;
 }
 export interface RecordInput {
   ejercicio_id: number;
@@ -78,4 +82,34 @@ export interface AuthInput {
 export interface AuthResult {
   access_token: string;
   token_type: 'bearer';
+}
+
+export interface PageResult<T> {
+  items: T[];
+  total: number;
+  pagina: number;
+  por_pagina: number;
+}
+export interface AdminSummary {
+  total_usuarios: number;
+  usuarios_activos: number;
+  total_sesiones: number;
+  total_ejercicios: number;
+  sesiones_recientes: AdminSession[];
+}
+export interface AdminSession extends TrainingSession {
+  usuario_id: number;
+  usuario_nombre: string;
+}
+export interface AdminUserDetail {
+  usuario: User;
+  progreso: Progress;
+  sesiones: TrainingSession[];
+  metas: Goal[];
+}
+export interface AdminUserInput {
+  nombre: string;
+  correo: string;
+  rol: Role;
+  activo: boolean;
 }

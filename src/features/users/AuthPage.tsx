@@ -37,11 +37,11 @@ export default function AuthPage() {
       setBusy(false);
     }
   }
-  async function demo() {
+  async function demo(rol: 'admin' | 'usuario' = 'usuario') {
     setBusy(true);
     setError('');
     try {
-      await signIn('demo', true);
+      await signIn('demo', true, rol);
     } catch (e) {
       setError(errorMessage(e));
     } finally {
@@ -182,9 +182,22 @@ export default function AuthPage() {
             </Button>
           </form>
           <div className="auth-divider">CONOCE FITANALYTICS</div>
-          <Button variant="secondary" className="button-wide" onClick={demo} disabled={busy}>
+          <Button
+            variant="secondary"
+            className="button-wide"
+            onClick={() => demo()}
+            disabled={busy}
+          >
             Explorar demo
             <Icon name="spark" size={16} />
+          </Button>
+          <Button
+            variant="ghost"
+            className="button-wide"
+            onClick={() => demo('admin')}
+            disabled={busy}
+          >
+            Explorar demo de administrador
           </Button>
           <p className="auth-note">
             Demo con datos de ejemplo. No requiere una cuenta.

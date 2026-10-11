@@ -2,14 +2,14 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
 import { userService } from './userService';
 import { session } from '../../lib/session';
 import { errorMessage } from '../../lib/api';
-import type { User } from '../../types';
+import type { Role, User } from '../../types';
 
 interface AuthContextValue {
   user: User | null;
   loading: boolean;
   error: string;
   demo: boolean;
-  signIn: (token: string, demo?: boolean) => Promise<void>;
+  signIn: (token: string, demo?: boolean, rol?: Role) => Promise<void>;
   signOut: () => void;
   setUser: (user: User) => void;
   retry: () => void;
@@ -52,8 +52,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     window.addEventListener('fitanalytics:unauthorized', signOut);
     return () => window.removeEventListener('fitanalytics:unauthorized', signOut);
   }, [signOut]);
-  async function signIn(token: string, demo = false) {
-    session.start(token, demo);
+  async function signIn(token: string, demo = false, rol: Role = 'usuario') {
+    session.start(token, demo, rol);
     try {
       const result = await userService.me();
       setUser(result);
