@@ -50,6 +50,7 @@ export default function TrainingDaysChart({ sessions }: { sessions: TrainingSess
               font: { size: 10 },
               maxRotation: 0,
               autoSkip: true,
+              maxTicksLimit: 4,
             },
           },
           y: {
