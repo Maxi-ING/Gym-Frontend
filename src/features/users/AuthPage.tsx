@@ -77,8 +77,8 @@ export default function AuthPage() {
             >
               <defs>
                 <linearGradient id="auth-fill" x1="0" y1="0" x2="0" y2="1">
-                  <stop stopColor="#d4f573" stopOpacity=".25" />
-                  <stop offset="1" stopColor="#d4f573" stopOpacity="0" />
+                  <stop stopColor="#5ab7ff" stopOpacity=".25" />
+                  <stop offset="1" stopColor="#5ab7ff" stopOpacity="0" />
                 </linearGradient>
               </defs>
               <path
@@ -88,7 +88,7 @@ export default function AuthPage() {
               <path
                 d="M0 90L45 83 90 65 135 69 180 48 225 38 270 42 315 18 360 8"
                 fill="none"
-                stroke="#d4f573"
+                stroke="#5ab7ff"
                 strokeWidth="3"
               />
             </svg>

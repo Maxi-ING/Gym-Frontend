@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { usePreferences } from '../settings/PreferencesProvider';
 import type { ProgressPoint } from '../../types';
 import { useChart } from '../../hooks/useChart';
 import { dateLabel, number } from '../../lib/format';
@@ -11,6 +12,7 @@ export default function ProgressChart({
   points: ProgressPoint[];
   metric?: 'volumen_kg' | 'carga_kg';
 }) {
+  const { dark, reducedMotion } = usePreferences();
   const config = useMemo<ChartConfiguration<'line'>>(
     () => ({
       type: 'line',
@@ -20,8 +22,8 @@ export default function ProgressChart({
           {
             label: metric === 'volumen_kg' ? 'Volumen (kg)' : 'Carga (kg)',
             data: points.map((p) => p[metric]),
-            borderColor: '#759d47',
-            backgroundColor: '#d4edaf55',
+            borderColor: '#449aff',
+            backgroundColor: '#449aff25',
             fill: true,
             tension: 0.25,
             pointRadius: 4,
@@ -35,7 +37,7 @@ export default function ProgressChart({
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        animation: false,
+        animation: reducedMotion ? false : { duration: 350 },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -47,18 +49,18 @@ export default function ProgressChart({
           x: {
             grid: { display: false },
             border: { display: false },
-            ticks: { color: '#929c89', font: { size: 10 }, maxTicksLimit: 8 },
+            ticks: { color: dark ? '#a8b8cc' : '#566a83', font: { size: 10 }, maxTicksLimit: 8 },
           },
           y: {
             beginAtZero: true,
             border: { display: false },
-            grid: { color: '#edf1e8' },
-            ticks: { color: '#929c89', font: { size: 10 }, maxTicksLimit: 6 },
+            grid: { color: dark ? '#2b3d54' : '#d9e2ee' },
+            ticks: { color: dark ? '#a8b8cc' : '#566a83', font: { size: 10 }, maxTicksLimit: 6 },
           },
         },
       },
     }),
-    [points, metric],
+    [points, metric, dark, reducedMotion],
   );
   const ref = useChart(config);
   if (!points.length)
