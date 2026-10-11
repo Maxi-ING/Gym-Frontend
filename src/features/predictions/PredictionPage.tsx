@@ -1,6 +1,7 @@
 import { useCallback, useState, type FormEvent } from 'react';
 import { recordService } from '../records/recordService';
 import { predictionService } from './predictionService';
+import { predictionAdvice } from './predictionAdvice';
 import PredictionChart from './PredictionChart';
 import { useResource } from '../../hooks/useResource';
 import { errorMessage } from '../../lib/api';
@@ -31,8 +32,8 @@ export default function PredictionPage() {
       return { exercises, goals };
     }, []),
   );
-  async function analyze(event: FormEvent) {
-    event.preventDefault();
+  async function analyze(e: FormEvent) {
+    e.preventDefault();
     setError('');
     setResult(undefined);
     setBusy(true);
@@ -49,17 +50,24 @@ export default function PredictionPage() {
       setBusy(false);
     }
   }
-  async function saveGoal(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    setGoalBusy(true);
+  async function saveGoal(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    const input = { ejercicio_id: Number(exercise), carga_objetivo_kg: Number(form.get('target')) };
     setGoalError('');
     setGoalMessage('');
+    if (
+      !input.ejercicio_id ||
+      !Number.isFinite(input.carga_objetivo_kg) ||
+      input.carga_objetivo_kg <= 0 ||
+      input.carga_objetivo_kg > 600
+    ) {
+      setGoalError('Selecciona un ejercicio y una carga objetivo entre 0.1 y 600 kg.');
+      return;
+    }
+    setGoalBusy(true);
     try {
-      const created = await predictionService.createGoal({
-        ejercicio_id: Number(exercise),
-        carga_objetivo_kg: Number(form.get('target')),
-      });
+      const created = await predictionService.createGoal(input);
       setGoal(String(created.id));
       setResult(undefined);
       setGoalMessage('Meta guardada. Puedes seleccionarla para el análisis.');
@@ -72,13 +80,16 @@ export default function PredictionPage() {
   }
   const selectedGoals =
     catalog.data?.goals.filter((g) => g.ejercicio_id === Number(exercise)) ?? [];
+  const advice = result ? predictionAdvice(result) : null;
   return (
-    <>
+    <div className="page-stack">
       <div className="page-heading">
         <div>
           <div className="eyebrow">COMPRENDE TU TENDENCIA</div>
-          <h1>Una perspectiva de tu avance.</h1>
-          <p>Selecciona un ejercicio y solicita el análisis de tu historial.</p>
+          <h1>Análisis de tu progreso</h1>
+          <p>
+            Primero elige una referencia. Después revisa el gráfico y la explicación de tu avance.
+          </p>
         </div>
         <span className="tag">
           <Icon name="spark" size={13} />
@@ -90,184 +101,229 @@ export default function PredictionPage() {
       ) : catalog.error ? (
         <ErrorState message={catalog.error} retry={catalog.reload} />
       ) : (
-        <div className="prediction-grid">
-          <aside className="form-stack">
-            <section className="panel">
-              <div className="panel-header">
-                <div>
-                  <h2>Analizar progreso</h2>
-                  <p>Necesitas al menos cuatro semanas observadas.</p>
-                </div>
+        <>
+          <section className="panel">
+            <div className="panel-header">
+              <div>
+                <h2>1. Analizar progreso</h2>
+                <p>Necesitas al menos cuatro semanas observadas del mismo ejercicio.</p>
               </div>
-              <form onSubmit={analyze} className="form-stack">
-                <fieldset disabled={busy || goalBusy} className="form-stack">
-                  <Select
-                    label="Ejercicio para analizar"
-                    value={exercise}
-                    required
-                    onChange={(e) => {
-                      setExercise(e.target.value);
-                      setGoal('');
-                      setResult(undefined);
-                      setError('');
-                      setGoalMessage('');
-                      setGoalError('');
-                    }}
-                  >
-                    <option value="" disabled>
-                      Selecciona un ejercicio
+            </div>
+            <form onSubmit={analyze} className="form-stack">
+              <fieldset disabled={busy || goalBusy} className="form-grid">
+                <Select
+                  label="Ejercicio para analizar"
+                  value={exercise}
+                  required
+                  onChange={(e) => {
+                    setExercise(e.target.value);
+                    setGoal('');
+                    setResult(undefined);
+                    setError('');
+                    setGoalMessage('');
+                    setGoalError('');
+                  }}
+                >
+                  <option value="" disabled>
+                    Selecciona un ejercicio
+                  </option>
+                  {catalog.data?.exercises.map((e) => (
+                    <option key={e.id} value={e.id}>
+                      {e.nombre}
                     </option>
-                    {catalog.data?.exercises.map((e) => (
-                      <option key={e.id} value={e.id}>
-                        {e.nombre}
-                      </option>
-                    ))}
-                  </Select>
-                  <Select
-                    label="Meta del análisis"
-                    value={goal}
-                    onChange={(e) => {
-                      setGoal(e.target.value);
-                      setResult(undefined);
-                      setError('');
-                    }}
-                  >
-                    <option value="">Solo consultar tendencia</option>
-                    {selectedGoals.map((g) => (
-                      <option value={g.id} key={g.id}>
-                        {number(g.carga_objetivo_kg, 1)} kg · {g.estado}
-                      </option>
-                    ))}
-                  </Select>
-                  <Button type="submit" loading={busy} disabled={!exercise} className="button-wide">
-                    <Icon name="spark" size={17} />
-                    Analizar mi progreso
-                  </Button>
-                </fieldset>
-              </form>
-              {error && (
-                <div className="feedback feedback-error inline-status" role="alert">
-                  {error}
-                </div>
-              )}
-              {demo && (
-                <div className="notice">
-                  La demo muestra un análisis fijo de Press de banca (meta de ejemplo: 50 kg). No
-                  recalcula predicciones al agregar sesiones o metas.
-                </div>
-              )}
-            </section>
-            <section className="panel">
-              <h3>Define una meta de carga</h3>
-              <p className="prediction-explainer" style={{ margin: '10px 0 18px' }}>
-                Establece una referencia para el ejercicio seleccionado, acordada con tu entrenador.
-              </p>
-              <form onSubmit={saveGoal} className="form-stack">
-                <fieldset disabled={goalBusy || busy || !exercise} className="form-stack">
-                  <Input
-                    label="Carga objetivo (kg)"
-                    name="target"
-                    type="number"
-                    min={0.1}
-                    max={1000}
-                    step={0.1}
-                    placeholder="50"
-                    required
-                  />
-                  <Button type="submit" variant="secondary" loading={goalBusy}>
-                    Guardar meta
-                  </Button>
-                </fieldset>
-              </form>
-              {goalError && (
-                <div className="feedback feedback-error inline-status" role="alert">
-                  {goalError}
-                </div>
-              )}
-              {goalMessage && (
-                <div className="feedback feedback-success inline-status" role="status">
-                  {goalMessage}
-                </div>
-              )}
-            </section>
-          </aside>
-          <div className="prediction-result">
-            <section className="panel">
-              {busy ? (
-                <LoadingState />
-              ) : !result ? (
-                <EmptyState title="Tus datos tienen una historia">
-                  Elige un ejercicio y pulsa Analizar mi progreso. La proyección aparecerá aquí.
-                </EmptyState>
-              ) : (
-                <>
-                  <div className="panel-header">
-                    <div>
-                      <h2>
-                        {result.estado === 'estimado'
-                          ? 'Tu tendencia de carga'
-                          : 'Resultado del análisis'}
-                      </h2>
-                      <p>
-                        {result.semanas_observadas} semanas observadas del ejercicio seleccionado.
-                      </p>
-                    </div>
-                    <span className="tag">
-                      {demo ? 'Ejemplo ilustrativo' : 'Análisis del historial'}
-                    </span>
-                  </div>
-                  <p className="prediction-message" role="status">
-                    {result.mensaje}
-                  </p>
-                  {result.estado === 'estimado' && (
-                    <>
-                      <div className="prediction-stats" style={{ margin: '22px 0' }}>
-                        <div className="prediction-stat">
-                          Tendencia semanal
-                          <strong>
-                            {result.pendiente_kg_semana != null
-                              ? `${number(result.pendiente_kg_semana, 1)} kg`
-                              : '—'}
-                          </strong>
-                        </div>
-                        <div className="prediction-stat">
-                          Siguiente estimación
-                          <strong>
-                            {result.siguiente_carga_kg != null
-                              ? `${number(result.siguiente_carga_kg, 1)} kg`
-                              : '—'}
-                          </strong>
-                        </div>
-                        <div className="prediction-stat">
-                          Tiempo hasta la meta
-                          <strong>
-                            {result.semanas_hasta_meta != null
-                              ? `${number(result.semanas_hasta_meta, 1)} sem.`
-                              : 'Sin meta'}
-                          </strong>
-                        </div>
-                      </div>
-                      <PredictionChart result={result} />
-                    </>
-                  )}
-                </>
-              )}
-            </section>
-            <section className="panel prediction-explainer">
-              <h3>Cómo interpretar el resultado</h3>
-              <p>
-                El análisis usa la carga máxima semanal del mismo ejercicio. Una tendencia positiva
-                puede generar una estimación; si faltan datos, la meta ya se alcanzó o la tendencia
-                no es positiva, se explica el resultado sin prometer una fecha de logro.
-              </p>
-              <div className="notice">
-                Una proyección no es una recomendación de carga ni una garantía. Revisa cualquier
-                ajuste con tu entrenador.
+                  ))}
+                </Select>
+                <Select
+                  label="Meta del análisis"
+                  value={goal}
+                  onChange={(e) => {
+                    setGoal(e.target.value);
+                    setResult(undefined);
+                    setError('');
+                  }}
+                >
+                  <option value="">Solo consultar tendencia</option>
+                  {selectedGoals.map((g) => (
+                    <option key={g.id} value={g.id}>
+                      {number(g.carga_objetivo_kg, 1)} kg · {g.estado}
+                    </option>
+                  ))}
+                </Select>
+              </fieldset>
+              <div className="form-actions">
+                <Button type="submit" loading={busy} disabled={!exercise || goalBusy}>
+                  <Icon name="spark" size={17} />
+                  Analizar mi progreso
+                </Button>
               </div>
+            </form>
+            {error && <ErrorState message={error} />}{' '}
+            {demo && (
+              <div className="notice">
+                La demo muestra un análisis fijo de Press de banca con una meta de ejemplo de 50 kg.
+                No recalcula predicciones al agregar sesiones o metas; los demás ejercicios muestran
+                un estado informativo.
+              </div>
+            )}
+          </section>
+          <section className="panel">
+            {busy ? (
+              <LoadingState />
+            ) : !result ? (
+              <EmptyState title="Tus datos tienen una historia">
+                Elige un ejercicio y pulsa Analizar mi progreso. La proyección aparecerá aquí.
+              </EmptyState>
+            ) : (
+              <>
+                <div className="panel-header">
+                  <div>
+                    <h2>
+                      {result.estado === 'estimado'
+                        ? 'Tu tendencia de carga'
+                        : 'Resultado del análisis'}
+                    </h2>
+                    <p>
+                      {catalog.data?.exercises.find((e) => e.id === Number(exercise))?.nombre} ·{' '}
+                      {result.semanas_observadas} semanas observadas.
+                    </p>
+                  </div>
+                  <span className="tag">
+                    {demo ? 'Ejemplo ilustrativo' : 'Análisis del historial'}
+                  </span>
+                </div>
+                <p className="prediction-message" role="status">
+                  {result.mensaje}
+                </p>
+                {result.estado === 'estimado' && (
+                  <>
+                    <div className="prediction-stats" style={{ margin: '22px 0' }}>
+                      <div className="prediction-stat">
+                        Tendencia semanal
+                        <strong>
+                          {result.pendiente_kg_semana !== null
+                            ? `${number(result.pendiente_kg_semana, 1)} kg`
+                            : '—'}
+                        </strong>
+                      </div>
+                      <div className="prediction-stat">
+                        Siguiente estimación
+                        <strong>
+                          {result.siguiente_carga_kg !== null
+                            ? `${number(result.siguiente_carga_kg, 1)} kg`
+                            : '—'}
+                        </strong>
+                      </div>
+                      <div className="prediction-stat">
+                        Tiempo hasta la meta
+                        <strong>
+                          {result.semanas_hasta_meta !== null
+                            ? `${number(result.semanas_hasta_meta, 1)} sem.`
+                            : 'Sin meta'}
+                        </strong>
+                      </div>
+                    </div>
+                    <PredictionChart result={result} />
+                  </>
+                )}
+              </>
+            )}
+          </section>
+          {advice && (
+            <section className="panel prediction-explainer">
+              <div className="eyebrow">2. CÓMO VAS Y QUÉ PUEDES HACER</div>
+              <h2>{advice.titulo}</h2>
+              <div className="advice-copy">
+                {advice.parrafos.map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
+              </div>
+              <span className="tag">Interpretación del resultado · no ejecuta otro modelo</span>
             </section>
-          </div>
-        </div>
+          )}
+          <details className="panel disclosure">
+            <summary>3. Definir o revisar una meta</summary>
+            <p className="section-description">
+              Selecciona arriba el ejercicio y define una carga objetivo acordada con tu entrenador.
+            </p>
+            <form onSubmit={saveGoal} className="form-stack">
+              <fieldset disabled={goalBusy || busy || !exercise} className="form-grid">
+                <Input
+                  label="Carga objetivo (kg)"
+                  name="target"
+                  type="number"
+                  min={0.1}
+                  max={600}
+                  step={0.1}
+                  placeholder="50"
+                  required
+                  hint="De 0.1 a 600 kg · una decimal"
+                />
+              </fieldset>
+              <div className="form-actions">
+                <Button
+                  type="submit"
+                  variant="secondary"
+                  loading={goalBusy}
+                  disabled={!exercise || busy}
+                >
+                  Guardar meta
+                </Button>
+              </div>
+            </form>
+            {goalError && <ErrorState message={goalError} />}{' '}
+            {goalMessage && (
+              <div className="feedback feedback-success inline-status" role="status">
+                {goalMessage}
+              </div>
+            )}
+            {selectedGoals.length > 0 && (
+              <ul className="goal-list">
+                {selectedGoals.map((g) => (
+                  <li key={g.id}>
+                    <div>
+                      <strong>{number(g.carga_objetivo_kg, 1)} kg</strong>
+                      <small>
+                        {g.estado === 'alcanzada' ? 'Meta alcanzada' : 'Meta pendiente'}
+                      </small>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      disabled={busy || goalBusy}
+                      onClick={() => {
+                        setGoal(String(g.id));
+                        setResult(undefined);
+                        setError('');
+                      }}
+                    >
+                      Usar esta meta
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </details>
+          <details className="panel disclosure prediction-explainer">
+            <summary>Cómo interpretar el análisis</summary>
+            <div className="advice-copy">
+              <p>
+                El modelo utiliza la carga máxima semanal del mismo ejercicio. La línea continua
+                muestra los registros y la línea discontinua representa una estimación. Las semanas
+                sin registros mantienen su separación temporal.
+              </p>
+              <p>
+                Si hay historial suficiente y una tendencia positiva, puede estimarse el tiempo para
+                una meta. Si faltan datos, la meta se alcanzó o la tendencia no es positiva, la
+                plataforma explica ese estado sin prometer una fecha de logro.
+              </p>
+              <p>
+                La carga siguiente es un valor de la proyección; no indica cuánto debes levantar. El
+                resultado no sustituye la evaluación del entrenador ni conoce la técnica, el
+                descanso o toda la planificación.
+              </p>
+            </div>
+          </details>
+        </>
       )}
-    </>
+    </div>
   );
 }

@@ -1794,3 +1794,15 @@ tbody tr:last-child td {
     grid-template-columns: 1fr;
   }
 }
+.advice-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 22px 0;
+  max-width: 980px;
+}
+.advice-copy p {
+  line-height: 1.95;
+  color: var(--muted);
+  font-size: 13px;
+}
