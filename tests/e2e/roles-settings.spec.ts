@@ -132,6 +132,55 @@ test('configuración conserva tema y movimiento por cuenta en el navegador', asy
   });
   await width(page);
 });
+
+test('la configuración es única y la demostración responde al interruptor y al dispositivo', async ({
+  page,
+}, info) => {
+  await enter(page);
+  await nav(page, 'Configuración');
+  await expect(page.getByRole('switch', { name: 'Espaciado compacto' })).toHaveCount(0);
+  await expect(page.locator('a[href="/configuracion"]')).toHaveCount(1);
+  expect(await page.locator('html').getAttribute('data-density')).toBeNull();
+  await page.getByRole('button', { name: 'Reproducir demostración' }).click();
+  expect(
+    await page
+      .locator('.motion-preview-bars')
+      .evaluate((el) => el.getAnimations({ subtree: true }).some((a) => a.playState === 'running')),
+  ).toBe(true);
+  await page.getByRole('switch', { name: 'Activar animaciones' }).uncheck();
+  await expect(page.locator('html')).toHaveAttribute('data-motion', 'reduced');
+  await expect(page.getByRole('button', { name: 'Reproducir demostración' })).toBeDisabled();
+  expect(
+    await page
+      .locator('.motion-preview-bars i')
+      .first()
+      .evaluate((el) => getComputedStyle(el).animationName),
+  ).toBe('none');
+  await nav(page, 'Inicio');
+  expect(
+    await page.locator('.route-view').evaluate((el) => getComputedStyle(el).animationName),
+  ).toBe('none');
+  await nav(page, 'Configuración');
+  await page.getByRole('switch', { name: 'Activar animaciones' }).check();
+  await expect(page.locator('html')).toHaveAttribute('data-motion', 'full');
+  expect(
+    await page
+      .locator('.motion-preview-bars i')
+      .first()
+      .evaluate((el) => getComputedStyle(el).animationName),
+  ).toBe('draw-bar');
+  await settle(page);
+  await page.screenshot({
+    path: `test-results/movimiento-${info.project.name}.png`,
+    fullPage: true,
+  });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(page.locator('html')).toHaveAttribute('data-motion', 'reduced');
+  await expect(page.getByRole('switch', { name: 'Activar animaciones' })).toBeChecked();
+  await expect(page.getByRole('button', { name: 'Reproducir demostración' })).toBeDisabled();
+  await expect(page.getByText(/Tu dispositivo solicita reducir movimiento/)).toBeVisible();
+  await width(page);
+});
 test('filtra caracteres y cargas fuera del límite antes de guardar', async ({ page }) => {
   await enter(page);
   await nav(page, 'Entrenamiento');
@@ -227,7 +276,13 @@ test('prioriza los gráficos y cuenta una fecha solo una vez al registrar otra s
       item.evaluate((el) => el.getBoundingClientRect().top),
     ),
   );
-  expect(order[0]).toBeLessThan(order[1]);
+  if (info.project.name === 'desktop') {
+    expect(Math.abs(order[0] - order[1])).toBeLessThan(2);
+    await expect(evolution.getByRole('img')).toBeInViewport({ ratio: 0.95 });
+    await expect(activity.getByRole('img')).toBeInViewport({ ratio: 0.95 });
+  } else {
+    expect(order[0]).toBeLessThan(order[1]);
+  }
   expect(order[1]).toBeLessThan(order[2]);
   await expect(evolution.getByRole('img')).toBeVisible();
   await expect(activity.getByRole('img')).toBeVisible();
@@ -236,7 +291,7 @@ test('prioriza los gráficos y cuenta una fecha solo una vez al registrar otra s
   await expect(activity.locator('tbody tr')).toHaveCount(8);
   await activity.getByText('Ver días registrados por semana').click();
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
-  await page.waitForTimeout(450);
+  await page.waitForTimeout(900);
   await page.screenshot({
     path: `test-results/graficos-oscuro-${info.project.name}.png`,
     fullPage: false,
@@ -253,7 +308,7 @@ test('prioriza los gráficos y cuenta una fecha solo una vez al registrar otra s
   await page.getByLabel('Tema', { exact: true }).selectOption('claro');
   await nav(page, 'Inicio');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
-  await page.waitForTimeout(450);
+  await page.waitForTimeout(900);
   await page.screenshot({
     path: `test-results/graficos-claro-${info.project.name}.png`,
     fullPage: false,
