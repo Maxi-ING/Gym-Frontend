@@ -4,6 +4,7 @@ import type {
   Prediction,
   ProfileInput,
   Progress,
+  ProgressPoint,
   RecordInput,
   SessionInput,
   TrainingSession,
@@ -98,13 +99,16 @@ export async function demoRequest<T>(path: string, init: RequestInit): Promise<T
         registros: s.registros.filter((r) => !exerciseId || r.ejercicio_id === exerciseId),
       }))
       .filter((s) => s.registros.length);
-    const puntos = matching
-      .map((s) => ({
+    const grouped = new Map<string, ProgressPoint>();
+    for (const s of matching) {
+      const previous = grouped.get(s.fecha);
+      grouped.set(s.fecha, {
         fecha: s.fecha,
-        carga_kg: Math.max(...s.registros.map((r) => r.carga_kg)),
-        volumen_kg: volume(s.registros),
-      }))
-      .sort((a, b) => a.fecha.localeCompare(b.fecha));
+        carga_kg: Math.max(previous?.carga_kg ?? 0, ...s.registros.map((r) => r.carga_kg)),
+        volumen_kg: (previous?.volumen_kg ?? 0) + volume(s.registros),
+      });
+    }
+    const puntos = [...grouped.values()].sort((a, b) => a.fecha.localeCompare(b.fecha));
     const progress: Progress = {
       total_sesiones: matching.length,
       volumen_total_kg: matching.reduce((sum, s) => sum + volume(s.registros), 0),
