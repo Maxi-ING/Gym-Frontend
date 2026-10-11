@@ -7,6 +7,7 @@ const userLinks: { to: string; label: string; icon: IconName }[] = [
   { to: '/', label: 'Mi progreso', icon: 'dashboard' },
   { to: '/entrenamiento', label: 'Entrenamiento', icon: 'training' },
   { to: '/analisis', label: 'Análisis IA', icon: 'spark' },
+  { to: '/perfil', label: 'Mi perfil', icon: 'profile' },
 ];
 export default function Layout() {
   const { user, demo, signOut } = useAuth();
