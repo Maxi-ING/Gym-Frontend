@@ -77,7 +77,7 @@ GET `/progreso?ejercicio_id=1&desde=2026-09-01&hasta=2026-10-10`. Los tres filtr
 }
 ```
 
-Una fila de `puntos` por fecha, ordenada de forma ascendente. Para varios registros en una fecha: carga máxima y volumen sumado. Con ejercicio filtrado, contar sesiones que contienen ese ejercicio y sumar solo sus registros. Sin registros: totales cero, `carga_maxima_kg: null`, `puntos: []`. Sin mediciones: `ultima_medicion: null`. No rellenar fechas ausentes. Las sesiones recientes del dashboard se consultan como historial general, independiente de estos filtros.
+Una fila de `puntos` por fecha, ordenada de forma ascendente. Para varios registros en una fecha: carga máxima y volumen sumado. Con ejercicio filtrado, contar sesiones que contienen ese ejercicio y sumar solo sus registros. Sin registros: totales cero, `carga_maxima_kg: null`, `puntos: []`. Sin mediciones: `ultima_medicion: null`. No rellenar fechas ausentes. Las sesiones recientes del dashboard se consultan como historial general, independiente de estos filtros. El gráfico de constancia también utiliza GET `/sesiones`: fechas únicas durante ocho semanas de lunes a domingo, incluida la actual hasta hoy. No depende del filtro de ejercicio o fechas del gráfico de evolución. Varias sesiones el mismo día cuentan como un día; fechas sin registros no prueban ausencia de entrenamiento. Este endpoint debe devolver el historial completo de la cuenta para que el cálculo sea correcto; si se pagina en el backend, se necesitará un agregado de días o consultar todas las páginas del período.
 
 ## Metas y análisis
 

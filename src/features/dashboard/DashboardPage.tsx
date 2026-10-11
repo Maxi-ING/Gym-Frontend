@@ -6,6 +6,7 @@ import { dashboardService } from './dashboardService';
 import { recordService } from '../records/recordService';
 import MetricsCards from './MetricsCards';
 import ProgressChart from './ProgressChart';
+import TrainingDaysChart from './TrainingDaysChart';
 import SessionTable from '../records/SessionTable';
 import Select from '../../components/Select';
 import Input from '../../components/Input';
@@ -50,6 +51,93 @@ export default function DashboardPage() {
           Registrar sesión
         </Link>
       </div>
+      <section className="panel">
+        <div className="panel-header">
+          <div>
+            <h2>La evolución de tu entrenamiento</h2>
+            <p>
+              Filtra tu historial para observar la carga por ejercicio o el volumen total por fecha.
+            </p>
+          </div>
+          <Icon name="trend" />
+        </div>
+        <div className="filter-bar">
+          <Select
+            label="Ejercicio"
+            value={filters.ejercicio_id ?? ''}
+            disabled={catalog.loading}
+            onChange={(e) =>
+              setFilters((f) => ({
+                ...f,
+                ejercicio_id: e.target.value ? Number(e.target.value) : undefined,
+              }))
+            }
+          >
+            <option value="">Todos los ejercicios</option>
+            {catalog.data?.map((e) => (
+              <option key={e.id} value={e.id}>
+                {e.nombre}
+              </option>
+            ))}
+          </Select>
+          <Input
+            label="Desde"
+            type="date"
+            min="2000-01-01"
+            value={filters.desde ?? ''}
+            max={filters.hasta || today()}
+            onChange={(e) => setFilters((f) => ({ ...f, desde: e.target.value || undefined }))}
+          />
+          <Input
+            label="Hasta"
+            type="date"
+            min={filters.desde || '2000-01-01'}
+            value={filters.hasta ?? ''}
+            max={today()}
+            onChange={(e) => setFilters((f) => ({ ...f, hasta: e.target.value || undefined }))}
+          />
+          <Button variant="ghost" onClick={() => setFilters({})}>
+            Limpiar filtros
+          </Button>
+        </div>
+        {catalog.error && <ErrorState message={catalog.error} retry={catalog.reload} />}{' '}
+        {invalidRange ? (
+          <ErrorState message="La fecha inicial debe ser anterior o igual a la fecha final." />
+        ) : progress.loading ? (
+          <LoadingState />
+        ) : progress.error ? (
+          <ErrorState message={progress.error} retry={progress.reload} />
+        ) : (
+          progress.data && (
+            <>
+              <div className="chart-heading">
+                <h3>{filters.ejercicio_id ? 'Evolución de la carga' : 'Volumen por fecha'}</h3>
+                <span className="tag">{progress.data.total_sesiones} sesiones en la consulta</span>
+              </div>
+              <ProgressChart
+                points={progress.data.puntos}
+                metric={filters.ejercicio_id ? 'carga_kg' : 'volumen_kg'}
+              />
+            </>
+          )
+        )}
+      </section>
+      <section className="panel">
+        <div className="panel-header">
+          <div>
+            <h2>Tu constancia en el gimnasio</h2>
+            <p>Días con sesiones registradas en las últimas ocho semanas, incluida la actual.</p>
+          </div>
+          <Icon name="calendar" />
+        </div>
+        {history.loading ? (
+          <LoadingState />
+        ) : history.error ? (
+          <ErrorState message={history.error} retry={history.reload} />
+        ) : (
+          history.data && <TrainingDaysChart sessions={history.data} />
+        )}
+      </section>
       {overview.loading ? (
         <LoadingState />
       ) : overview.error ? (
@@ -184,77 +272,6 @@ export default function DashboardPage() {
           </>
         )
       )}
-      <section className="panel">
-        <div className="panel-header">
-          <div>
-            <h2>La evolución de tu entrenamiento</h2>
-            <p>
-              Filtra tu historial para observar la carga por ejercicio o el volumen total por fecha.
-            </p>
-          </div>
-          <Icon name="trend" />
-        </div>
-        <div className="filter-bar">
-          <Select
-            label="Ejercicio"
-            value={filters.ejercicio_id ?? ''}
-            disabled={catalog.loading}
-            onChange={(e) =>
-              setFilters((f) => ({
-                ...f,
-                ejercicio_id: e.target.value ? Number(e.target.value) : undefined,
-              }))
-            }
-          >
-            <option value="">Todos los ejercicios</option>
-            {catalog.data?.map((e) => (
-              <option key={e.id} value={e.id}>
-                {e.nombre}
-              </option>
-            ))}
-          </Select>
-          <Input
-            label="Desde"
-            type="date"
-            min="2000-01-01"
-            value={filters.desde ?? ''}
-            max={filters.hasta || today()}
-            onChange={(e) => setFilters((f) => ({ ...f, desde: e.target.value || undefined }))}
-          />
-          <Input
-            label="Hasta"
-            type="date"
-            min={filters.desde || '2000-01-01'}
-            value={filters.hasta ?? ''}
-            max={today()}
-            onChange={(e) => setFilters((f) => ({ ...f, hasta: e.target.value || undefined }))}
-          />
-          <Button variant="ghost" onClick={() => setFilters({})}>
-            Limpiar filtros
-          </Button>
-        </div>
-        {catalog.error && <ErrorState message={catalog.error} retry={catalog.reload} />}{' '}
-        {invalidRange ? (
-          <ErrorState message="La fecha inicial debe ser anterior o igual a la fecha final." />
-        ) : progress.loading ? (
-          <LoadingState />
-        ) : progress.error ? (
-          <ErrorState message={progress.error} retry={progress.reload} />
-        ) : (
-          progress.data && (
-            <>
-              <div className="chart-heading">
-                <h3>{filters.ejercicio_id ? 'Evolución de la carga' : 'Volumen por fecha'}</h3>
-                <span className="tag">{progress.data.total_sesiones} sesiones en la consulta</span>
-              </div>
-              <ProgressChart
-                points={progress.data.puntos}
-                metric={filters.ejercicio_id ? 'carga_kg' : 'volumen_kg'}
-              />
-            </>
-          )
-        )}
-      </section>
       {overview.data && (
         <>
           <section className="panel">

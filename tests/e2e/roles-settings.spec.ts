@@ -209,3 +209,65 @@ test('revisa el encuadre y las vistas en móvil y escritorio', async ({ page }, 
     fullPage: true,
   });
 });
+
+test('prioriza los gráficos y cuenta una fecha solo una vez al registrar otra sesión', async ({
+  page,
+}, info) => {
+  await enter(page);
+  await settle(page);
+  const evolution = page
+    .locator('section')
+    .filter({ has: page.getByRole('heading', { name: 'La evolución de tu entrenamiento' }) });
+  const activity = page
+    .locator('section')
+    .filter({ has: page.getByRole('heading', { name: 'Tu constancia en el gimnasio' }) });
+  const summary = page.getByRole('region', { name: 'Resumen del entrenamiento' });
+  const order = await Promise.all(
+    [evolution, activity, summary].map((item) =>
+      item.evaluate((el) => el.getBoundingClientRect().top),
+    ),
+  );
+  expect(order[0]).toBeLessThan(order[1]);
+  expect(order[1]).toBeLessThan(order[2]);
+  await expect(evolution.getByRole('img')).toBeVisible();
+  await expect(activity.getByRole('img')).toBeVisible();
+  const count = await activity.locator('.tag').innerText();
+  await activity.getByText('Ver días registrados por semana').click();
+  await expect(activity.locator('tbody tr')).toHaveCount(8);
+  await activity.getByText('Ver días registrados por semana').click();
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+  await page.waitForTimeout(450);
+  await page.screenshot({
+    path: `test-results/graficos-oscuro-${info.project.name}.png`,
+    fullPage: false,
+  });
+  await activity.screenshot({ path: `test-results/constancia-${info.project.name}.png` });
+  await nav(page, 'Entrenamiento');
+  await page.getByLabel('Ejercicio 1', { exact: true }).selectOption('1');
+  await page.getByLabel('Carga (kg)', { exact: true }).fill('40');
+  await page.getByRole('button', { name: 'Guardar sesión' }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'Sesión guardada' })).toBeVisible();
+  await nav(page, 'Inicio');
+  await expect(activity.locator('.tag')).toHaveText(count);
+  await nav(page, 'Configuración');
+  await page.getByLabel('Tema', { exact: true }).selectOption('claro');
+  await nav(page, 'Inicio');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  await page.waitForTimeout(450);
+  await page.screenshot({
+    path: `test-results/graficos-claro-${info.project.name}.png`,
+    fullPage: false,
+  });
+  await width(page);
+  await nav(page, 'Análisis IA');
+  await page.getByLabel('Ejercicio para analizar').selectOption('1');
+  await page.getByRole('button', { name: 'Analizar mi progreso' }).click();
+  const chart = page.getByRole('img', { name: /Historial de/ });
+  await expect(chart).toBeVisible();
+  const chartTop = await chart.evaluate((el) => el.getBoundingClientRect().top);
+  const statsTop = await page
+    .locator('.prediction-stats')
+    .evaluate((el) => el.getBoundingClientRect().top);
+  expect(chartTop).toBeLessThan(statsTop);
+  await width(page);
+});
