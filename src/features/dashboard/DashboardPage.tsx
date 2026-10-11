@@ -39,105 +39,113 @@ export default function DashboardPage() {
   );
   const paths = { registro: '/entrenamiento', perfil: '/perfil', analisis: '/analisis' };
   return (
-    <div className="page-stack">
+    <div className="page-stack dashboard-page">
       <div className="page-heading">
         <div>
           <div className="eyebrow">TU ENTRENAMIENTO, EN PERSPECTIVA</div>
           <h1>Inicio, {user?.nombre.split(' ')[0]}.</h1>
-          <p>Tu punto de partida, tu rendimiento y el siguiente paso hacia tus objetivos.</p>
+          <p>Tus gráficos, indicadores y próximos pasos.</p>
         </div>
         <Link className="button button-primary" to="/entrenamiento" viewTransition>
           <Icon name="plus" size={17} />
           Registrar sesión
         </Link>
       </div>
-      <section className="panel">
-        <div className="panel-header">
-          <div>
-            <h2>La evolución de tu entrenamiento</h2>
-            <p>
-              Filtra tu historial para observar la carga por ejercicio o el volumen total por fecha.
-            </p>
+      <div className="dashboard-charts">
+        <section className="panel">
+          <div className="panel-header">
+            <div>
+              <h2>La evolución de tu entrenamiento</h2>
+              <p>Carga por ejercicio o volumen total por fecha.</p>
+            </div>
+            <Icon name="trend" />
           </div>
-          <Icon name="trend" />
-        </div>
-        <div className="filter-bar">
-          <Select
-            label="Ejercicio"
-            value={filters.ejercicio_id ?? ''}
-            disabled={catalog.loading}
-            onChange={(e) =>
-              setFilters((f) => ({
-                ...f,
-                ejercicio_id: e.target.value ? Number(e.target.value) : undefined,
-              }))
-            }
-          >
-            <option value="">Todos los ejercicios</option>
-            {catalog.data?.map((e) => (
-              <option key={e.id} value={e.id}>
-                {e.nombre}
-              </option>
-            ))}
-          </Select>
-          <Input
-            label="Desde"
-            type="date"
-            min="2000-01-01"
-            value={filters.desde ?? ''}
-            max={filters.hasta || today()}
-            onChange={(e) => setFilters((f) => ({ ...f, desde: e.target.value || undefined }))}
-          />
-          <Input
-            label="Hasta"
-            type="date"
-            min={filters.desde || '2000-01-01'}
-            value={filters.hasta ?? ''}
-            max={today()}
-            onChange={(e) => setFilters((f) => ({ ...f, hasta: e.target.value || undefined }))}
-          />
-          <Button variant="ghost" onClick={() => setFilters({})}>
-            Limpiar filtros
-          </Button>
-        </div>
-        {catalog.error && <ErrorState message={catalog.error} retry={catalog.reload} />}{' '}
-        {invalidRange ? (
-          <ErrorState message="La fecha inicial debe ser anterior o igual a la fecha final." />
-        ) : progress.loading ? (
-          <LoadingState />
-        ) : progress.error ? (
-          <ErrorState message={progress.error} retry={progress.reload} />
-        ) : (
-          progress.data && (
-            <>
-              <div className="chart-heading">
-                <h3>{filters.ejercicio_id ? 'Evolución de la carga' : 'Volumen por fecha'}</h3>
-                <span className="tag">{progress.data.total_sesiones} sesiones en la consulta</span>
-              </div>
-              <ProgressChart
-                points={progress.data.puntos}
-                metric={filters.ejercicio_id ? 'carga_kg' : 'volumen_kg'}
+          {catalog.error && <ErrorState message={catalog.error} retry={catalog.reload} />}{' '}
+          {invalidRange ? (
+            <ErrorState message="La fecha inicial debe ser anterior o igual a la fecha final." />
+          ) : progress.loading ? (
+            <LoadingState />
+          ) : progress.error ? (
+            <ErrorState message={progress.error} retry={progress.reload} />
+          ) : (
+            progress.data && (
+              <>
+                <div className="chart-heading">
+                  <h3>{filters.ejercicio_id ? 'Evolución de la carga' : 'Volumen por fecha'}</h3>
+                  <span className="tag">
+                    {progress.data.total_sesiones} sesiones en la consulta
+                  </span>
+                </div>
+                <ProgressChart
+                  points={progress.data.puntos}
+                  metric={filters.ejercicio_id ? 'carga_kg' : 'volumen_kg'}
+                />
+              </>
+            )
+          )}
+          <details className="chart-filters">
+            <summary>
+              Filtrar por ejercicio y fechas{' '}
+              {filters.ejercicio_id || filters.desde || filters.hasta ? '· filtros activos' : ''}
+            </summary>
+            <div className="filter-bar">
+              <Select
+                label="Ejercicio"
+                value={filters.ejercicio_id ?? ''}
+                disabled={catalog.loading}
+                onChange={(e) =>
+                  setFilters((f) => ({
+                    ...f,
+                    ejercicio_id: e.target.value ? Number(e.target.value) : undefined,
+                  }))
+                }
+              >
+                <option value="">Todos los ejercicios</option>
+                {catalog.data?.map((e) => (
+                  <option key={e.id} value={e.id}>
+                    {e.nombre}
+                  </option>
+                ))}
+              </Select>
+              <Input
+                label="Desde"
+                type="date"
+                min="2000-01-01"
+                value={filters.desde ?? ''}
+                max={filters.hasta || today()}
+                onChange={(e) => setFilters((f) => ({ ...f, desde: e.target.value || undefined }))}
               />
-            </>
-          )
-        )}
-      </section>
-      <section className="panel">
-        <div className="panel-header">
-          <div>
-            <h2>Tu constancia en el gimnasio</h2>
-            <p>Días con sesiones registradas en las últimas ocho semanas, incluida la actual.</p>
+              <Input
+                label="Hasta"
+                type="date"
+                min={filters.desde || '2000-01-01'}
+                value={filters.hasta ?? ''}
+                max={today()}
+                onChange={(e) => setFilters((f) => ({ ...f, hasta: e.target.value || undefined }))}
+              />
+              <Button variant="ghost" onClick={() => setFilters({})}>
+                Limpiar filtros
+              </Button>
+            </div>
+          </details>
+        </section>
+        <section className="panel">
+          <div className="panel-header">
+            <div>
+              <h2>Tu constancia en el gimnasio</h2>
+              <p>Días registrados por semana · últimas 8 semanas.</p>
+            </div>
+            <Icon name="calendar" />
           </div>
-          <Icon name="calendar" />
-        </div>
-        {history.loading ? (
-          <LoadingState />
-        ) : history.error ? (
-          <ErrorState message={history.error} retry={history.reload} />
-        ) : (
-          history.data && <TrainingDaysChart sessions={history.data} />
-        )}
-      </section>
+          {history.loading ? (
+            <LoadingState />
+          ) : history.error ? (
+            <ErrorState message={history.error} retry={history.reload} />
+          ) : (
+            history.data && <TrainingDaysChart sessions={history.data} />
+          )}
+        </section>
+      </div>
       {overview.loading ? (
         <LoadingState />
       ) : overview.error ? (
@@ -150,7 +158,6 @@ export default function DashboardPage() {
                 <span className="section-index">01</span>
                 <div>
                   <h2>Tu resumen</h2>
-                  <p>Los indicadores principales de tu historial.</p>
                 </div>
               </div>
               <MetricsCards progress={overview.data.progreso} scope="historial" />

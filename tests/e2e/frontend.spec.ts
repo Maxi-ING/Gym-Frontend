@@ -28,6 +28,7 @@ test('la demo recorre entrenamiento, progreso y análisis sin usar la API', asyn
   await expect(page.getByRole('status').filter({ hasText: 'Sesión guardada' })).toBeVisible();
   await expect(page.getByText('9 sesiones', { exact: true })).toBeVisible();
   await navigate(page, 'Inicio');
+  await page.getByText('Filtrar por ejercicio y fechas', { exact: true }).click();
   await page.getByLabel('Ejercicio', { exact: true }).selectOption('1');
   await expect(page.getByRole('heading', { name: 'Evolución de la carga' })).toBeVisible();
   await navigate(page, 'Análisis IA');

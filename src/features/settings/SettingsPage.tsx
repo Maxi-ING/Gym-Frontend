@@ -5,9 +5,10 @@ import Select from '../../components/Select';
 import Button from '../../components/Button';
 import Icon from '../../components/Icon';
 export default function SettingsPage() {
-  const { preferences, update, reset } = usePreferences();
+  const { preferences, update, reset, reducedMotion } = usePreferences();
   const { user } = useAuth();
   const [message, setMessage] = useState('');
+  const [preview, setPreview] = useState(0);
   return (
     <div className="page-stack">
       <div className="page-heading">
@@ -48,8 +49,8 @@ export default function SettingsPage() {
           <div>
             <h3>Transiciones y animaciones</h3>
             <p>
-              Suaviza el cambio de vistas. Se respeta la preferencia de reducir movimiento del
-              dispositivo.
+              Activa la entrada de las vistas, el trazado de los gráficos y la respuesta de los
+              controles. Puedes comprobar el efecto aquí mismo.
             </p>
           </div>
           <input
@@ -58,27 +59,54 @@ export default function SettingsPage() {
             checked={preferences.movimiento}
             onChange={(e) => {
               update({ movimiento: e.target.checked });
+              setPreview((v) => v + 1);
               setMessage('Preferencia de movimiento actualizada.');
             }}
             aria-label="Activar animaciones"
           />
         </label>
-        <label className="setting-row">
-          <div>
-            <h3>Espaciado compacto</h3>
-            <p>Reduce el espacio entre los bloques para ver más información.</p>
+        <div className="motion-demo">
+          <div className="motion-demo-heading">
+            <div>
+              <h3>Así se mueve tu panel</h3>
+              <p>
+                {reducedMotion
+                  ? 'Movimiento desactivado · vista estática'
+                  : 'Entrada suave y gráficos que se dibujan'}
+              </p>
+            </div>
+            <Button
+              variant="secondary"
+              disabled={reducedMotion}
+              onClick={() => setPreview((v) => v + 1)}
+            >
+              Reproducir demostración
+            </Button>
           </div>
-          <input
-            type="checkbox"
-            role="switch"
-            checked={preferences.compacto}
-            onChange={(e) => {
-              update({ compacto: e.target.checked });
-              setMessage('Espaciado actualizado.');
-            }}
-            aria-label="Espaciado compacto"
-          />
-        </label>
+          <div className="motion-preview" key={`${preview}-${reducedMotion}`} aria-hidden="true">
+            <div className="motion-preview-card">
+              <Icon name="trend" />
+              <span>Tu evolución</span>
+              <strong>Registro a registro</strong>
+            </div>
+            <div className="motion-preview-bars">
+              <i />
+              <i />
+              <i />
+              <i />
+              <i />
+            </div>
+          </div>
+          <p className="chart-summary">
+            Esta vista es una demostración visual, no contiene métricas de tu entrenamiento.
+          </p>
+          {preferences.movimiento && reducedMotion && (
+            <p className="notice">
+              Tu dispositivo solicita reducir movimiento. Esa preferencia tiene prioridad; por eso
+              la demostración se mantiene estática.
+            </p>
+          )}
+        </div>
       </section>
       <section className="panel">
         <h2>Mi cuenta</h2>

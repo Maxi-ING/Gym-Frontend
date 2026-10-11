@@ -37,7 +37,7 @@ export default function ProgressChart({
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        animation: reducedMotion ? false : { duration: 350 },
+        animation: reducedMotion ? false : { duration: 850, easing: 'easeOutQuart' },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -80,10 +80,13 @@ export default function ProgressChart({
       </div>
       <figcaption className="chart-summary">
         {points.length} puntos de tu historial. Último valor: {number(points.at(-1)![metric], 1)}{' '}
-        kg. Los períodos sin registros no representan entrenamientos con carga cero.
+        kg.
       </figcaption>
       <details className="chart-values">
         <summary>Ver valores del gráfico</summary>
+        <p className="chart-summary">
+          Los períodos sin registros no representan entrenamientos con carga cero.
+        </p>
         <div className="table-wrap">
           <table>
             <thead>

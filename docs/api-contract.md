@@ -203,10 +203,12 @@ La eliminación de una sesión revierte sus registros en una transacción y actu
 
 ## Preferencias de interfaz
 
-Tema (`oscuro`, `claro`, `sistema`), animaciones y espaciado se guardan en `localStorage`, separados por ID de cuenta y modo API/demo. No requieren nuevos endpoints ni se sincronizan entre dispositivos. No almacenan roles ni secretos. El tema predeterminado es azul noche. La preferencia de reducir movimiento del dispositivo tiene prioridad sobre activar animaciones en la plataforma.
+Tema (`oscuro`, `claro`, `sistema`) y animaciones se guardan en `localStorage`, separados por ID de cuenta y modo API/demo. No requieren nuevos endpoints ni se sincronizan entre dispositivos. No almacenan roles ni secretos. El tema predeterminado es azul noche. La preferencia de reducir movimiento del dispositivo tiene prioridad sobre activar animaciones en la plataforma.
 
 ## Errores y despliegue
 
 Errores con `{"detail":"Mensaje comprensible"}` o validación Pydantic `{"detail":[{"loc":["body","campo"],"msg":"...","type":"..."}]}`. Usar 401 para sesión inválida, 403/404 para recursos no autorizados o no disponibles, 409 para conflictos y 422 para datos inválidos. No devolver detalles de SQL ni credenciales.
 
 GET `/health` para comprobar disponibilidad. CORS debe permitir el origen del frontend, los métodos GET/POST/PATCH/DELETE/OPTIONS y los encabezados Authorization/Content-Type. En producción, frontend y API con HTTPS. PostgreSQL no se conecta desde React: únicamente FastAPI maneja SQLAlchemy, transacciones y credenciales.
+
+La distribución usa un espaciado único adaptable; se retiró la preferencia `compacto`. Cualquier valor antiguo guardado para esa propiedad se ignora. Configuración tiene un único acceso en la navegación principal. La demostración de movimiento contiene elementos ilustrativos y no realiza consultas al modelo ni representa métricas reales.

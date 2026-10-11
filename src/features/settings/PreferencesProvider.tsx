@@ -3,9 +3,8 @@ import { useAuth } from '../users/AuthProvider';
 export interface Preferences {
   tema: 'oscuro' | 'claro' | 'sistema';
   movimiento: boolean;
-  compacto: boolean;
 }
-const defaults: Preferences = { tema: 'oscuro', movimiento: true, compacto: false };
+const defaults: Preferences = { tema: 'oscuro', movimiento: true };
 interface Value {
   preferences: Preferences;
   update: (input: Partial<Preferences>) => void;
@@ -20,7 +19,6 @@ function read(key: string): Preferences {
     return {
       tema: ['oscuro', 'claro', 'sistema'].includes(v.tema) ? v.tema : 'oscuro',
       movimiento: typeof v.movimiento === 'boolean' ? v.movimiento : true,
-      compacto: typeof v.compacto === 'boolean' ? v.compacto : false,
     };
   } catch {
     return { ...defaults };
@@ -59,8 +57,8 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     document.documentElement.dataset.theme = dark ? 'dark' : 'light';
     document.documentElement.dataset.motion = reducedMotion ? 'reduced' : 'full';
-    document.documentElement.dataset.density = preferences.compacto ? 'compact' : 'comfortable';
-  }, [dark, reducedMotion, preferences.compacto]);
+    delete document.documentElement.dataset.density;
+  }, [dark, reducedMotion]);
   function update(input: Partial<Preferences>) {
     const next = { ...preferences, ...input };
     setStored({ key, preferences: next });
