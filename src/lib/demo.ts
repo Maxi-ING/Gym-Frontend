@@ -10,6 +10,7 @@ import type {
   SessionInput,
   TrainingSession,
   User,
+  UserOverview,
 } from '../types';
 import { session } from './session';
 import { today } from './format';
@@ -47,6 +48,7 @@ let sessions: TrainingSession[] = Array.from({ length: 8 }, (_, i) => {
   return { id: i + 1, fecha: dated(7 - i), registros, volumen_kg: volume(registros) };
 });
 let weight = 80;
+let lastPrediction: Prediction | null = null;
 let goals: Goal[] = [{ id: 1, ejercicio_id: 1, carga_objetivo_kg: 50, estado: 'pendiente' }];
 
 let admin: User = {
@@ -302,6 +304,74 @@ export async function demoRequest<T>(path: string, init: RequestInit): Promise<T
       puntos,
     };
     result = progress;
+  } else if (url.pathname === '/inicio') {
+    const progreso = await demoRequest<Progress>('/progreso', {});
+    const rendimiento = exercises.map((e) => {
+      const rows = sessions
+        .slice()
+        .sort((a, b) => a.fecha.localeCompare(b.fecha))
+        .flatMap((s) => {
+          const matching = s.registros.filter((r) => r.ejercicio_id === e.id);
+          return matching.length ? [{ carga: Math.max(...matching.map((r) => r.carga_kg)) }] : [];
+        });
+      const first = rows[0]?.carga ?? null;
+      const last = rows.at(-1)?.carga ?? null;
+      return {
+        ejercicio_id: e.id,
+        nombre: e.nombre,
+        sesiones: rows.length,
+        primera_carga_kg: first,
+        ultima_carga_kg: last,
+        mejor_carga_kg: rows.length ? Math.max(...rows.map((r) => r.carga)) : null,
+        variacion_porcentaje:
+          first !== null && first > 0 && last !== null ? ((last - first) / first) * 100 : null,
+      };
+    });
+    const overview: UserOverview = {
+      progreso,
+      rendimiento,
+      metas: goals.map((g) => {
+        const load =
+          rendimiento.find((e) => e.ejercicio_id === g.ejercicio_id)?.ultima_carga_kg ?? null;
+        return {
+          ...g,
+          ejercicio_nombre: exercises.find((e) => e.id === g.ejercicio_id)?.nombre ?? 'Ejercicio',
+          ultima_carga_kg: load,
+          avance_porcentaje:
+            load !== null ? Math.min(100, (load / g.carga_objetivo_kg) * 100) : null,
+        };
+      }),
+      ultimo_analisis: lastPrediction,
+      recomendaciones: [
+        {
+          titulo: 'Construye un historial consistente',
+          mensaje:
+            'Registra la fecha, las series, las repeticiones y la carga externa después de cada sesión. Un registro completo facilita comparar el mismo ejercicio a lo largo del tiempo y detectar semanas sin información.',
+          origen: 'regla',
+          accion: 'registro',
+        },
+        {
+          titulo:
+            user.objetivo === 'Ganar fuerza'
+              ? 'Observa la evolución de tus cargas'
+              : 'Revisa tu objetivo de entrenamiento',
+          mensaje:
+            user.objetivo === 'Ganar fuerza'
+              ? 'Tu objetivo es ganar fuerza. Compara la carga de un mismo ejercicio junto con sus series y repeticiones; un aumento de carga aislado no describe todo tu rendimiento. Revisa tu planificación con el entrenador.'
+              : 'Mantén actualizado tu objetivo y contrasta las sesiones registradas con la planificación de tu entrenador. Los indicadores ayudan a observar el historial, sin sustituir una evaluación personal.',
+          origen: 'regla',
+          accion: 'perfil',
+        },
+        {
+          titulo: 'Consulta tu tendencia cuando tengas historial',
+          mensaje:
+            'El análisis se ejecuta cuando lo solicitas. Revisa el ejercicio y la meta antes de interpretar la proyección; las semanas estimadas pueden cambiar cuando se incorporan nuevos registros.',
+          origen: 'regla',
+          accion: 'analisis',
+        },
+      ],
+    };
+    result = overview;
   } else if (url.pathname === '/analisis') {
     // Ejemplo fijo del informe. No se entrena ni se ejecuta ML en el navegador.
     const prediction: Prediction =
@@ -332,6 +402,7 @@ export async function demoRequest<T>(path: string, init: RequestInit): Promise<T
             historial: [],
             proyeccion: [],
           };
+    lastPrediction = prediction;
     result = prediction;
   } else throw new Error('Operación no disponible en la demostración.');
   return result as T;
