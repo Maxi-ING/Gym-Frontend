@@ -103,7 +103,7 @@ export default function UsersPage() {
           resource.data && (
             <>
               {resource.data.items.length ? (
-                <div className="table-wrap">
+                <div className="table-wrap mobile-cards">
                   <table>
                     <caption className="sr-only">Directorio de usuarios</caption>
                     <thead>
@@ -122,14 +122,18 @@ export default function UsersPage() {
                             <strong>{u.nombre}</strong>
                             <small className="table-subtext">{u.correo}</small>
                           </td>
-                          <td>{u.rol === 'admin' ? 'Administrador' : 'Usuario'}</td>
-                          <td>
+                          <td data-label="Rol">
+                            {u.rol === 'admin' ? 'Administrador' : 'Usuario'}
+                          </td>
+                          <td data-label="Estado">
                             <span className={`tag ${u.activo ? '' : 'tag-inactive'}`}>
                               {u.activo ? 'Activo' : 'Inactivo'}
                             </span>
                           </td>
-                          <td>{u.perfil_completo ? 'Completo' : 'Pendiente'}</td>
-                          <td>
+                          <td data-label="Perfil">
+                            {u.perfil_completo ? 'Completo' : 'Pendiente'}
+                          </td>
+                          <td data-label="Gestión">
                             <Link
                               className="button button-secondary"
                               to={`/usuarios/${u.id}`}

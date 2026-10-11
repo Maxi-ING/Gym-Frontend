@@ -179,7 +179,7 @@ export default function AdminUserDetail() {
           Los datos corporales se actualizan desde el perfil personal del usuario.
         </p>
       </section>
-      <MetricsCards progress={progreso} />
+      <MetricsCards progress={progreso} scope="historial" />
       <section className="panel">
         <div className="panel-header">
           <div>

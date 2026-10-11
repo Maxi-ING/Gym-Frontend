@@ -57,7 +57,7 @@ export default function AdminDashboardPage() {
                 </Link>
               </div>
               {resource.data.sesiones_recientes.length ? (
-                <div className="table-wrap">
+                <div className="table-wrap mobile-cards">
                   <table>
                     <thead>
                       <tr>
@@ -74,8 +74,8 @@ export default function AdminDashboardPage() {
                               {s.usuario_nombre}
                             </Link>
                           </td>
-                          <td>{dateLabel(s.fecha)}</td>
-                          <td>{number(s.volumen_kg)} kg</td>
+                          <td data-label="Fecha">{dateLabel(s.fecha)}</td>
+                          <td data-label="Volumen">{number(s.volumen_kg)} kg</td>
                         </tr>
                       ))}
                     </tbody>

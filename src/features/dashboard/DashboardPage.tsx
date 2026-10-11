@@ -65,7 +65,7 @@ export default function DashboardPage() {
                   <p>Los indicadores principales de tu historial.</p>
                 </div>
               </div>
-              <MetricsCards progress={overview.data.progreso} />
+              <MetricsCards progress={overview.data.progreso} scope="historial" />
             </section>
             <section className="panel">
               <div className="panel-header">
@@ -120,7 +120,7 @@ export default function DashboardPage() {
                 </div>
               </div>
               {overview.data.rendimiento.length ? (
-                <div className="table-wrap">
+                <div className="table-wrap mobile-cards">
                   <table>
                     <caption className="sr-only">Evolución de las cargas por ejercicio</caption>
                     <thead>
@@ -139,21 +139,22 @@ export default function DashboardPage() {
                           <td>
                             <strong>{e.nombre}</strong>
                           </td>
-                          <td>{e.sesiones}</td>
-                          <td>
+                          <td data-label="Sesiones">{e.sesiones}</td>
+                          <td data-label="Primera carga">
                             {e.primera_carga_kg !== null
                               ? `${number(e.primera_carga_kg, 1)} kg`
                               : '—'}
                           </td>
-                          <td>
+                          <td data-label="Última carga">
                             {e.ultima_carga_kg !== null
                               ? `${number(e.ultima_carga_kg, 1)} kg`
                               : '—'}
                           </td>
-                          <td>
+                          <td data-label="Mejor carga">
                             {e.mejor_carga_kg !== null ? `${number(e.mejor_carga_kg, 1)} kg` : '—'}
                           </td>
                           <td
+                            data-label="Variación"
                             className={
                               e.variacion_porcentaje !== null && e.variacion_porcentaje > 0
                                 ? 'positive'

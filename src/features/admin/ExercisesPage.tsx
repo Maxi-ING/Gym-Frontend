@@ -101,7 +101,7 @@ export default function ExercisesPage() {
         ) : resource.error ? (
           <ErrorState message={resource.error} retry={resource.reload} />
         ) : resource.data?.length ? (
-          <div className="table-wrap">
+          <div className="table-wrap mobile-cards">
             <table>
               <caption className="sr-only">Catálogo de ejercicios</caption>
               <thead>
@@ -118,9 +118,9 @@ export default function ExercisesPage() {
                     <td>
                       <strong>{e.nombre}</strong>
                     </td>
-                    <td>kg</td>
-                    <td>{e.activo === false ? 'Inactivo' : 'Activo'}</td>
-                    <td>
+                    <td data-label="Unidad">kg</td>
+                    <td data-label="Estado">{e.activo === false ? 'Inactivo' : 'Activo'}</td>
+                    <td data-label="Gestión">
                       <div className="actions">
                         <Button
                           variant="secondary"
