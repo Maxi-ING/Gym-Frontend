@@ -60,8 +60,8 @@ export default function RecordsPage() {
                   </EmptyState>
                 )}
               </section>
-              <aside className="panel record-help">
-                <h2>Un registro claro, un mejor historial.</h2>
+              <details className="panel record-help disclosure" open>
+                <summary>Un registro claro, un mejor historial.</summary>
                 <ul>
                   <li>Usa la carga externa que levantaste, expresada en kg.</li>
                   <li>
@@ -74,7 +74,7 @@ export default function RecordsPage() {
                   Cada registro reúne series con la misma carga y repeticiones. La sesión se guarda
                   completa.
                 </div>
-              </aside>
+              </details>
             </div>
             <section className="panel table-panel">
               <div className="panel-header">

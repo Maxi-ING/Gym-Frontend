@@ -137,6 +137,6 @@ export interface UserOverview {
   progreso: Progress;
   rendimiento: ExercisePerformance[];
   metas: OverviewGoal[];
-  ultimo_analisis: Prediction | null;
+  ultimo_analisis: { ejercicio_nombre: string; fecha: string; resultado: Prediction } | null;
   recomendaciones: Recommendation[];
 }

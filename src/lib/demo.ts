@@ -48,7 +48,7 @@ let sessions: TrainingSession[] = Array.from({ length: 8 }, (_, i) => {
   return { id: i + 1, fecha: dated(7 - i), registros, volumen_kg: volume(registros) };
 });
 let weight = 80;
-let lastPrediction: Prediction | null = null;
+let lastPrediction: UserOverview['ultimo_analisis'] = null;
 let goals: Goal[] = [{ id: 1, ejercicio_id: 1, carga_objetivo_kg: 50, estado: 'pendiente' }];
 
 let admin: User = {
@@ -402,7 +402,11 @@ export async function demoRequest<T>(path: string, init: RequestInit): Promise<T
             historial: [],
             proyeccion: [],
           };
-    lastPrediction = prediction;
+    lastPrediction = {
+      ejercicio_nombre: exercises.find((e) => e.id === body.ejercicio_id)?.nombre ?? 'Ejercicio',
+      fecha: new Date().toISOString(),
+      resultado: prediction,
+    };
     result = prediction;
   } else throw new Error('Operación no disponible en la demostración.');
   return result as T;

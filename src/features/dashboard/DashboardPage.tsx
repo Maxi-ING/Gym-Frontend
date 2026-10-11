@@ -308,15 +308,16 @@ export default function DashboardPage() {
             <div className="notice">
               {overview.data.ultimo_analisis ? (
                 <>
-                  <strong>Último análisis solicitado · </strong>
-                  {overview.data.ultimo_analisis.mensaje}
-                  {overview.data.ultimo_analisis.semanas_hasta_meta !== null && (
+                  <strong>
+                    Último análisis · {overview.data.ultimo_analisis.ejercicio_nombre} ·{' '}
+                    {overview.data.ultimo_analisis.fecha.slice(0, 10)} ·{' '}
+                  </strong>
+                  {overview.data.ultimo_analisis.resultado.mensaje}
+                  {overview.data.ultimo_analisis.resultado.semanas_hasta_meta !== null && (
                     <>
                       {' '}
-                      Tiempo estimado: {number(
-                        overview.data.ultimo_analisis.semanas_hasta_meta,
-                        1,
-                      )}{' '}
+                      Tiempo estimado:{' '}
+                      {number(overview.data.ultimo_analisis.resultado.semanas_hasta_meta, 1)}{' '}
                       semanas.
                     </>
                   )}

@@ -13,7 +13,7 @@ async function navigate(page: Page, label: string) {
 async function demo(page: Page) {
   await page.goto('/');
   await page.getByRole('button', { name: 'Explorar demo', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Tu progreso, Alex.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Inicio, Alex.' })).toBeVisible();
 }
 test('la demo recorre entrenamiento, progreso y análisis sin usar la API', async ({ page }) => {
   let apiCalls = 0;
@@ -112,6 +112,20 @@ test('completa el perfil, guarda en la API y representa historial insuficiente',
         carga_maxima_kg: null,
         ultima_medicion: null,
         puntos: [],
+      };
+    if (path === '/inicio')
+      body = {
+        progreso: {
+          total_sesiones: 0,
+          volumen_total_kg: 0,
+          carga_maxima_kg: null,
+          ultima_medicion: null,
+          puntos: [],
+        },
+        rendimiento: [],
+        metas: [],
+        ultimo_analisis: null,
+        recomendaciones: [],
       };
     if (path === '/metas') body = [];
     if (path === '/analisis')
