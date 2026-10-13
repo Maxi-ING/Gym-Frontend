@@ -6,7 +6,7 @@ import { dashboardService } from './dashboardService';
 import { recordService } from '../records/recordService';
 import MetricsCards from './MetricsCards';
 import ProgressChart from './ProgressChart';
-import TrainingDaysChart from './TrainingDaysChart';
+import TrainingCalendar from './TrainingCalendar';
 import SessionTable from '../records/SessionTable';
 import Select from '../../components/Select';
 import Input from '../../components/Input';
@@ -133,7 +133,7 @@ export default function DashboardPage() {
           <div className="panel-header">
             <div>
               <h2>Tu constancia en el gimnasio</h2>
-              <p>Días registrados por semana · últimas 8 semanas.</p>
+              <p>Calendario de sesiones · días registrados en verde.</p>
             </div>
             <Icon name="calendar" />
           </div>
@@ -142,7 +142,7 @@ export default function DashboardPage() {
           ) : history.error ? (
             <ErrorState message={history.error} retry={history.reload} />
           ) : (
-            history.data && <TrainingDaysChart sessions={history.data} />
+            history.data && <TrainingCalendar sessions={history.data} />
           )}
         </section>
       </div>

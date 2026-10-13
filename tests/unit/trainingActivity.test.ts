@@ -1,47 +1,40 @@
 import { describe, expect, it } from 'vitest';
-import { trainingActivity } from '../../src/features/dashboard/trainingActivity';
+import { trainingCalendar, shiftMonth } from '../../src/features/dashboard/trainingCalendar';
 
-describe('Días con entrenamiento por semana', () => {
-  it('cuenta fechas únicas, no el número de sesiones, con semanas de lunes a domingo', () => {
-    const weeks = trainingActivity(
-      [
-        { fecha: '2026-10-04' },
-        { fecha: '2026-10-05' },
-        { fecha: '2026-10-05' },
-        { fecha: '2026-10-06' },
-        { fecha: '2026-10-07' },
-      ],
-      '2026-10-07',
+describe('Calendario del entrenamiento', () => {
+  it('cuenta varios registros de la misma fecha en una sola celda', () => {
+    const days = trainingCalendar(
+      [{ fecha: '2026-10-05' }, { fecha: '2026-10-05' }],
+      '2026-10',
+      '2026-10-12',
     );
-    expect(weeks).toHaveLength(8);
-    expect(weeks.at(-2)).toEqual({ inicio: '2026-09-28', fin: '2026-10-04', dias: 1 });
-    expect(weeks.at(-1)).toEqual({ inicio: '2026-10-05', fin: '2026-10-07', dias: 3 });
+    expect(days.filter((day) => day.delMes && day.sesiones > 0)).toHaveLength(1);
+    expect(days.find((day) => day.fecha === '2026-10-05')?.sesiones).toBe(2);
   });
-  it('excluye fechas futuras, antiguas, inválidas y fechas con hora', () => {
-    const weeks = trainingActivity(
-      [
-        { fecha: '2026-08-16' },
-        { fecha: '2026-08-17' },
-        { fecha: '2026-10-08' },
-        { fecha: '2026-09-31' },
-        { fecha: 'texto' },
-        { fecha: '2026-10-07T00:00:00Z' },
-      ],
-      '2026-10-07',
+  it('ordena semanas de lunes a domingo y conserva el relleno de otros meses', () => {
+    const days = trainingCalendar([], '2026-10', '2026-10-12');
+    expect(days).toHaveLength(35);
+    expect(days[0]).toMatchObject({ fecha: '2026-09-28', delMes: false });
+    expect(days.filter((day) => day.delMes)).toHaveLength(31);
+    expect(days.at(-1)).toMatchObject({ fecha: '2026-11-01', delMes: false });
+  });
+  it('incluye febrero bisiesto y meses que necesitan seis filas', () => {
+    expect(trainingCalendar([], '2024-02', '2026-10-12').filter((day) => day.delMes)).toHaveLength(
+      29,
     );
-    expect(weeks[0]).toEqual({ inicio: '2026-08-17', fin: '2026-08-23', dias: 1 });
-    expect(weeks.reduce((sum, week) => sum + week.dias, 0)).toBe(1);
+    expect(trainingCalendar([], '2026-03', '2026-10-12')).toHaveLength(42);
   });
-  it('mantiene ocho semanas sin datos y cruza años correctamente', () => {
-    const weeks = trainingActivity([], '2027-01-04');
-    expect(weeks).toHaveLength(8);
-    expect(weeks.at(-2)).toEqual({ inicio: '2026-12-28', fin: '2027-01-03', dias: 0 });
-    expect(weeks.at(-1)).toEqual({ inicio: '2027-01-04', fin: '2027-01-04', dias: 0 });
+  it('descarta fechas inválidas y futuras y marca los días futuros', () => {
+    const days = trainingCalendar(
+      [{ fecha: '2026-10-13' }, { fecha: '2026-10-32' }, { fecha: '2026-10-12T12:00:00Z' }],
+      '2026-10',
+      '2026-10-12',
+    );
+    expect(days.reduce((sum, day) => sum + day.sesiones, 0)).toBe(0);
+    expect(days.find((day) => day.fecha === '2026-10-13')?.futuro).toBe(true);
   });
-  it('no supera siete días cuando se registran sesiones repetidas', () => {
-    const sessions = Array.from({ length: 21 }, (_, i) => ({
-      fecha: `2026-10-${String(5 + (i % 7)).padStart(2, '0')}`,
-    }));
-    expect(trainingActivity(sessions, '2026-10-11').at(-1)?.dias).toBe(7);
+  it('navega entre diciembre y enero sin perder el año', () => {
+    expect(shiftMonth('2026-12', 1)).toBe('2027-01');
+    expect(shiftMonth('2027-01', -1)).toBe('2026-12');
   });
 });
