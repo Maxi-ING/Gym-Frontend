@@ -279,17 +279,23 @@ test('prioriza los gráficos y cuenta una fecha solo una vez al registrar otra s
   if (info.project.name === 'desktop') {
     expect(Math.abs(order[0] - order[1])).toBeLessThan(2);
     await expect(evolution.getByRole('img')).toBeInViewport({ ratio: 0.95 });
-    await expect(activity.getByRole('img')).toBeInViewport({ ratio: 0.95 });
+    await expect(activity.getByRole('table')).toBeInViewport({ ratio: 0.95 });
   } else {
     expect(order[0]).toBeLessThan(order[1]);
   }
   expect(order[1]).toBeLessThan(order[2]);
   await expect(evolution.getByRole('img')).toBeVisible();
-  await expect(activity.getByRole('img')).toBeVisible();
+  await expect(activity.getByRole('table')).toBeVisible();
   const count = await activity.locator('.tag').innerText();
-  await activity.getByText('Ver días registrados por semana').click();
-  await expect(activity.locator('tbody tr')).toHaveCount(8);
-  await activity.getByText('Ver días registrados por semana').click();
+  await expect(activity.locator('.calendar-trained')).not.toHaveCount(0);
+  await expect(activity.getByRole('button', { name: 'Mes siguiente' })).toBeDisabled();
+  const month = (await activity.locator('.calendar-heading h3').textContent())!.trim();
+  await activity.getByRole('button', { name: 'Mes anterior' }).click();
+  await expect(activity.locator('.calendar-heading h3')).not.toHaveText(month);
+  await activity.getByRole('button', { name: 'Mes siguiente' }).click();
+  await expect(activity.locator('.calendar-heading h3')).toHaveText(month);
+  await activity.locator('.calendar-day[aria-current="date"]').click();
+  await expect(activity.locator('.calendar-selection')).toContainText('1 sesión registrada');
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
   await page.waitForTimeout(900);
   await page.screenshot({
@@ -304,6 +310,8 @@ test('prioriza los gráficos y cuenta una fecha solo una vez al registrar otra s
   await expect(page.getByRole('status').filter({ hasText: 'Sesión guardada' })).toBeVisible();
   await nav(page, 'Inicio');
   await expect(activity.locator('.tag')).toHaveText(count);
+  await activity.locator('.calendar-day[aria-current="date"]').click();
+  await expect(activity.locator('.calendar-selection')).toContainText('2 sesiones registradas');
   await nav(page, 'Configuración');
   await page.getByLabel('Tema', { exact: true }).selectOption('claro');
   await nav(page, 'Inicio');
