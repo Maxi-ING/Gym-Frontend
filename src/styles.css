@@ -588,6 +588,9 @@ input[type='checkbox'] {
   min-width: 0;
 }
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   min-height: 70px;
   display: flex;
   align-items: center;
@@ -636,6 +639,7 @@ input[type='checkbox'] {
   margin-right: 5px;
 }
 .page {
+  scroll-margin-top: 90px;
   padding: 22px 26px;
   max-width: 1380px;
   margin: auto;
