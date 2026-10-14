@@ -30,6 +30,43 @@ test('la demo distingue registros cambios y referencia de meta', async ({ page }
     fullPage: true,
   });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  async function navigate(label: string) {
+    if (await menu.isVisible()) await menu.click();
+    await page
+      .getByRole('navigation', { name: 'Navegación principal' })
+      .getByRole('link', { name: label, exact: true })
+      .click();
+  }
+  await navigate('Configuración');
+  await page.getByLabel('Tema', { exact: true }).selectOption('claro');
+  await navigate('Análisis');
+  await page.getByLabel('Ejercicio para analizar').selectOption('1');
+  await page.getByRole('button', { name: 'Analizar mi progreso', exact: true }).click();
+  const sample = page.locator('.legend-actual');
+  await expect(sample).toBeVisible();
+  const colors = await sample.evaluate((el) => ({
+    line: getComputedStyle(el, '::before').borderTopColor,
+    background: getComputedStyle(el.closest('.panel')!).backgroundColor,
+  }));
+  function luminance(color: string) {
+    const channels = color
+      .match(/[\d.]+/g)!
+      .slice(0, 3)
+      .map(Number)
+      .map((n) => n / 255)
+      .map((n) => (n <= 0.04045 ? n / 12.92 : ((n + 0.055) / 1.055) ** 2.4));
+    return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
+  }
+  const line = luminance(colors.line);
+  const background = luminance(colors.background);
+  expect(
+    (Math.max(line, background) + 0.05) / (Math.min(line, background) + 0.05),
+  ).toBeGreaterThanOrEqual(3);
+  await page.waitForTimeout(500);
+  await page.screenshot({
+    path: `test-results/analisis-claro-${info.project.name}.png`,
+    fullPage: true,
+  });
 });
 
 test('una tendencia negativa conserva el historial sin mostrar una fecha o predicción inventada', async ({

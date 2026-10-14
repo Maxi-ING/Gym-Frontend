@@ -37,7 +37,7 @@
   --primary: #242424;
   --on-primary: #ffffff;
   --primary-hover: #404040;
-  --chart-actual: #deded9;
+  --chart-actual: #343430;
   --chart-projection: #73736e;
   --line: #d6d6d0;
   --soft: #e6e6df;
@@ -1589,9 +1589,6 @@ tbody tr:last-child td {
   .auth-content h1 {
     font-size: 54px;
     max-width: none;
-  }
-  .auth-content h1 br {
-    display: none;
   }
   .auth-content p {
     margin-top: 14px;

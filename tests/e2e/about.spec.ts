@@ -6,6 +6,9 @@ test('la historia pública identifica el caso ficticio y conserva el acceso al p
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/');
+  expect(await page.getByRole('heading', { level: 1 }).innerText()).toContain(
+    'Cada sesión\ncuenta.',
+  );
   await page.evaluate(() => document.fonts.ready);
   await page.screenshot({ path: `test-results/acceso-nuevo-${info.project.name}.png` });
   await page.getByRole('link', { name: 'Sobre nosotros', exact: true }).click();
