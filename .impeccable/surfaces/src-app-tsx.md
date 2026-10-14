@@ -1,8 +1,13 @@
 ---
 version: 1
-slug: "src-app-tsx"
-primary_target: "src/App.tsx"
-related_targets: ["src/styles.css","src/features/users/AuthPage.tsx","src/features/predictions/PredictionPage.tsx"]
+slug: 'src-app-tsx'
+primary_target: 'src/App.tsx'
+related_targets:
+  [
+    'src/styles.css',
+    'src/features/users/AuthPage.tsx',
+    'src/features/predictions/PredictionPage.tsx',
+  ]
 ---
 
 # Frontend FitAnalytics AI
