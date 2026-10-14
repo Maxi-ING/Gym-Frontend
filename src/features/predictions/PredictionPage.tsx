@@ -3,6 +3,7 @@ import { recordService } from '../records/recordService';
 import { predictionService } from './predictionService';
 import { predictionAdvice } from './predictionAdvice';
 import PredictionChart from './PredictionChart';
+import PredictionDetails from './PredictionDetails';
 import { useResource } from '../../hooks/useResource';
 import { errorMessage } from '../../lib/api';
 import { number } from '../../lib/format';
@@ -80,18 +81,19 @@ export default function PredictionPage() {
   const selectedGoals =
     catalog.data?.goals.filter((g) => g.ejercicio_id === Number(exercise)) ?? [];
   const advice = result ? predictionAdvice(result) : null;
+  const selectedGoal = selectedGoals.find((g) => g.id === Number(goal));
+  // La demo de banca devuelve siempre el ejemplo documentado de 50 kg.
+  const target = demo && exercise === '1' ? 50 : selectedGoal?.carga_objetivo_kg;
   return (
-    <div className="page-stack">
+    <div className="page-stack analysis-page">
       <div className="page-heading">
         <div>
-          <h1>Análisis de tu progreso</h1>
-          <p>
-            Primero elige una referencia. Después revisa el gráfico y la explicación de tu avance.
-          </p>
+          <h1>Análisis y predicción</h1>
+          <p>Observa tus cargas, revisa los cambios y sigue tu meta.</p>
         </div>
         <span className="tag">
-          <Icon name="spark" size={13} />
-          Análisis a solicitud
+          <Icon name="trend" size={13} />
+          Modelo predictivo
         </span>
       </div>
       {catalog.loading ? (
@@ -100,10 +102,10 @@ export default function PredictionPage() {
         <ErrorState message={catalog.error} retry={catalog.reload} />
       ) : (
         <>
-          <section className="panel">
+          <section className="panel analysis-controls">
             <div className="panel-header">
               <div>
-                <h2>1. Analizar progreso</h2>
+                <h2>Selecciona tu ejercicio</h2>
                 <p>Necesitas al menos cuatro semanas observadas del mismo ejercicio.</p>
               </div>
             </div>
@@ -150,7 +152,7 @@ export default function PredictionPage() {
               </fieldset>
               <div className="form-actions">
                 <Button type="submit" loading={busy} disabled={!exercise || goalBusy}>
-                  <Icon name="spark" size={17} />
+                  <Icon name="trend" size={17} />
                   Analizar mi progreso
                 </Button>
               </div>
@@ -189,7 +191,12 @@ export default function PredictionPage() {
                     {demo ? 'Ejemplo ilustrativo' : 'Análisis del historial'}
                   </span>
                 </div>
-                {result.estado === 'estimado' && <PredictionChart result={result} />}
+                {result.historial.length > 0 && (
+                  <>
+                    <PredictionChart result={result} target={target} />
+                    <PredictionDetails result={result} target={target} />
+                  </>
+                )}
                 <p className="prediction-message" role="status">
                   {result.mensaje}
                 </p>
@@ -217,7 +224,9 @@ export default function PredictionPage() {
                         <strong>
                           {result.semanas_hasta_meta !== null
                             ? `${number(result.semanas_hasta_meta, 1)} sem.`
-                            : 'Sin meta'}
+                            : goal
+                              ? 'No estimable'
+                              : 'Sin meta'}
                         </strong>
                       </div>
                     </div>
@@ -230,15 +239,21 @@ export default function PredictionPage() {
             <section className="panel prediction-explainer">
               <h2>{advice.titulo}</h2>
               <div className="advice-copy">
-                {advice.parrafos.map((p, i) => (
-                  <p key={i}>{p}</p>
-                ))}
+                <p>{advice.parrafos[0]}</p>
               </div>
-              <span className="tag">Interpretación del resultado · no ejecuta otro modelo</span>
+              <details className="analysis-advice-details">
+                <summary>Ver explicación y siguientes pasos</summary>
+                <div className="advice-copy">
+                  {advice.parrafos.slice(1).map((p, i) => (
+                    <p key={i}>{p}</p>
+                  ))}
+                </div>
+              </details>
+              <span className="tag">Mensajes mediante reglas</span>
             </section>
           )}
           <details className="panel disclosure">
-            <summary>3. Definir o revisar una meta</summary>
+            <summary>Definir o revisar una meta</summary>
             <p className="section-description">
               Selecciona arriba el ejercicio y define una carga objetivo acordada con tu entrenador.
             </p>
