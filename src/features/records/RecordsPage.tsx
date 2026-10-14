@@ -19,7 +19,6 @@ export default function RecordsPage() {
     <>
       <div className="page-heading">
         <div>
-          <div className="eyebrow">TU ENTRENAMIENTO</div>
           <h1>Una sesión más cerca.</h1>
           <p>Registra lo que hiciste. El progreso se construye sesión a sesión.</p>
         </div>

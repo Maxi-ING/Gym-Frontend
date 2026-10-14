@@ -14,8 +14,8 @@ export default function PredictionChart({ result }: { result: Prediction }) {
           {
             label: 'Carga registrada',
             data: result.historial.map((p) => ({ x: p.semana, y: p.carga_kg })),
-            borderColor: dark ? '#8aaad0' : '#365f8d',
-            backgroundColor: dark ? '#8aaad0' : '#365f8d',
+            borderColor: dark ? '#deded9' : '#343430',
+            backgroundColor: dark ? '#deded9' : '#343430',
             pointRadius: 4,
             borderWidth: 2,
             tension: 0,
@@ -23,8 +23,8 @@ export default function PredictionChart({ result }: { result: Prediction }) {
           {
             label: 'Proyección',
             data: result.proyeccion.map((p) => ({ x: p.semana, y: p.carga_kg })),
-            borderColor: dark ? '#b3afa5' : '#696559',
-            backgroundColor: dark ? '#b3afa5' : '#696559',
+            borderColor: dark ? '#8c8c88' : '#73736e',
+            backgroundColor: dark ? '#8c8c88' : '#73736e',
             borderDash: [5, 5],
             borderWidth: 2,
             pointRadius: 4,
@@ -35,7 +35,7 @@ export default function PredictionChart({ result }: { result: Prediction }) {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        animation: reducedMotion ? false : { duration: 850, easing: 'easeOutQuart' },
+        animation: reducedMotion ? false : { duration: 450, easing: 'easeOutQuart' },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -54,12 +54,12 @@ export default function PredictionChart({ result }: { result: Prediction }) {
             title: {
               display: true,
               text: 'Semanas transcurridas desde el primer registro',
-              color: dark ? '#abb5c2' : '#616b76',
+              color: dark ? '#b5b5b2' : '#62625f',
               font: { size: 10 },
             },
             ticks: {
               stepSize: 1,
-              color: dark ? '#abb5c2' : '#616b76',
+              color: dark ? '#b5b5b2' : '#62625f',
               font: { size: 10 },
               callback: (value) => String(Number(value) + 1),
               maxTicksLimit: 10,
@@ -67,13 +67,13 @@ export default function PredictionChart({ result }: { result: Prediction }) {
           },
           y: {
             beginAtZero: true,
-            grid: { color: dark ? '#354151' : '#d7dbdf' },
+            grid: { color: dark ? '#383838' : '#d6d6d0' },
             border: { display: false },
-            ticks: { color: dark ? '#abb5c2' : '#616b76', font: { size: 10 } },
+            ticks: { color: dark ? '#b5b5b2' : '#62625f', font: { size: 10 } },
             title: {
               display: true,
               text: 'Carga (kg)',
-              color: dark ? '#abb5c2' : '#616b76',
+              color: dark ? '#b5b5b2' : '#62625f',
               font: { size: 10 },
             },
           },

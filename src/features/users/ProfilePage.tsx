@@ -49,7 +49,6 @@ export default function ProfilePage() {
     <>
       <div className="page-heading">
         <div>
-          <div className="eyebrow">TU PUNTO DE PARTIDA</div>
           <h1>Tu perfil, siempre al día.</h1>
           <p>Actualiza tus datos y conserva tus mediciones de peso.</p>
         </div>

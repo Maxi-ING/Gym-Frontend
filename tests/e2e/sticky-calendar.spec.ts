@@ -31,7 +31,7 @@ test('la barra superior permanece visible en las vistas de usuario y administrad
     ).toBeVisible();
     const links = admin
       ? ['Inicio', 'Usuarios', 'Entrenamientos', 'Ejercicios', 'Configuración']
-      : ['Inicio', 'Entrenamiento', 'Análisis IA', 'Configuración'];
+      : ['Inicio', 'Entrenamiento', 'Análisis', 'Configuración'];
     for (const link of links) {
       await navigate(page, link);
       await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));

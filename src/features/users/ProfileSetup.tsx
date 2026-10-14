@@ -19,7 +19,6 @@ export default function ProfileSetup() {
       onCancel={(event) => event.preventDefault()}
       aria-labelledby="setup-title"
     >
-      <div className="eyebrow">TU PUNTO DE PARTIDA</div>
       <h2 id="setup-title">Completa tu perfil</h2>
       <p>
         Antes de registrar tu entrenamiento, necesitamos tus datos iniciales. Podrás editarlos en tu

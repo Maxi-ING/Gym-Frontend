@@ -13,7 +13,6 @@ export default function AdminDashboardPage() {
     <div className="page-stack">
       <div className="page-heading">
         <div>
-          <div className="eyebrow">POWERGYM · ADMINISTRACIÓN</div>
           <h1>Resumen del gimnasio</h1>
           <p>Una vista general de las cuentas, la actividad registrada y el catálogo.</p>
         </div>

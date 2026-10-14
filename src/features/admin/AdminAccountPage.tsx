@@ -38,7 +38,6 @@ export default function AdminAccountPage() {
     <div className="page-stack">
       <div className="page-heading">
         <div>
-          <div className="eyebrow">MI CUENTA</div>
           <h1>Perfil de administrador</h1>
           <p>Tu identidad y acceso para gestionar PowerGym.</p>
         </div>
