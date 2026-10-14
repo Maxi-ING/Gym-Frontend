@@ -25,6 +25,10 @@ test('la demo distingue registros cambios y referencia de meta', async ({ page }
     document.getAnimations().every((a) => a.playState !== 'running'),
   );
   await page.waitForTimeout(500);
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+  await page.waitForFunction(() =>
+    document.getAnimations().every((a) => a.playState !== 'running'),
+  );
   await page.screenshot({
     path: `test-results/analisis-nuevo-${info.project.name}.png`,
     fullPage: true,
@@ -63,6 +67,10 @@ test('la demo distingue registros cambios y referencia de meta', async ({ page }
     (Math.max(line, background) + 0.05) / (Math.min(line, background) + 0.05),
   ).toBeGreaterThanOrEqual(3);
   await page.waitForTimeout(500);
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+  await page.waitForFunction(() =>
+    document.getAnimations().every((a) => a.playState !== 'running'),
+  );
   await page.screenshot({
     path: `test-results/analisis-claro-${info.project.name}.png`,
     fullPage: true,
