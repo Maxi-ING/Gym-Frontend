@@ -1074,7 +1074,7 @@ tbody tr:last-child td {
   font-weight: 600;
   line-height: 0.95;
   letter-spacing: -0.02em;
-  max-width: 7ch;
+  max-width: 12ch;
 }
 .auth-content p {
   font-size: 18px;
