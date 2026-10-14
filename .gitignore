@@ -8,3 +8,4 @@ playwright-report/
 *.tsbuildinfo
 *.local
 qa/
+.agents/

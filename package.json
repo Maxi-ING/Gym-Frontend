@@ -14,7 +14,8 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "skills:install": "npx -y skills@latest add pbakaus/impeccable --skill impeccable --agent codex -y && npx -y skills@latest add emilkowalski/skills --skill emil-design-eng --agent codex -y && npx -y skills@latest add Leonxlnx/taste-skill --skill design-taste-frontend --agent codex -y"
   },
   "dependencies": {
     "chart.js": "4.5.1",
