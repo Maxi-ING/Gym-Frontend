@@ -1,0 +1,160 @@
+/* Short, finite motion. No intro, scroll interception or continuous decoration. */
+.auth-shell,
+.public-about {
+  view-transition-name: page-content;
+}
+.route-view {
+  animation: fade-in 180ms var(--ease-out);
+}
+::view-transition-old(page-content) {
+  animation: motion-exit 140ms ease both;
+}
+::view-transition-new(page-content) {
+  animation: motion-enter 280ms var(--ease-out) both;
+}
+@keyframes motion-exit {
+  to {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+}
+@keyframes motion-enter {
+  from {
+    opacity: 0.45;
+    transform: translateX(24px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+.nav a,
+.sidebar-about,
+.calendar-day {
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    transform 160ms var(--ease-out);
+}
+.nav a:active,
+.sidebar-about:active,
+.calendar-day:active:not(:disabled) {
+  transform: scale(0.98);
+}
+.account-menu[open] .account-popover {
+  animation: motion-popover 200ms var(--ease-out);
+}
+@keyframes motion-popover {
+  from {
+    opacity: 0.3;
+    transform: translateY(8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+details[open] > :not(summary) {
+  animation: motion-detail 220ms var(--ease-out);
+}
+@keyframes motion-detail {
+  from {
+    opacity: 0.4;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.modal[open] {
+  animation: motion-dialog 240ms var(--ease-out);
+}
+.modal::backdrop,
+.nav-backdrop {
+  animation: fade-in 180ms ease;
+}
+@keyframes motion-dialog {
+  from {
+    opacity: 0.4;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.about-image {
+  overflow: hidden;
+}
+.about-image img {
+  transition: transform 420ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .button:hover:not(:disabled) {
+    transform: translateY(-2px);
+  }
+  .nav a:hover > svg {
+    transform: translateX(2px);
+  }
+  .about-image:hover img {
+    transform: scale(1.025);
+  }
+}
+.nav a > svg {
+  transition: transform 180ms var(--ease-out);
+}
+@media (max-width: 800px) {
+  .menu-open .nav a {
+    animation: motion-link 240ms var(--ease-out) backwards;
+  }
+  .menu-open .nav a:nth-child(2) {
+    animation-delay: 35ms;
+  }
+  .menu-open .nav a:nth-child(3) {
+    animation-delay: 70ms;
+  }
+  .menu-open .nav a:nth-child(4) {
+    animation-delay: 105ms;
+  }
+  .menu-open .nav a:nth-child(5) {
+    animation-delay: 140ms;
+  }
+}
+@keyframes motion-link {
+  from {
+    opacity: 0.5;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+html[data-input='keyboard'] *,
+html[data-input='keyboard'] *::before,
+html[data-input='keyboard'] *::after,
+html[data-motion='reduced'] *,
+html[data-motion='reduced'] *::before,
+html[data-motion='reduced'] *::after {
+  animation: none !important;
+  transition: none !important;
+}
+html[data-input='keyboard']::view-transition-old(page-content),
+html[data-input='keyboard']::view-transition-new(page-content),
+html[data-motion='reduced']::view-transition-old(page-content),
+html[data-motion='reduced']::view-transition-new(page-content) {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  ::view-transition-old(page-content),
+  ::view-transition-new(page-content) {
+    animation: none;
+  }
+}

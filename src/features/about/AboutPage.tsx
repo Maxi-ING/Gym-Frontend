@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../users/AuthProvider';
 import Icon from '../../components/Icon';
+import { useMotionReveal } from '../../hooks/useMotionReveal';
 
 const journey = [
   {
@@ -22,8 +23,9 @@ const journey = [
 
 export default function AboutPage() {
   const { user } = useAuth();
+  const motion = useMotionReveal(!user);
   return (
-    <div className={user ? 'about-page' : 'public-about'}>
+    <div ref={motion} className={user ? 'about-page' : 'public-about'}>
       {!user && (
         <header className="public-header">
           <Link to="/" className="brand" aria-label="FitAnalytics AI inicio" viewTransition>

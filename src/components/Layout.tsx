@@ -4,6 +4,7 @@ import { useAuth } from '../features/users/AuthProvider';
 import Icon, { type IconName } from './Icon';
 import ProfileSetup from '../features/users/ProfileSetup';
 import { LoadingState } from './Feedback';
+import MotionSurface from './MotionSurface';
 const userLinks: { to: string; label: string; icon: IconName }[] = [
   { to: '/', label: 'Inicio', icon: 'dashboard' },
   { to: '/entrenamiento', label: 'Entrenamiento', icon: 'training' },
@@ -234,7 +235,7 @@ export default function Layout() {
           </div>
         )}
         <main id="main-content" className="page" tabIndex={-1}>
-          <div className="route-view" key={location.pathname}>
+          <MotionSurface key={location.pathname}>
             <Suspense fallback={<LoadingState />}>
               {user?.perfil_completo || user?.rol === 'admin' ? (
                 <Outlet />
@@ -242,7 +243,7 @@ export default function Layout() {
                 <div className="empty-state">Completa tu perfil para empezar.</div>
               )}
             </Suspense>
-          </div>
+          </MotionSurface>
           <footer className="page-footer">
             <span>FitAnalytics AI · PowerGym Lima</span>
             <span>Entrena. Registra. Comprende.</span>
