@@ -42,7 +42,6 @@ export default function DashboardPage() {
     <div className="page-stack dashboard-page">
       <div className="page-heading">
         <div>
-          <div className="eyebrow">TU ENTRENAMIENTO, EN PERSPECTIVA</div>
           <h1>Inicio, {user?.nombre.split(' ')[0]}.</h1>
           <p>Tus gráficos, indicadores y próximos pasos.</p>
         </div>
@@ -155,7 +154,6 @@ export default function DashboardPage() {
           <>
             <section aria-label="Resumen del entrenamiento">
               <div className="section-heading">
-                <span className="section-index">01</span>
                 <div>
                   <h2>Tu resumen</h2>
                 </div>
@@ -165,7 +163,6 @@ export default function DashboardPage() {
             <section className="panel">
               <div className="panel-header">
                 <div>
-                  <div className="eyebrow">ANÁLISIS CORPORAL</div>
                   <h2>Tu punto de partida</h2>
                   <p>Datos personales y última medición registrada.</p>
                 </div>
@@ -209,7 +206,6 @@ export default function DashboardPage() {
             <section className="panel">
               <div className="panel-header">
                 <div>
-                  <div className="eyebrow">ANÁLISIS ESTADÍSTICO</div>
                   <h2>Rendimiento por ejercicio</h2>
                   <p>Compara el mismo ejercicio desde tu primera sesión hasta la más reciente.</p>
                 </div>
@@ -284,7 +280,6 @@ export default function DashboardPage() {
           <section className="panel">
             <div className="panel-header">
               <div>
-                <div className="eyebrow">METAS Y MODELO PREDICTIVO</div>
                 <h2>Tu próximo objetivo</h2>
                 <p>Avance registrado y última proyección solicitada.</p>
               </div>
@@ -327,7 +322,7 @@ export default function DashboardPage() {
               </div>
             ) : (
               <EmptyState title="Define tu primera meta">
-                En Análisis IA puedes guardar una referencia de carga acordada con tu entrenador.
+                En Análisis puedes guardar una referencia de carga acordada con tu entrenador.
               </EmptyState>
             )}
             <div className="notice">
@@ -359,7 +354,6 @@ export default function DashboardPage() {
           <section className="panel">
             <div className="panel-header">
               <div>
-                <div className="eyebrow">RECOMENDACIONES PARA TU SEGUIMIENTO</div>
                 <h2>Un siguiente paso con sentido</h2>
                 <p>Sugerencias vinculadas a tu objetivo y a los datos disponibles.</p>
               </div>
@@ -367,7 +361,6 @@ export default function DashboardPage() {
             <div className="recommendation-list">
               {overview.data.recomendaciones.map((r, i) => (
                 <article key={`${r.titulo}-${i}`}>
-                  <span className="section-index">{String(i + 1).padStart(2, '0')}</span>
                   <div>
                     <h3>{r.titulo}</h3>
                     <p>{r.mensaje}</p>

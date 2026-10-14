@@ -84,7 +84,6 @@ export default function PredictionPage() {
     <div className="page-stack">
       <div className="page-heading">
         <div>
-          <div className="eyebrow">COMPRENDE TU TENDENCIA</div>
           <h1>Análisis de tu progreso</h1>
           <p>
             Primero elige una referencia. Después revisa el gráfico y la explicación de tu avance.
@@ -229,7 +228,6 @@ export default function PredictionPage() {
           </section>
           {advice && (
             <section className="panel prediction-explainer">
-              <div className="eyebrow">2. CÓMO VAS Y QUÉ PUEDES HACER</div>
               <h2>{advice.titulo}</h2>
               <div className="advice-copy">
                 {advice.parrafos.map((p, i) => (

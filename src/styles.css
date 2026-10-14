@@ -2574,3 +2574,116 @@ h3 {
   }
 }
 
+/* Motion supports navigation; it never blocks the initial screen. */
+.app-shell {
+  transition: grid-template-columns 240ms var(--ease-drawer);
+}
+.sidebar {
+  transition:
+    width 240ms var(--ease-drawer),
+    transform 240ms var(--ease-drawer);
+}
+.sidebar-section {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 12px;
+}
+.sidebar-about {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #bdbdb7;
+  min-height: 44px;
+  padding: 10px 14px;
+  font-size: 13px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+}
+.sidebar-about:hover,
+.sidebar-about.active {
+  background: #252525;
+  color: #fff;
+}
+.shell-collapsed .sidebar-about {
+  justify-content: center;
+  padding-inline: 0;
+}
+.topbar-title span {
+  letter-spacing: 0;
+  font-size: 11px;
+}
+.route-view {
+  animation: reveal 240ms var(--ease-out);
+}
+@keyframes reveal {
+  from {
+    opacity: 0.3;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+::view-transition-old(page-content) {
+  animation: fade-out 100ms ease both;
+}
+::view-transition-new(page-content) {
+  animation: enter-view 240ms var(--ease-out) both;
+}
+@keyframes enter-view {
+  from {
+    opacity: 0.3;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+html:active-view-transition .route-view {
+  animation: none;
+}
+.account-menu[open] .account-popover {
+  animation: reveal 180ms var(--ease-out);
+  transform-origin: bottom left;
+}
+.disclosure[open] {
+  animation: none;
+}
+.button,
+.icon-button {
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    transform 140ms var(--ease-out);
+}
+.button:hover:not(:disabled) {
+  transform: none;
+}
+.button:active:not(:disabled),
+.icon-button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+@media (hover: hover) and (pointer: fine) {
+  .button:hover:not(:disabled) > svg:last-child {
+    transform: translateX(2px);
+  }
+}
+.button > svg {
+  transition: transform 160ms var(--ease-out);
+}
+.motion-preview-card {
+  animation: reveal 280ms var(--ease-out) both;
+}
+.nav a.active svg {
+  filter: none;
+}
+html[data-input='keyboard'] .route-view,
+html[data-input='keyboard'] .account-popover {
+  animation: none;
+}
+html[data-input='keyboard']::view-transition-old(page-content),
+html[data-input='keyboard']::view-transition-new(page-content) {
+  animation: none;
+}

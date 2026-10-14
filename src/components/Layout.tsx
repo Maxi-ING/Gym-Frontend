@@ -7,7 +7,7 @@ import { LoadingState } from './Feedback';
 const userLinks: { to: string; label: string; icon: IconName }[] = [
   { to: '/', label: 'Inicio', icon: 'dashboard' },
   { to: '/entrenamiento', label: 'Entrenamiento', icon: 'training' },
-  { to: '/analisis', label: 'Análisis IA', icon: 'spark' },
+  { to: '/analisis', label: 'Análisis', icon: 'trend' },
   { to: '/configuracion', label: 'Configuración', icon: 'settings' },
 ];
 const adminLinks: typeof userLinks = [
@@ -79,9 +79,11 @@ export default function Layout() {
   const title =
     location.pathname === '/perfil'
       ? 'Mi perfil'
-      : (links.find((l) =>
-          l.to === '/' ? location.pathname === '/' : location.pathname.startsWith(l.to),
-        )?.label ?? 'Usuarios');
+      : location.pathname === '/sobre'
+        ? 'Sobre nosotros'
+        : (links.find((l) =>
+            l.to === '/' ? location.pathname === '/' : location.pathname.startsWith(l.to),
+          )?.label ?? 'Usuarios');
   function toggle() {
     if (mobile) setOpen((v) => !v);
     else setCollapsed((v) => !v);
@@ -131,7 +133,7 @@ export default function Layout() {
           )}
         </div>
         <div className="sidebar-section">
-          {user?.rol === 'admin' ? 'GESTIÓN DEL GIMNASIO' : 'MI ENTRENAMIENTO'}
+          {user?.rol === 'admin' ? 'Gestión del gimnasio' : 'Mi entrenamiento'}
         </div>
         <nav className="nav" aria-label="Navegación principal">
           {links.map((l) => (
@@ -148,6 +150,10 @@ export default function Layout() {
           ))}
         </nav>
         <div className="sidebar-bottom">
+          <NavLink to="/sobre" className="sidebar-about" title="Sobre nosotros" viewTransition>
+            <Icon name="weight" size={18} />
+            <span className="nav-label">Sobre nosotros</span>
+          </NavLink>
           <div className="sidebar-tip">
             <Icon name={user?.rol === 'admin' ? 'users' : 'trend'} size={23} />
             <strong>
@@ -203,7 +209,7 @@ export default function Layout() {
               <Icon name="menu" />
             </button>
             <div className="topbar-title">
-              <span>POWERGYM LIMA</span>
+              <span>PowerGym Lima</span>
               <strong>{title}</strong>
             </div>
           </div>
