@@ -5,6 +5,7 @@ import { useChart } from '../../hooks/useChart';
 import { dateLabel, number } from '../../lib/format';
 import { EmptyState } from '../../components/Feedback';
 import type { ChartConfiguration } from 'chart.js';
+import { lineMotion } from '../../lib/chartMotion';
 export default function ProgressChart({
   points,
   metric = 'volumen_kg',
@@ -37,7 +38,7 @@ export default function ProgressChart({
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        animation: reducedMotion ? false : { duration: 450, easing: 'easeOutQuart' },
+        ...lineMotion(reducedMotion),
         plugins: {
           legend: { display: false },
           tooltip: {
