@@ -674,18 +674,18 @@
       },
       {
         "name": "route-view",
-        "value": "240ms",
-        "purpose": "Entrada de página con desplazamiento de 8px."
+        "value": "180ms",
+        "purpose": "Fundido de respaldo sin View Transitions."
       },
       {
         "name": "view-out",
-        "value": "100ms ease",
-        "purpose": "Salida de página con View Transitions."
+        "value": "140ms ease",
+        "purpose": "Salida horizontal de 12px con View Transitions."
       },
       {
         "name": "account-popover",
-        "value": "180ms var(--ease-out)",
-        "purpose": "Entrada del menú de cuenta."
+        "value": "200ms var(--ease-out)",
+        "purpose": "Entrada desde el control de cuenta, escala inicial 0.97."
       },
       {
         "name": "button-state",
@@ -716,6 +716,21 @@
         "name": "motion-preview-bars",
         "value": "800ms cubic-bezier(0.2, 0.7, 0.2, 1)",
         "purpose": "Demostración de barras, con retrasos de 80ms; respeta movimiento reducido."
+      },
+      {
+        "name": "view-in",
+        "value": "280ms var(--ease-out)",
+        "purpose": "Entrada de 24px horizontal y escala inicial 0.99."
+      },
+      {
+        "name": "block-reveal",
+        "value": "280ms, stagger 45ms, max delay 135ms",
+        "purpose": "Entrada vertical de 16px una sola vez al observar cada bloque."
+      },
+      {
+        "name": "chart-draw",
+        "value": "550ms line, 450ms bar",
+        "purpose": "Retrasos por punto limitados a 210ms y 180ms; conserva los datos."
       }
     ],
     "breakpoints": [

@@ -36,3 +36,19 @@ Las tres skills están instaladas localmente en `.agents/skills`. Sus fuentes y 
 - El detector señaló un borde decorativo en avisos, reducido a 1 px. El indicador de día seleccionado en el calendario se conserva como estado funcional.
 - El inspector de Taste no pudo iniciar Chromium en este entorno; la verificación visual y funcional se realiza con Playwright en escritorio y móvil y con una revisión independiente de las capturas. El requisito de abundante movimiento y cuatro imágenes se omite por el encargo explícito de una interfaz ligera.
 - El modelo mejorado, las metas con repeticiones y sus migraciones quedan para el siguiente encargo de backend.
+
+## Movimiento más expresivo
+
+Se amplía el movimiento a petición del cliente, con CSS y Web Animations nativas, sin nuevas dependencias. Los paneles se revelan una sola vez al entrar en pantalla; no se ocultan permanentemente ni esperan una introducción. Las pantallas de usuario y administración comparten el mismo comportamiento.
+
+Los bloques con controles interactivos aparecen mediante opacidad, sin desplazarlos. Esto mantiene fija la posición de un botón o filtro durante el clic; los bloques de lectura conservan su entrada vertical.
+
+| Before                                    | After                                                                                    | Why                                                      |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| Vista completa con entrada vertical breve | Cambio horizontal de 280 ms y salida de 140 ms; fundido de respaldo                      | Dar continuidad al navegar sin retener la vista anterior |
+| Paneles aparecen simultáneamente          | Entradas de 280 ms con escalonado limitado a 135 ms                                      | Guiar la mirada sin retrasar controles                   |
+| Gráficos se animan a la vez               | Trazado progresivo de líneas y barras con retrasos acotados                              | Hacer más fácil seguir la aparición de la información    |
+| Detalles se abren de golpe                | Entrada breve del contenido, diálogos y enlaces móviles                                  | Conectar el control con su resultado                     |
+| Preferencia reduce CSS y gráficos         | Además cancela las entradas nativas; el teclado y el foco eliminan desplazamiento activo | Mantener accesibilidad e interacción inmediata           |
+
+Se verifica el flujo completo en escritorio y móvil, incluyendo roles, menú, formularios, contraste, ausencia de desbordamiento y cancelación del movimiento. Las pruebas móviles utilizan emulación de navegador, no un dispositivo físico.

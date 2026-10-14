@@ -8,6 +8,7 @@ import Button from './components/Button';
 import { ErrorState, LoadingState } from './components/Feedback';
 import { PreferencesProvider } from './features/settings/PreferencesProvider';
 import './styles.css';
+import './motion.css';
 const SettingsPage = lazy(() => import('./features/settings/SettingsPage'));
 const ProfilePage = lazy(() => import('./features/users/ProfilePage'));
 const RecordsPage = lazy(() => import('./features/records/RecordsPage'));

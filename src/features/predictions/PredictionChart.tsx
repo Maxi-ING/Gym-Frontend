@@ -4,6 +4,7 @@ import type { ChartConfiguration } from 'chart.js';
 import type { Prediction } from '../../types';
 import { useChart } from '../../hooks/useChart';
 import { number } from '../../lib/format';
+import { lineMotion } from '../../lib/chartMotion';
 export default function PredictionChart({
   result,
   target,
@@ -68,7 +69,7 @@ export default function PredictionChart({
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        animation: reducedMotion ? false : { duration: 450, easing: 'easeOutQuart' },
+        ...lineMotion(reducedMotion),
         plugins: {
           legend: { display: false },
           tooltip: {

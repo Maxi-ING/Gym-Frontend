@@ -30,7 +30,15 @@ function ChangesChart({ history }: { history: Prediction['historial'] }) {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        animation: reducedMotion ? false : { duration: 350, easing: 'easeOutQuart' },
+        animation:
+          reducedMotion || document.documentElement.dataset.input === 'keyboard'
+            ? false
+            : {
+                duration: 450,
+                easing: 'easeOutQuart',
+                delay: (context) =>
+                  context.type === 'data' ? Math.min(context.dataIndex * 35, 180) : 0,
+              },
         plugins: {
           legend: { display: false },
           tooltip: {

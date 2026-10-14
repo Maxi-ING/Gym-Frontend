@@ -239,9 +239,11 @@ Las leyendas distinguen historial con trazo continuo, proyección con discontinu
 
 ### Preferencias y movimiento
 
-El interruptor mantiene estado nativo y `role="switch"`. Los cambios de vista duran (240ms), con desplazamiento de entrada (8px); la vista saliente dura (100ms). El menú de cuenta entra en (180ms). Botones y flechas responden en (140–160ms); el cajón, en (240ms). Las curvas y duraciones exactas se registran en el sidecar.
+Los bloques con controles interactivos se revelan con opacidad y mantienen fija su posición durante la interacción. El desplazamiento de 16px se limita a bloques de lectura sin controles.
 
-No hay introducción animada. La animación de barras pertenece a la demostración de preferencias y no impone movimiento continuo al panel. Tanto `prefers-reduced-motion` como la preferencia de la aplicación desactivan animaciones y transiciones. La navegación por teclado suprime además la entrada de vistas y del menú de cuenta.
+El interruptor mantiene estado nativo y `role="switch"`. Las View Transitions entran en (280ms), con desplazamiento horizontal (24px) y escala inicial (0.99); salen en (140ms). El respaldo sin View Transitions es un fundido de (180ms). Los bloques aparecen una sola vez al entrar en pantalla en (280ms), con desplazamiento vertical (16px) y escalonado de (45ms), limitado a (135ms). El menú de cuenta entra en (200ms), los detalles en (220ms) y los diálogos en (240ms). Botones y flechas responden en (140–160ms); el cajón, en (240ms). Las curvas y duraciones exactas se registran en el sidecar y en `src/motion.css`.
+
+No hay introducción animada ni desplazamiento forzado. Las líneas se trazan en (550ms), con retrasos por punto limitados a (210ms); las barras de cambios, en (450ms), con retrasos limitados a (180ms). Los valores y escalas corresponden siempre a los datos originales; no se animan contadores ni se fabrican puntos. Tanto `prefers-reduced-motion` como la preferencia de la aplicación desactivan el movimiento. El teclado cancela las entradas activas; enfocar un control cancela la animación de su bloque. Los observadores y animaciones se liberan al cambiar de vista. Sin soporte de animación, todo el contenido permanece visible.
 
 ## Do's and Don'ts
 

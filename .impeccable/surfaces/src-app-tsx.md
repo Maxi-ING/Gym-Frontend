@@ -28,6 +28,6 @@ FIRST VIEWPORT: Acceso dividido con fotografía de pesas y título de dos línea
 
 FORM: Dirección fijada por el usuario, composición split-stage solo en acceso y Sobre. Navegación convencional en paneles. seed: none (unavailable). La dirección del usuario prevalece sobre sorteos y requerimientos decorativos de las skills.
 
-SIGNATURE: Cambio de vista de 240 ms y menús de 200 ms. Sin scroll forzado, cursores especiales ni fondos animados. Preferencia de movimiento reducido prioritaria.
+SIGNATURE: Cambio de vista de 280 ms y menús de 200 ms. Entrada de bloques de 280 ms, escalonada y una sola vez; gráficos con trazado progresivo. Sin scroll forzado, cursores especiales ni fondos animados. Preferencia de movimiento reducido y teclado prioritarios.
 
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
