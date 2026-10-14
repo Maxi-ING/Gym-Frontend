@@ -17,3 +17,13 @@ Conservar el contrato actual. Gráficos descriptivos derivados del historial rec
 ## Narrativa
 
 La historia y los hitos de PowerGym Lima son ficticios y se identifican como parte del caso ilustrativo. No se añaden cifras de clientes, testimonios, reconocimientos ni instalaciones presentadas como verificadas.
+
+## Skills del proyecto
+
+Las tres skills están instaladas localmente en `.agents/skills`. Sus fuentes y huellas se registran en `skills-lock.json`; se pueden instalar de nuevo con `npm run skills:install`. No se versiona el código de terceros de las skills ni se incluye en el bundle de la aplicación.
+
+| Before                                         | After                                | Why                                             |
+| ---------------------------------------------- | ------------------------------------ | ----------------------------------------------- |
+| Paneles azules con rótulos y acentos repetidos | Carbón y acero, encabezados directos | Priorizar los datos sin saturar la vista        |
+| Entrada de vistas de 520 ms                    | Entrada de 240 ms                    | Responder con rapidez al cambio de página       |
+| Desplazamiento de botones al pasar el puntero  | Respuesta breve al pulsar            | Evitar movimiento repetido en tareas frecuentes |
