@@ -61,7 +61,6 @@ export default function ExercisesPage() {
     <div className="page-stack">
       <div className="page-heading">
         <div>
-          <div className="eyebrow">CATÁLOGO DEL GIMNASIO</div>
           <h1>Ejercicios</h1>
           <p>Organiza los ejercicios disponibles para nuevos entrenamientos.</p>
         </div>

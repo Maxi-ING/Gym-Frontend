@@ -13,7 +13,6 @@ export default function SettingsPage() {
     <div className="page-stack">
       <div className="page-heading">
         <div>
-          <div className="eyebrow">TU EXPERIENCIA</div>
           <h1>Configuración</h1>
           <p>Adapta la plataforma a tu forma de trabajar y entrenar.</p>
         </div>
