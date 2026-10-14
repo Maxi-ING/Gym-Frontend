@@ -7,8 +7,10 @@ import { useAuth } from './AuthProvider';
 import { userService } from './userService';
 import { validName } from '../../lib/validation';
 import { errorMessage } from '../../lib/api';
+import { useMotionReveal } from '../../hooks/useMotionReveal';
 
 export default function AuthPage() {
+  const motion = useMotionReveal<HTMLElement>();
   const { signIn } = useAuth();
   const [register, setRegister] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -56,7 +58,7 @@ export default function AuthPage() {
     }
   }
   return (
-    <main className="auth-shell">
+    <main ref={motion} className="auth-shell">
       <section className="auth-visual" aria-label="FitAnalytics AI">
         <img
           className="auth-photo"
