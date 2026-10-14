@@ -1019,96 +1019,88 @@ tbody tr:last-child td {
 .auth-shell {
   min-height: 100dvh;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
 }
 .auth-visual {
-  background: #191919;
-  color: #fff;
+  position: relative;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  padding: clamp(24px, 3.5vw, 48px);
-  position: relative;
-  overflow: hidden;
+  padding: 32px clamp(24px, 4vw, 64px);
+  background: #101010;
+  color: #f5f5f1;
+  isolation: isolate;
+  overflow: clip;
+}
+.auth-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 60% center;
+  filter: grayscale(1);
+  z-index: -2;
 }
 .auth-visual::after {
   content: '';
   position: absolute;
   inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, #101010cc 0%, #10101088 35%, #101010dd 100%);
   pointer-events: none;
-  background-image:
-    linear-gradient(#ffffff08 1px, transparent 1px),
-    linear-gradient(90deg, #ffffff08 1px, transparent 1px);
-  background-size: 38px 38px;
+}
+.auth-visual-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.auth-about-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  min-height: 44px;
 }
 .auth-content {
   margin: auto 0;
-  padding: 34px 0;
-  max-width: 470px;
-  z-index: 1;
-}
-.auth-content .eyebrow {
-  color: #d0d0c9;
+  padding: 44px 0;
 }
 .auth-content h1 {
-  font-size: clamp(34px, 3.3vw, 54px);
-  letter-spacing: -0.025em;
-  line-height: 1.1;
-}
-.auth-content h1 span {
-  color: #deded9;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(64px, 7vw, 96px);
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  max-width: 7ch;
 }
 .auth-content p {
-  color: #c7c7bf;
-  font-size: 14px;
-  line-height: 1.8;
-  margin: 18px 0 24px;
-  max-width: 370px;
+  font-size: 18px;
+  line-height: 1.55;
+  max-width: 30ch;
+  margin-top: 24px;
+  color: #e4e4de;
 }
-.auth-preview {
-  border: 1px solid #454545;
-  border-radius: 16px;
-  padding: 18px 22px;
-  background: #232323;
-  box-shadow: 0 15px 40px #0003;
-  max-width: 390px;
-}
-.auth-preview-top {
+.auth-method {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  font-size: 11px;
-  color: #cfcfc7;
-}
-.auth-preview-top svg {
-  width: 18px;
-  height: 18px;
-  margin: 0;
-  flex-shrink: 0;
-}
-.auth-preview strong {
-  display: block;
-  font-size: 25px;
-  margin-top: 12px;
-  letter-spacing: -0.8px;
-}
-.auth-preview > svg {
-  width: 100%;
-  height: 80px;
-  margin-top: 14px;
-}
-.auth-preview small {
-  color: #bdbdb4;
-  font-size: 9px;
+  flex-wrap: wrap;
+  gap: 20px;
+  font-size: 14px;
+  margin-top: 32px;
+  color: #dadad3;
 }
 .auth-foot {
   display: flex;
   justify-content: space-between;
-  gap: 15px;
-  font-size: 9px;
-  line-height: 1.7;
-  color: #b6b6ad;
-  z-index: 1;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13px;
+  color: #d0d0c9;
+}
+.auth-mobile-about {
+  display: none;
 }
 .auth-form-side {
   display: flex;
@@ -1450,26 +1442,14 @@ tbody tr:last-child td {
   .sidebar-tip {
     display: none;
   }
-  .auth-visual {
-    padding: 26px 36px;
-  }
   .auth-content {
-    padding: 22px 0;
+    padding: 24px 0;
   }
   .auth-content h1 {
-    font-size: clamp(32px, 3vw, 44px);
-  }
-  .auth-content p {
-    margin: 14px 0 18px;
-  }
-  .auth-preview {
-    padding: 14px 18px;
-  }
-  .auth-preview > svg {
-    height: 58px;
+    font-size: 72px;
   }
   .auth-form-side {
-    padding-block: 20px;
+    padding-block: 24px;
   }
 }
 @media (max-width: 1150px) {
@@ -1597,30 +1577,38 @@ tbody tr:last-child td {
     grid-template-columns: 1fr;
   }
   .auth-visual {
-    padding: 22px 24px;
+    padding: 20px 24px 28px;
+  }
+  .auth-visual-header .auth-about-link {
+    font-size: 13px;
   }
   .auth-content {
-    padding: 24px 0 4px;
+    margin: 0;
+    padding: 30px 0 0;
   }
   .auth-content h1 {
-    font-size: 32px;
+    font-size: 54px;
+    max-width: none;
   }
   .auth-content h1 br {
     display: none;
   }
-  .auth-content h1 span::before {
-    content: ' ';
-  }
   .auth-content p {
-    margin: 14px 0 0;
-    font-size: 12px;
+    margin-top: 14px;
+    font-size: 16px;
+    max-width: 34ch;
   }
-  .auth-preview,
+  .auth-method,
   .auth-foot {
     display: none;
   }
   .auth-form-side {
-    padding: 28px 24px 35px;
+    padding: 30px 24px;
+  }
+  .auth-mobile-about {
+    display: block;
+    text-align: center;
+    margin-top: 12px;
   }
   .setting-row {
     gap: 16px;
@@ -2293,3 +2281,296 @@ h3 {
 .setting-row input[role='switch']:checked::after {
   background: var(--on-primary);
 }
+
+.auth-form-side {
+  --bg: #efefec;
+  --surface: #ffffff;
+  --surface-raised: #f7f7f4;
+  --ink: #202020;
+  --muted: #62625f;
+  --line: #d6d6d0;
+  --accent: #333330;
+  --primary: #242424;
+  --primary-hover: #404040;
+  --on-primary: #ffffff;
+  --soft: #e6e6df;
+  --danger: #a52934;
+  --danger-bg: #fff1f1;
+  --success: #176657;
+  --success-bg: #eaf8f5;
+  color: var(--ink);
+  color-scheme: light;
+}
+.auth-form-card h2 {
+  font-size: 28px;
+}
+.auth-form-card > p {
+  font-size: 15px;
+  line-height: 1.5;
+}
+.auth-form-card .field label {
+  font-size: 13px;
+}
+.auth-divider {
+  font-size: 13px;
+}
+.auth-note {
+  font-size: 12px !important;
+}
+.auth-about-link svg {
+  transition: transform 160ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .auth-about-link:hover svg {
+    transform: translateX(4px);
+  }
+}
+
+/* Institutional story: open sections, no nested cards. */
+.public-about {
+  min-height: 100dvh;
+}
+.public-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--surface);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 18px clamp(20px, 5vw, 80px);
+}
+.public-header .brand {
+  color: var(--ink);
+}
+.public-header .brand-mark {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+.public-header .brand small {
+  color: var(--muted);
+}
+.about-content {
+  max-width: 1240px;
+  margin: auto;
+  padding: 42px clamp(0px, 3vw, 40px);
+}
+.public-about .about-content {
+  padding-inline: clamp(20px, 5vw, 80px);
+}
+.about-opening {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: clamp(24px, 4vw, 64px);
+}
+.about-opening h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: clamp(48px, 5vw, 72px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  max-width: 12ch;
+}
+.about-opening p {
+  font-size: 16px;
+  line-height: 1.7;
+  max-width: 46ch;
+  margin-top: 20px;
+  color: var(--muted);
+}
+.about-opening .about-lead {
+  font-size: 20px;
+  color: var(--ink);
+}
+.about-story-link {
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 24px;
+  font-size: 15px;
+}
+.about-image {
+  margin: 0;
+  min-width: 0;
+}
+.about-image img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4/5;
+  object-fit: cover;
+  filter: grayscale(1);
+  border-radius: 2px;
+}
+.about-image figcaption {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 10px;
+  line-height: 1.6;
+}
+.about-image a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.about-history {
+  margin-top: 72px;
+  display: grid;
+  grid-template-columns: 0.8fr 1.4fr;
+  gap: 28px 48px;
+  scroll-margin-top: 110px;
+}
+.about-section-title h2,
+.about-principles h2,
+.about-platform h2 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(32px, 3vw, 44px);
+  font-weight: 600;
+  line-height: 1.15;
+}
+.about-section-title p {
+  color: var(--muted);
+  margin-top: 12px;
+  font-size: 16px;
+}
+.about-journey {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.about-journey li {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  gap: 20px;
+  padding: 0 0 28px;
+}
+.journey-year {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.about-journey h3 {
+  font-size: 20px;
+}
+.about-journey p {
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--muted);
+  margin-top: 8px;
+  max-width: 52ch;
+}
+.about-fiction {
+  grid-column: 2;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.about-principles {
+  margin-top: 64px;
+  padding: 32px;
+  background: var(--surface-raised);
+  display: grid;
+  grid-template-columns: 0.8fr 1.4fr;
+  gap: 32px;
+}
+.about-principles dl {
+  margin: 0;
+}
+.about-principles dl > div {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 20px;
+  padding-block: 12px;
+}
+.about-principles dt {
+  font-size: 18px;
+  font-weight: 600;
+}
+.about-principles dd {
+  margin: 0;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.6;
+}
+.about-platform {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 64px;
+}
+.about-platform > div {
+  max-width: 62ch;
+}
+.about-platform p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--muted);
+  margin-top: 16px;
+}
+.public-footer {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 24px clamp(20px, 5vw, 80px);
+  color: var(--muted);
+  font-size: 13px;
+}
+@media (max-width: 800px) {
+  .public-header {
+    padding: 12px 20px;
+  }
+  .public-header .brand {
+    font-size: 15px;
+  }
+  .public-header .button {
+    padding-inline: 10px;
+    font-size: 12px;
+  }
+  .about-content {
+    padding-top: 18px;
+  }
+  .public-about .about-content {
+    padding-top: 32px;
+  }
+  .about-opening,
+  .about-history,
+  .about-principles {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .about-opening h1 {
+    font-size: 48px;
+    max-width: 12ch;
+  }
+  .about-opening .about-lead {
+    font-size: 18px;
+  }
+  .about-image img {
+    aspect-ratio: 4/3;
+    max-height: 320px;
+  }
+  .about-history,
+  .about-principles,
+  .about-platform {
+    margin-top: 44px;
+  }
+  .about-fiction {
+    grid-column: 1;
+  }
+  .about-principles {
+    padding: 24px;
+  }
+  .about-principles dl > div {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .about-journey li {
+    grid-template-columns: 60px 1fr;
+    gap: 12px;
+  }
+}
+
