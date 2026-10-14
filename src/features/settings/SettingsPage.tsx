@@ -30,7 +30,7 @@ export default function SettingsPage() {
         <div className="setting-row">
           <div>
             <h3>Tema de la plataforma</h3>
-            <p>Azul noche, versión clara o el tema de tu dispositivo.</p>
+            <p>Negro carbón, versión clara o el tema de tu dispositivo.</p>
           </div>
           <Select
             label="Tema"
@@ -40,7 +40,7 @@ export default function SettingsPage() {
               setMessage('Tema actualizado.');
             }}
           >
-            <option value="oscuro">Azul noche</option>
+            <option value="oscuro">Oscuro</option>
             <option value="claro">Claro</option>
             <option value="sistema">Según el dispositivo</option>
           </Select>

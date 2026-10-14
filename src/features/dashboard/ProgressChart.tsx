@@ -22,13 +22,13 @@ export default function ProgressChart({
           {
             label: metric === 'volumen_kg' ? 'Volumen (kg)' : 'Carga (kg)',
             data: points.map((p) => p[metric]),
-            borderColor: dark ? '#8aaad0' : '#365f8d',
-            backgroundColor: dark ? '#8aaad01a' : '#365f8d15',
+            borderColor: dark ? '#deded9' : '#343430',
+            backgroundColor: dark ? '#deded91a' : '#34343015',
             fill: true,
             tension: 0.25,
             pointRadius: 4,
             pointHoverRadius: 6,
-            pointBorderColor: dark ? '#1d2530' : '#fff',
+            pointBorderColor: dark ? '#1b1b1b' : '#fff',
             pointBorderWidth: 2,
             borderWidth: 2,
           },
@@ -37,7 +37,7 @@ export default function ProgressChart({
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        animation: reducedMotion ? false : { duration: 850, easing: 'easeOutQuart' },
+        animation: reducedMotion ? false : { duration: 450, easing: 'easeOutQuart' },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -49,13 +49,13 @@ export default function ProgressChart({
           x: {
             grid: { display: false },
             border: { display: false },
-            ticks: { color: dark ? '#abb5c2' : '#616b76', font: { size: 10 }, maxTicksLimit: 8 },
+            ticks: { color: dark ? '#b5b5b2' : '#62625f', font: { size: 10 }, maxTicksLimit: 8 },
           },
           y: {
             beginAtZero: true,
             border: { display: false },
-            grid: { color: dark ? '#354151' : '#d7dbdf' },
-            ticks: { color: dark ? '#abb5c2' : '#616b76', font: { size: 10 }, maxTicksLimit: 6 },
+            grid: { color: dark ? '#383838' : '#d6d6d0' },
+            ticks: { color: dark ? '#b5b5b2' : '#62625f', font: { size: 10 }, maxTicksLimit: 6 },
           },
         },
       },

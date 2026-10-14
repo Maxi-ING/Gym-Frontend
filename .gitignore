@@ -8,4 +8,10 @@ playwright-report/
 *.tsbuildinfo
 *.local
 qa/
+
+# Herramientas de diseño: capturas y estado temporal
+.taste-skill/
+.impeccable/review/
+.impeccable/questions/
+.impeccable/live/
 .agents/
