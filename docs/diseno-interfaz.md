@@ -27,3 +27,12 @@ Las tres skills están instaladas localmente en `.agents/skills`. Sus fuentes y 
 | Paneles azules con rótulos y acentos repetidos | Carbón y acero, encabezados directos | Priorizar los datos sin saturar la vista        |
 | Entrada de vistas de 520 ms                    | Entrada de 240 ms                    | Responder con rapidez al cambio de página       |
 | Desplazamiento de botones al pasar el puntero  | Respuesta breve al pulsar            | Evitar movimiento repetido en tareas frecuentes |
+
+## Verificación del rediseño
+
+- La paleta se aplica al acceso, panel personal, administración, formularios y gráficos.
+- Tres vistas del análisis: historial y proyección disponible, cambios observados y relación de la última carga con la meta. La referencia de meta no representa un avance desde el punto inicial.
+- Las semanas sin registros no se inventan como cargas cero. Los estados sin proyección mantienen su historial visible.
+- El detector señaló un borde decorativo en avisos, reducido a 1 px. El indicador de día seleccionado en el calendario se conserva como estado funcional.
+- El inspector de Taste no pudo iniciar Chromium en este entorno; la verificación visual y funcional se realiza con Playwright en escritorio y móvil y con una revisión independiente de las capturas. El requisito de abundante movimiento y cuatro imágenes se omite por el encargo explícito de una interfaz ligera.
+- El modelo mejorado, las metas con repeticiones y sus migraciones quedan para el siguiente encargo de backend.
