@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import Icon from '../../components/Icon';
@@ -57,53 +58,41 @@ export default function AuthPage() {
   return (
     <main className="auth-shell">
       <section className="auth-visual" aria-label="FitAnalytics AI">
-        <div className="brand">
-          <span className="brand-mark">F</span>fitanalytics<small>AI</small>
+        <img
+          className="auth-photo"
+          src="/images/weights.webp"
+          alt="Mancuernas negras y mangos de acero en un gimnasio"
+          width="1400"
+          height="1027"
+          fetchPriority="high"
+        />
+        <div className="auth-visual-header">
+          <div className="brand">
+            <span className="brand-mark">
+              <Icon name="training" size={23} />
+            </span>
+            fitanalytics<small>AI</small>
+          </div>
+          <Link to="/sobre" className="auth-about-link" viewTransition>
+            Sobre nosotros <Icon name="arrow" size={16} />
+          </Link>
         </div>
         <div className="auth-content">
-          <div className="eyebrow">ENTRENA CON PERSPECTIVA</div>
           <h1>
             Cada sesión
             <br />
             cuenta.
-            <br />
-            <span>Hazla visible.</span>
           </h1>
-          <p>Tu entrenamiento, tus datos y una forma más clara de entender tu progreso.</p>
-          <div className="auth-preview">
-            <div className="auth-preview-top">
-              <span>Un historial que cuenta tu avance</span>
-              <Icon name="trend" size={18} />
-            </div>
-            <strong>Tu próximo paso ↗</strong>
-            <svg
-              viewBox="0 0 360 110"
-              role="img"
-              aria-label="Ilustración de una tendencia ascendente"
-            >
-              <defs>
-                <linearGradient id="auth-fill" x1="0" y1="0" x2="0" y2="1">
-                  <stop stopColor="#5ab7ff" stopOpacity=".25" />
-                  <stop offset="1" stopColor="#5ab7ff" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              <path
-                d="M0 90L45 83 90 65 135 69 180 48 225 38 270 42 315 18 360 8V110H0Z"
-                fill="url(#auth-fill)"
-              />
-              <path
-                d="M0 90L45 83 90 65 135 69 180 48 225 38 270 42 315 18 360 8"
-                fill="none"
-                stroke="#5ab7ff"
-                strokeWidth="3"
-              />
-            </svg>
-            <small>Ilustración del seguimiento · no son resultados reales</small>
+          <p>Entrena con intención. Registra tu esfuerzo y comprende tu progreso.</p>
+          <div className="auth-method">
+            <span>Entrena.</span>
+            <span>Registra.</span>
+            <span>Comprende.</span>
           </div>
         </div>
         <div className="auth-foot">
-          <span>POWERGYM LIMA · FITANALYTICS AI</span>
-          <span>Entrena. Registra. Comprende.</span>
+          <span>PowerGym Lima</span>
+          <span>Tu fuerza, en perspectiva.</span>
         </div>
       </section>
       <section className="auth-form-side">
@@ -188,7 +177,7 @@ export default function AuthPage() {
               <Icon name="arrow" size={17} />
             </Button>
           </form>
-          <div className="auth-divider">CONOCE FITANALYTICS</div>
+          <div className="auth-divider">Prueba antes de empezar</div>
           <Button
             variant="secondary"
             className="button-wide"
@@ -196,7 +185,7 @@ export default function AuthPage() {
             disabled={busy}
           >
             Explorar demo
-            <Icon name="spark" size={16} />
+            <Icon name="arrow" size={16} />
           </Button>
           <Button
             variant="ghost"
@@ -206,6 +195,9 @@ export default function AuthPage() {
           >
             Explorar demo de administrador
           </Button>
+          <Link className="auth-mobile-about link" to="/sobre" viewTransition>
+            Conoce PowerGym Lima →
+          </Link>
           <p className="auth-note">
             Demo con datos de ejemplo. No requiere una cuenta.
             <br />

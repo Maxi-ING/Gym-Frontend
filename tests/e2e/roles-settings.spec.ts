@@ -237,7 +237,7 @@ test('revisa el encuadre y las vistas en móvil y escritorio', async ({ page }, 
     path: `test-results/entrenamiento-final-${info.project.name}.png`,
     fullPage: true,
   });
-  await nav(page, 'Análisis IA');
+  await nav(page, 'Análisis');
   await page.getByLabel('Ejercicio para analizar').selectOption('1');
   await page.getByRole('button', { name: 'Analizar mi progreso', exact: true }).click();
   await expect(
@@ -322,7 +322,7 @@ test('prioriza los gráficos y cuenta una fecha solo una vez al registrar otra s
     fullPage: false,
   });
   await width(page);
-  await nav(page, 'Análisis IA');
+  await nav(page, 'Análisis');
   await page.getByLabel('Ejercicio para analizar').selectOption('1');
   await page.getByRole('button', { name: 'Analizar mi progreso' }).click();
   const chart = page.getByRole('img', { name: /Historial de/ });

@@ -4,7 +4,13 @@ import type { ChartConfiguration } from 'chart.js';
 import type { Prediction } from '../../types';
 import { useChart } from '../../hooks/useChart';
 import { number } from '../../lib/format';
-export default function PredictionChart({ result }: { result: Prediction }) {
+export default function PredictionChart({
+  result,
+  target,
+}: {
+  result: Prediction;
+  target?: number;
+}) {
   const { dark, reducedMotion } = usePreferences();
   const config = useMemo<ChartConfiguration<'line'>>(
     () => ({
@@ -14,28 +20,55 @@ export default function PredictionChart({ result }: { result: Prediction }) {
           {
             label: 'Carga registrada',
             data: result.historial.map((p) => ({ x: p.semana, y: p.carga_kg })),
-            borderColor: dark ? '#8aaad0' : '#365f8d',
-            backgroundColor: dark ? '#8aaad0' : '#365f8d',
+            borderColor: dark ? '#deded9' : '#343430',
+            backgroundColor: dark ? '#deded9' : '#343430',
             pointRadius: 4,
             borderWidth: 2,
             tension: 0,
           },
           {
-            label: 'Proyección',
-            data: result.proyeccion.map((p) => ({ x: p.semana, y: p.carga_kg })),
-            borderColor: dark ? '#b3afa5' : '#696559',
-            backgroundColor: dark ? '#b3afa5' : '#696559',
+            label: 'Proyección histórica',
+            data:
+              result.estado === 'estimado'
+                ? result.proyeccion.map((p) => ({ x: p.semana, y: p.carga_kg }))
+                : [],
+            borderColor: dark ? '#8c8c88' : '#73736e',
+            backgroundColor: dark ? '#8c8c88' : '#73736e',
             borderDash: [5, 5],
             borderWidth: 2,
             pointRadius: 4,
             tension: 0,
           },
+          ...(target != null
+            ? [
+                {
+                  label: 'Meta de carga',
+                  data: [
+                    { x: result.historial[0]?.semana ?? 0, y: target },
+                    {
+                      x: Math.max(
+                        1,
+                        result.historial.at(-1)?.semana ?? 0,
+                        ...(result.estado === 'estimado'
+                          ? result.proyeccion.map((p) => p.semana)
+                          : []),
+                      ),
+                      y: target,
+                    },
+                  ],
+                  borderColor: dark ? '#b5b5b2' : '#62625f',
+                  borderDash: [2, 5],
+                  borderWidth: 1,
+                  pointRadius: 0,
+                },
+              ]
+            : []),
         ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        animation: reducedMotion ? false : { duration: 850, easing: 'easeOutQuart' },
+        animation: reducedMotion ? false : { duration: 450, easing: 'easeOutQuart' },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -54,12 +87,12 @@ export default function PredictionChart({ result }: { result: Prediction }) {
             title: {
               display: true,
               text: 'Semanas transcurridas desde el primer registro',
-              color: dark ? '#abb5c2' : '#616b76',
+              color: dark ? '#b5b5b2' : '#62625f',
               font: { size: 10 },
             },
             ticks: {
               stepSize: 1,
-              color: dark ? '#abb5c2' : '#616b76',
+              color: dark ? '#b5b5b2' : '#62625f',
               font: { size: 10 },
               callback: (value) => String(Number(value) + 1),
               maxTicksLimit: 10,
@@ -67,27 +100,30 @@ export default function PredictionChart({ result }: { result: Prediction }) {
           },
           y: {
             beginAtZero: true,
-            grid: { color: dark ? '#354151' : '#d7dbdf' },
+            grid: { color: dark ? '#383838' : '#d6d6d0' },
             border: { display: false },
-            ticks: { color: dark ? '#abb5c2' : '#616b76', font: { size: 10 } },
+            ticks: { color: dark ? '#b5b5b2' : '#62625f', font: { size: 10 } },
             title: {
               display: true,
               text: 'Carga (kg)',
-              color: dark ? '#abb5c2' : '#616b76',
+              color: dark ? '#b5b5b2' : '#62625f',
               font: { size: 10 },
             },
           },
         },
       },
     }),
-    [result, dark, reducedMotion],
+    [result, target, dark, reducedMotion],
   );
   const ref = useChart(config);
   return (
     <figure style={{ margin: 0 }}>
       <div className="legend">
-        <span>Carga registrada</span>
-        <span>Proyección estimada</span>
+        <span className="legend-actual">Carga registrada</span>
+        {result.estado === 'estimado' && result.proyeccion.length > 0 && (
+          <span className="legend-projection">Proyección histórica</span>
+        )}
+        {target != null && <span className="legend-goal">Meta de carga</span>}
       </div>
       <div className="chart-container" style={{ marginTop: 20 }}>
         <canvas
@@ -97,8 +133,9 @@ export default function PredictionChart({ result }: { result: Prediction }) {
         />
       </div>
       <figcaption className="chart-summary">
-        La línea discontinua representa una estimación. Las semanas sin registros conservan su
-        separación temporal.
+        Las semanas sin registros conservan su separación temporal.
+        {result.estado === 'estimado' &&
+          ' La línea discontinua es una estimación del historial, no una indicación de cuánto levantar.'}
       </figcaption>
       <details className="chart-values">
         <summary>Ver valores del análisis</summary>

@@ -51,7 +51,6 @@ export default function UsersPage() {
     <div className="page-stack">
       <div className="page-heading">
         <div>
-          <div className="eyebrow">ADMINISTRACIÓN</div>
           <h1>Usuarios</h1>
           <p>Gestiona cuentas, permisos y acceso al gimnasio.</p>
         </div>

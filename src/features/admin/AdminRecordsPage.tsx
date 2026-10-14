@@ -52,7 +52,6 @@ export default function AdminRecordsPage() {
     <div className="page-stack">
       <div className="page-heading">
         <div>
-          <div className="eyebrow">SUPERVISIÓN DEL HISTORIAL</div>
           <h1>Entrenamientos registrados</h1>
           <p>
             Revisa las sesiones de los usuarios y elimina registros incorrectos tras verificarlos.

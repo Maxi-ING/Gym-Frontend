@@ -55,6 +55,20 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
   const dark = preferences.tema === 'oscuro' || (preferences.tema === 'sistema' && systemDark);
   const reducedMotion = systemMotion || !preferences.movimiento;
   useEffect(() => {
+    const keyboard = () => {
+      document.documentElement.dataset.input = 'keyboard';
+    };
+    const pointer = () => {
+      document.documentElement.dataset.input = 'pointer';
+    };
+    window.addEventListener('keydown', keyboard);
+    window.addEventListener('pointerdown', pointer);
+    return () => {
+      window.removeEventListener('keydown', keyboard);
+      window.removeEventListener('pointerdown', pointer);
+    };
+  }, []);
+  useEffect(() => {
     document.documentElement.dataset.theme = dark ? 'dark' : 'light';
     document.documentElement.dataset.motion = reducedMotion ? 'reduced' : 'full';
     delete document.documentElement.dataset.density;

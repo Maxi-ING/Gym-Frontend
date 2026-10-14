@@ -1,5 +1,5 @@
 import { createBrowserRouter, RouterProvider, Routes, Route, Link } from 'react-router-dom';
-import { lazy } from 'react';
+import { lazy, Suspense } from 'react';
 import { AuthProvider, useAuth } from './features/users/AuthProvider';
 import AuthPage from './features/users/AuthPage';
 import RoleGuard from './features/admin/RoleGuard';
@@ -13,6 +13,7 @@ const ProfilePage = lazy(() => import('./features/users/ProfilePage'));
 const RecordsPage = lazy(() => import('./features/records/RecordsPage'));
 const DashboardPage = lazy(() => import('./features/dashboard/DashboardPage'));
 const PredictionPage = lazy(() => import('./features/predictions/PredictionPage'));
+const AboutPage = lazy(() => import('./features/about/AboutPage'));
 
 const AdminDashboardPage = lazy(() => import('./features/admin/AdminDashboardPage'));
 const AdminAccountPage = lazy(() => import('./features/admin/AdminAccountPage'));
@@ -33,10 +34,19 @@ function Content() {
         </Button>
       </main>
     );
-  if (!user) return <AuthPage />;
+  if (!user)
+    return (
+      <Suspense fallback={<LoadingState />}>
+        <Routes>
+          <Route path="/sobre" element={<AboutPage />} />
+          <Route path="*" element={<AuthPage />} />
+        </Routes>
+      </Suspense>
+    );
   return (
     <Routes>
       <Route element={<Layout />}>
+        <Route path="/sobre" element={<AboutPage />} />
         <Route index element={user.rol === 'admin' ? <AdminDashboardPage /> : <DashboardPage />} />
         <Route path="/configuracion" element={<SettingsPage />} />
         <Route
