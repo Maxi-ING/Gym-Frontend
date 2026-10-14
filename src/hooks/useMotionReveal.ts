@@ -32,10 +32,14 @@ export function useMotionReveal<T extends HTMLElement = HTMLDivElement>(enabled 
             !element.animate
           )
             continue;
+          // Moving a pressed form control can change the pointer-up target and lose its click.
+          const interactive = element.querySelector(
+            'a, button, input, select, textarea, summary, [tabindex]',
+          );
           const animation = element.animate(
             [
-              { opacity: 0.55, transform: 'translateY(16px)' },
-              { opacity: 1, transform: 'translateY(0)' },
+              { opacity: 0.55, transform: interactive ? 'none' : 'translateY(16px)' },
+              { opacity: 1, transform: interactive ? 'none' : 'translateY(0)' },
             ],
             {
               duration: 280,

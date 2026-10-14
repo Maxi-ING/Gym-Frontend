@@ -41,6 +41,8 @@ Las tres skills están instaladas localmente en `.agents/skills`. Sus fuentes y 
 
 Se amplía el movimiento a petición del cliente, con CSS y Web Animations nativas, sin nuevas dependencias. Los paneles se revelan una sola vez al entrar en pantalla; no se ocultan permanentemente ni esperan una introducción. Las pantallas de usuario y administración comparten el mismo comportamiento.
 
+Los bloques con controles interactivos aparecen mediante opacidad, sin desplazarlos. Esto mantiene fija la posición de un botón o filtro durante el clic; los bloques de lectura conservan su entrada vertical.
+
 | Before                                    | After                                                                                    | Why                                                      |
 | ----------------------------------------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------- |
 | Vista completa con entrada vertical breve | Cambio horizontal de 280 ms y salida de 140 ms; fundido de respaldo                      | Dar continuidad al navegar sin retener la vista anterior |

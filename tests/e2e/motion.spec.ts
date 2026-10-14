@@ -1,5 +1,15 @@
 import { test, expect } from '@playwright/test';
 
+test('el filtro se abre con el primer clic durante la entrada del panel', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Explorar demo', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Inicio, Alex.' })).toBeVisible();
+  await page.getByText('Filtrar por ejercicio y fechas', { exact: true }).click();
+  await expect(page.getByLabel('Ejercicio', { exact: true })).toBeVisible();
+  await page.getByLabel('Ejercicio', { exact: true }).selectOption('1');
+  await expect(page.getByRole('heading', { name: 'Evolución de la carga' })).toBeVisible();
+});
+
 test('los paneles entran con movimiento y el teclado lo cancela sin ocultar contenido', async ({
   page,
 }) => {
