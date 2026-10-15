@@ -265,6 +265,7 @@ export async function demoRequest<T>(path: string, init: RequestInit): Promise<T
       id: Date.now(),
       ejercicio_id: body.ejercicio_id,
       carga_objetivo_kg: body.carga_objetivo_kg,
+      repeticiones_objetivo: body.repeticiones_objetivo ?? null,
       estado: 'pendiente',
     };
     goals = [...goals, goal];
@@ -375,12 +376,17 @@ export async function demoRequest<T>(path: string, init: RequestInit): Promise<T
   } else if (url.pathname === '/analisis') {
     // Ejemplo fijo del informe. No se entrena ni se ejecuta ML en el navegador.
     const prediction: Prediction =
-      body.ejercicio_id === 1
+      body.ejercicio_id === 1 && (body.repeticiones ?? 8) === 8
         ? {
             estado: 'estimado',
             mensaje:
               'Ejemplo ilustrativo de ocho semanas: tendencia de 2 kg por semana. La estimación no indica qué carga debes levantar.',
             semanas_observadas: 8,
+            repeticiones_analizadas: 8,
+            modelo_version: 'demo_lineal_comparable_v2',
+            error_mae_kg: 0,
+            error_referencia_kg: 2,
+            validaciones_temporales: 6,
             pendiente_kg_semana: 2,
             siguiente_carga_kg: 48,
             semanas_hasta_meta: 2,
@@ -394,7 +400,7 @@ export async function demoRequest<T>(path: string, init: RequestInit): Promise<T
         : {
             estado: 'historial_insuficiente',
             mensaje:
-              'Este ejemplo de predicción solo está disponible para Press de banca. En modo API se analizará tu historial real.',
+              'Este ejemplo fijo solo está disponible para Press de banca a 8 repeticiones. En modo API se analizará tu historial real con las repeticiones elegidas.',
             semanas_observadas: 0,
             pendiente_kg_semana: null,
             siguiente_carga_kg: null,

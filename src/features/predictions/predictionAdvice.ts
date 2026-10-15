@@ -2,6 +2,15 @@ import type { Prediction } from '../../types';
 import { number } from '../../lib/format';
 export function predictionAdvice(result: Prediction) {
   switch (result.estado) {
+    case 'no_estimable':
+      return {
+        titulo: 'No estimable con suficiente fiabilidad',
+        parrafos: [
+          result.mensaje,
+          'Conservamos tus registros y la referencia de la meta, pero no mostramos una curva futura ni una fecha que estos datos no permiten sostener. Revisa las repeticiones elegidas, la continuidad de las fechas y las cargas registradas.',
+          'Añade sesiones recientes y comparables antes de volver a consultar. Los mensajes siguen reglas; la plataforma no evalúa técnica, descanso ni recuperación y no indica cuánto peso debes levantar.',
+        ],
+      };
     case 'historial_insuficiente':
       return {
         titulo: 'Tu historial todavía está tomando forma',

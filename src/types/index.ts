@@ -41,12 +41,14 @@ export interface SessionInput {
 export interface TrainingSession extends SessionInput {
   id: number;
   volumen_kg: number;
+  registros: (RecordInput & { ejercicio_nombre?: string })[];
 }
 export interface Goal {
   id: number;
   ejercicio_id: number;
   carga_objetivo_kg: number;
   estado: 'pendiente' | 'alcanzada';
+  repeticiones_objetivo?: number | null;
 }
 export interface ProgressPoint {
   fecha: string;
@@ -66,7 +68,12 @@ export interface ProgressFilters {
   hasta?: string;
 }
 export interface Prediction {
-  estado: 'estimado' | 'historial_insuficiente' | 'meta_alcanzada' | 'sin_tendencia_positiva';
+  estado:
+    | 'estimado'
+    | 'historial_insuficiente'
+    | 'meta_alcanzada'
+    | 'sin_tendencia_positiva'
+    | 'no_estimable';
   mensaje: string;
   semanas_observadas: number;
   pendiente_kg_semana: number | null;
@@ -74,6 +81,11 @@ export interface Prediction {
   semanas_hasta_meta: number | null;
   historial: { semana: number; carga_kg: number }[];
   proyeccion: { semana: number; carga_kg: number }[];
+  modelo_version?: string | null;
+  repeticiones_analizadas?: number | null;
+  error_mae_kg?: number | null;
+  error_referencia_kg?: number | null;
+  validaciones_temporales?: number;
 }
 export interface AuthInput {
   correo: string;
