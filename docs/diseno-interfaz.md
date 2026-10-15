@@ -12,7 +12,7 @@ La elección del usuario determina la dirección. Taste se aplica al acceso y a 
 
 ## Alcance predictivo
 
-Conservar el contrato actual. Gráficos descriptivos derivados del historial recibido: evolución, cambios de carga y relación de la última carga con la meta. Los cambios no acreditan mejora de fuerza sin controlar repeticiones. El modelo con comparación por repeticiones, validación temporal y avance desde un punto inicial se integrará posteriormente en el backend. No fabricar esos resultados en el frontend.
+El contrato incorpora campos opcionales para repeticiones, versión del modelo y validación temporal. El backend compara el mismo ejercicio con las mismas repeticiones y puede responder `no_estimable`; la interfaz conserva el historial y oculta proyección y plazo en ese caso. Los análisis antiguos siguen visibles y se identifican como anteriores. La barra de meta compara la última carga con el objetivo; no representa un recorrido desde un punto inicial.
 
 ## Narrativa
 
@@ -35,7 +35,7 @@ Las tres skills están instaladas localmente en `.agents/skills`. Sus fuentes y 
 - Las semanas sin registros no se inventan como cargas cero. Los estados sin proyección mantienen su historial visible.
 - El detector señaló un borde decorativo en avisos, reducido a 1 px. El indicador de día seleccionado en el calendario se conserva como estado funcional.
 - El inspector de Taste no pudo iniciar Chromium en este entorno; la verificación visual y funcional se realiza con Playwright en escritorio y móvil y con una revisión independiente de las capturas. El requisito de abundante movimiento y cuatro imágenes se omite por el encargo explícito de una interfaz ligera.
-- El modelo mejorado, las metas con repeticiones y sus migraciones quedan para el siguiente encargo de backend.
+- El modelo comparable se integra con la API 0.2.0 y la migración Alembic 0004. La demo permanece fija y claramente identificada; no ejecuta el modelo en el navegador.
 
 ## Movimiento más expresivo
 

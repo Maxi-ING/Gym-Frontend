@@ -20,7 +20,7 @@ React, TypeScript y Vite en Vercel; API FastAPI en Render. Se utiliza en escrito
 
 ## Capabilities and Constraints
 
-Conservar autenticación, validaciones, perfiles, registros, roles, calendario, preferencias y contratos de la API. El encargo actual cambia solo el frontend. Los mensajes utilizan reglas; no hay agentes ni IA generativa. El modelo mejorado con comparación por repeticiones y validación temporal se integrará posteriormente en el backend. No atribuir esas funciones al contrato actual.
+Conservar autenticación, validaciones, perfiles, registros, roles, calendario y preferencias. La API 0.2.0 integra regresión lineal por ejercicio y repeticiones equivalentes, validación temporal y límites de fiabilidad. Los mensajes utilizan reglas; no hay agentes ni IA generativa. Las metas anteriores mantienen repeticiones sin especificar; no se reescriben los análisis antiguos. El historial muestra ejercicios agrupados y conserva el nombre de ejercicios desactivados. Una conexión lenta muestra una explicación sin cambiar el tiempo de espera ni reintentar escrituras automáticamente.
 
 ## Brand Commitments
 
