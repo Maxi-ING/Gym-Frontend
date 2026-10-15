@@ -129,9 +129,13 @@ test('una meta fija las repeticiones y un resultado no estimable conserva solo o
 test('explica una conexión lenta sin reenviar las credenciales', async ({ page }) => {
   await page.clock.install();
   let calls = 0;
+  let release!: () => void;
+  const pending = new Promise<void>((resolve) => {
+    release = resolve;
+  });
   await page.route('http://localhost:8000/auth/login', async (route) => {
     calls++;
-    await new Promise((resolve) => setTimeout(resolve, 5500));
+    await pending;
     await route.fulfill({
       status: 503,
       headers: {
@@ -158,7 +162,10 @@ test('explica una conexión lenta sin reenviar las credenciales', async ({ page 
   await page.getByLabel('Correo electrónico').fill('sara@example.com');
   await page.getByLabel('Contraseña').fill('test-password');
   await page.getByRole('button', { name: 'Entrar a mi espacio' }).click();
+  await expect.poll(() => calls).toBe(1);
   await page.clock.fastForward(4100);
   await expect(page.getByText(/Seguimos cargando/)).toBeVisible();
   expect(calls).toBe(1);
+  release();
+  await expect(page.getByText('Servidor no disponible.', { exact: true })).toBeVisible();
 });
