@@ -300,6 +300,11 @@ export default function DashboardPage() {
                     <p className="goal-target">
                       {number(g.carga_objetivo_kg, 1)} <span>kg de carga objetivo</span>
                     </p>
+                    {g.repeticiones_objetivo != null && (
+                      <p className="chart-summary">
+                        Referencia a {g.repeticiones_objetivo} repeticiones.
+                      </p>
+                    )}
                     {g.avance_porcentaje !== null ? (
                       <>
                         <progress
@@ -333,6 +338,12 @@ export default function DashboardPage() {
                     {overview.data.ultimo_analisis.fecha.slice(0, 10)} ·{' '}
                   </strong>
                   {overview.data.ultimo_analisis.resultado.mensaje}
+                  {!overview.data.ultimo_analisis.resultado.modelo_version && (
+                    <p className="chart-summary">
+                      Este análisis se guardó con la versión anterior. Solicita uno nuevo para
+                      comparar repeticiones.
+                    </p>
+                  )}
                   {overview.data.ultimo_analisis.resultado.semanas_hasta_meta !== null && (
                     <>
                       {' '}

@@ -7,7 +7,13 @@ import { number } from '../../lib/format';
 import { EmptyState } from '../../components/Feedback';
 import { goalReference, loadChanges } from './predictionVisuals';
 
-function ChangesChart({ history }: { history: Prediction['historial'] }) {
+function ChangesChart({
+  history,
+  repetitions,
+}: {
+  history: Prediction['historial'];
+  repetitions?: number | null;
+}) {
   const { dark, reducedMotion } = usePreferences();
   const changes = useMemo(() => loadChanges(history), [history]);
   const config = useMemo<ChartConfiguration<'bar'>>(
@@ -85,7 +91,10 @@ function ChangesChart({ history }: { history: Prediction['historial'] }) {
         <canvas ref={ref} role="img" aria-label="Cambios de carga entre semanas observadas" />
       </div>
       <figcaption className="chart-summary">
-        Arriba de cero: subió la carga. Abajo: bajó. Las repeticiones pueden variar entre registros.
+        Arriba de cero: subió la carga. Abajo: bajó.{' '}
+        {repetitions != null
+          ? `Se comparan registros de ${repetitions} repeticiones.`
+          : 'Este análisis anterior no incluye el criterio de repeticiones.'}
       </figcaption>
       <details className="chart-values">
         <summary>Ver cambios registrados</summary>
@@ -127,7 +136,7 @@ export default function PredictionDetails({
     <div className="prediction-secondary-charts">
       <section className="prediction-detail-chart" aria-labelledby="load-changes-title">
         <h3 id="load-changes-title">Tus cambios de carga</h3>
-        <ChangesChart history={result.historial} />
+        <ChangesChart history={result.historial} repetitions={result.repeticiones_analizadas} />
       </section>
       <section
         className="prediction-detail-chart prediction-goal-chart"
