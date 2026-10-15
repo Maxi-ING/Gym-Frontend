@@ -8,6 +8,7 @@ import { userService } from './userService';
 import { validName } from '../../lib/validation';
 import { errorMessage } from '../../lib/api';
 import { useMotionReveal } from '../../hooks/useMotionReveal';
+import { ConnectionHint } from '../../components/Feedback';
 
 export default function AuthPage() {
   const motion = useMotionReveal<HTMLElement>();
@@ -179,6 +180,7 @@ export default function AuthPage() {
               <Icon name="arrow" size={17} />
             </Button>
           </form>
+          <ConnectionHint busy={busy} />
           <div className="auth-divider">Prueba antes de empezar</div>
           <Button
             variant="secondary"

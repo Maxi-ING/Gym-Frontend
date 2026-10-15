@@ -2827,3 +2827,48 @@ html[data-input='keyboard']::view-transition-new(page-content) {
     font-size: 28px;
   }
 }
+
+/* Detalle de cada sesión, agrupado por ejercicio y con valores originales. */
+.session-detail {
+  margin-top: 10px;
+  max-width: 440px;
+  white-space: normal;
+}
+.session-detail summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 12px;
+}
+.session-exercises {
+  margin: 12px 0 0;
+  display: grid;
+  gap: 14px;
+}
+.session-exercises dt {
+  font-weight: 700;
+}
+.session-exercises dd {
+  margin: 6px 0 0;
+}
+.session-exercises ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+.session-exercises li {
+  font-size: 12px;
+  line-height: 1.6;
+}
+.session-exercises li span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+}
+.connection-hint {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 12px 0;
+}

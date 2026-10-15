@@ -203,7 +203,9 @@ export default function AdminUserDetail() {
                     {exercises.find((e) => e.id === g.ejercicio_id)?.nombre ?? 'Ejercicio'}
                   </strong>
                   <small>
-                    {number(g.carga_objetivo_kg, 1)} kg · {g.estado}
+                    {number(g.carga_objetivo_kg, 1)} kg ·{' '}
+                    {g.repeticiones_objetivo ? `${g.repeticiones_objetivo} rep. · ` : ''}
+                    {g.estado}
                   </small>
                 </div>
                 <Button variant="ghost" onClick={() => setPending({ goal: g.id })}>

@@ -19,6 +19,7 @@ export default function PredictionPage() {
   const { demo } = useAuth();
   const [exercise, setExercise] = useState('');
   const [goal, setGoal] = useState('');
+  const [repetitions, setRepetitions] = useState('8');
   const [result, setResult] = useState<Prediction>();
   const [busy, setBusy] = useState(false);
   const [goalBusy, setGoalBusy] = useState(false);
@@ -43,6 +44,7 @@ export default function PredictionPage() {
       setResult(
         await predictionService.predict({
           ejercicio_id: Number(exercise),
+          repeticiones: Number(repetitions),
           ...(goal ? { meta_id: Number(goal) } : {}),
         }),
       );
@@ -55,14 +57,23 @@ export default function PredictionPage() {
   async function saveGoal(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
-    const input = { ejercicio_id: Number(exercise), carga_objetivo_kg: Number(form.get('target')) };
+    const input = {
+      ejercicio_id: Number(exercise),
+      carga_objetivo_kg: Number(form.get('target')),
+      repeticiones_objetivo: Number(repetitions),
+    };
     setGoalError('');
     setGoalMessage('');
     if (
       !input.ejercicio_id ||
+      !Number.isInteger(input.repeticiones_objetivo) ||
+      input.repeticiones_objetivo < 1 ||
+      input.repeticiones_objetivo > 100 ||
       !validRange(input.carga_objetivo_kg, { ...limits.carga, min: 0.1 })
     ) {
-      setGoalError('Selecciona un ejercicio y una carga objetivo entre 0.1 y 600 kg.');
+      setGoalError(
+        'Selecciona un ejercicio, de 1 a 100 repeticiones y una carga objetivo entre 0.1 y 600 kg.',
+      );
       return;
     }
     setGoalBusy(true);
@@ -106,7 +117,10 @@ export default function PredictionPage() {
             <div className="panel-header">
               <div>
                 <h2>Selecciona tu ejercicio</h2>
-                <p>Necesitas al menos cuatro semanas observadas del mismo ejercicio.</p>
+                <p>
+                  Compara el mismo ejercicio y las mismas repeticiones, con al menos cuatro semanas
+                  registradas.
+                </p>
               </div>
             </div>
             <form onSubmit={analyze} className="form-stack">
@@ -118,6 +132,7 @@ export default function PredictionPage() {
                   onChange={(e) => {
                     setExercise(e.target.value);
                     setGoal('');
+                    setRepetitions('8');
                     setResult(undefined);
                     setError('');
                     setGoalMessage('');
@@ -138,6 +153,9 @@ export default function PredictionPage() {
                   value={goal}
                   onChange={(e) => {
                     setGoal(e.target.value);
+                    const chosen = selectedGoals.find((item) => item.id === Number(e.target.value));
+                    if (chosen?.repeticiones_objetivo != null)
+                      setRepetitions(String(chosen.repeticiones_objetivo));
                     setResult(undefined);
                     setError('');
                   }}
@@ -145,10 +163,32 @@ export default function PredictionPage() {
                   <option value="">Solo consultar tendencia</option>
                   {selectedGoals.map((g) => (
                     <option key={g.id} value={g.id}>
-                      {number(g.carga_objetivo_kg, 1)} kg · {g.estado}
+                      {number(g.carga_objetivo_kg, 1)} kg ·{' '}
+                      {g.repeticiones_objetivo ? `${g.repeticiones_objetivo} rep. · ` : ''}
+                      {g.estado}
                     </option>
                   ))}
                 </Select>
+                <Input
+                  label="Repeticiones comparadas"
+                  type="number"
+                  min={1}
+                  max={100}
+                  step={1}
+                  required
+                  value={repetitions}
+                  disabled={selectedGoal?.repeticiones_objetivo != null}
+                  onChange={(e) => {
+                    setRepetitions(e.target.value);
+                    setResult(undefined);
+                    setError('');
+                  }}
+                  hint={
+                    selectedGoal?.repeticiones_objetivo
+                      ? 'Fijadas por la meta seleccionada.'
+                      : 'Solo se analizan registros con este número de repeticiones.'
+                  }
+                />
               </fieldset>
               <div className="form-actions">
                 <Button type="submit" loading={busy} disabled={!exercise || goalBusy}>
@@ -160,9 +200,9 @@ export default function PredictionPage() {
             {error && <ErrorState message={error} />}{' '}
             {demo && (
               <div className="notice">
-                La demo muestra un análisis fijo de Press de banca con una meta de ejemplo de 50 kg.
-                No recalcula predicciones al agregar sesiones o metas; los demás ejercicios muestran
-                un estado informativo.
+                La demo muestra un análisis fijo de Press de banca a 8 repeticiones con una meta de
+                ejemplo de 50 kg. No recalcula predicciones al agregar sesiones o metas; los demás
+                ejercicios muestran un estado informativo.
               </div>
             )}
           </section>
@@ -185,6 +225,8 @@ export default function PredictionPage() {
                     <p>
                       {catalog.data?.exercises.find((e) => e.id === Number(exercise))?.nombre} ·{' '}
                       {result.semanas_observadas} semanas observadas.
+                      {result.repeticiones_analizadas != null &&
+                        ` Comparación a ${result.repeticiones_analizadas} repeticiones.`}
                     </p>
                   </div>
                   <span className="tag">
@@ -200,6 +242,23 @@ export default function PredictionPage() {
                 <p className="prediction-message" role="status">
                   {result.mensaje}
                 </p>
+                {result.error_mae_kg != null && (
+                  <details className="analysis-advice-details">
+                    <summary>
+                      {demo
+                        ? 'Validación ilustrativa del ejemplo'
+                        : 'Cómo se comprobó esta estimación'}
+                    </summary>
+                    <p>
+                      Se predijeron semanas posteriores usando solo registros anteriores. Error
+                      absoluto medio: {number(result.error_mae_kg, 2)} kg en{' '}
+                      {result.validaciones_temporales ?? 0} comprobaciones. La referencia de repetir
+                      la última carga tuvo un error de {number(result.error_referencia_kg ?? 0, 2)}{' '}
+                      kg. Esto describe las pruebas del historial; no es una garantía de resultados
+                      futuros.
+                    </p>
+                  </details>
+                )}
                 {result.estado === 'estimado' && (
                   <>
                     <div className="prediction-stats" style={{ margin: '22px 0' }}>
@@ -255,7 +314,8 @@ export default function PredictionPage() {
           <details className="panel disclosure">
             <summary>Definir o revisar una meta</summary>
             <p className="section-description">
-              Selecciona arriba el ejercicio y define una carga objetivo acordada con tu entrenador.
+              Selecciona arriba el ejercicio y define una carga objetivo acordada con tu entrenador.{' '}
+              La nueva meta se guardará para {repetitions || '—'} repeticiones.
             </p>
             <form onSubmit={saveGoal} className="form-stack">
               <fieldset disabled={goalBusy || busy || !exercise} className="form-grid">
@@ -293,16 +353,27 @@ export default function PredictionPage() {
                 {selectedGoals.map((g) => (
                   <li key={g.id}>
                     <div>
-                      <strong>{number(g.carga_objetivo_kg, 1)} kg</strong>
+                      <strong>
+                        {number(g.carga_objetivo_kg, 1)} kg
+                        {g.repeticiones_objetivo ? ` · ${g.repeticiones_objetivo} rep.` : ''}
+                      </strong>
                       <small>
                         {g.estado === 'alcanzada' ? 'Meta alcanzada' : 'Meta pendiente'}
                       </small>
+                      {g.repeticiones_objetivo == null && (
+                        <small>
+                          Meta anterior sin repeticiones fijadas; el análisis usa las que elijas
+                          arriba.
+                        </small>
+                      )}
                     </div>
                     <Button
                       variant="ghost"
                       disabled={busy || goalBusy}
                       onClick={() => {
                         setGoal(String(g.id));
+                        if (g.repeticiones_objetivo != null)
+                          setRepetitions(String(g.repeticiones_objetivo));
                         setResult(undefined);
                         setError('');
                       }}
@@ -318,14 +389,19 @@ export default function PredictionPage() {
             <summary>Cómo interpretar el análisis</summary>
             <div className="advice-copy">
               <p>
-                El modelo utiliza la carga máxima semanal del mismo ejercicio. La línea continua
-                muestra los registros y la línea discontinua representa una estimación. Las semanas
-                sin registros mantienen su separación temporal.
+                El modelo utiliza la carga máxima semanal del mismo ejercicio con las mismas
+                repeticiones. La línea continua muestra los registros y la línea discontinua
+                representa una estimación. Las semanas sin registros mantienen su separación
+                temporal.
               </p>
               <p>
                 Si hay historial suficiente y una tendencia positiva, puede estimarse el tiempo para
                 una meta. Si faltan datos, la meta se alcanzó o la tendencia no es positiva, la
-                plataforma explica ese estado sin prometer una fecha de logro.
+                plataforma explica ese estado sin prometer una fecha de logro. También rechaza
+                ajustes con demasiado error, intervalos mayores de cuatro semanas sin registros
+                comparables, datos sin actualizar por más de cuatro semanas, plazos mayores de doce
+                semanas o proyecciones fuera de 0–600 kg. Son criterios operativos del proyecto, no
+                límites médicos.
               </p>
               <p>
                 La carga siguiente es un valor de la proyección; no indica cuánto debes levantar. El
