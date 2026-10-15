@@ -332,8 +332,18 @@ export async function demoRequest<T>(path: string, init: RequestInit): Promise<T
       progreso,
       rendimiento,
       metas: goals.map((g) => {
-        const load =
-          rendimiento.find((e) => e.ejercicio_id === g.ejercicio_id)?.ultima_carga_kg ?? null;
+        const matching = sessions
+          .slice()
+          .sort((a, b) => a.fecha.localeCompare(b.fecha))
+          .flatMap((s) => {
+            const rows = s.registros.filter(
+              (r) =>
+                r.ejercicio_id === g.ejercicio_id &&
+                (g.repeticiones_objetivo == null || r.repeticiones === g.repeticiones_objetivo),
+            );
+            return rows.length ? [Math.max(...rows.map((r) => r.carga_kg))] : [];
+          });
+        const load = matching.at(-1) ?? null;
         return {
           ...g,
           ejercicio_nombre: exercises.find((e) => e.id === g.ejercicio_id)?.nombre ?? 'Ejercicio',
