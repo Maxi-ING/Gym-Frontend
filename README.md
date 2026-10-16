@@ -1,25 +1,39 @@
 # FitAnalytics AI · Frontend
 
-Aplicación React y TypeScript para el seguimiento del entrenamiento de PowerGym Lima. Usa una estructura por funciones y consume la API FastAPI prevista para PC1 y PC2. La persistencia, los indicadores y el modelo de predicción corresponden al backend con SQLAlchemy y PostgreSQL en la nube.
+Aplicación web para registrar entrenamientos y entender el progreso mediante gráficos, indicadores y estimaciones de carga. Desarrollada con **React, TypeScript, Vite y Chart.js**, con vistas para usuarios y administradores.
 
-## Ejecutar en tu equipo
+**[Ver aplicación](https://gym-frontend-beta-eight.vercel.app/)** · [Backend](https://github.com/Maxi-ING/GymAI-Backend) · [Swagger](https://gym-ai-backend-2ne5.onrender.com/docs)
 
-Instala Node.js 24 (o una versión compatible a partir de 22.12). Después:
+Desde el acceso puedes elegir **Explorar demo** o **Explorar demo de administrador** para conocer ambos roles sin crear una cuenta.
+
+## Funciones principales
+
+- Registro, inicio de sesión, perfil y seguimiento de peso e IMC.
+- Sesiones con varios ejercicios, series, repeticiones y cargas; historial agrupado con detalle.
+- Panel con evolución, rendimiento por ejercicio, calendario de entrenamientos y metas.
+- Análisis por ejercicio y repeticiones comparables, con proyección y mensajes que explican el resultado o la falta de datos fiables.
+- Administración de usuarios, catálogo, sesiones y metas.
+- Diseño adaptable a móvil, temas claro y oscuro, navegación plegable y animaciones configurables que respetan la preferencia de movimiento reducido.
+
+## Integración y diseño
+
+El código se organiza por funcionalidades en `src/features/`, con componentes reutilizables, contratos TypeScript y un cliente HTTP compartido. Los formularios validan los datos y muestran estados de carga, vacío y error. Los gráficos incluyen resúmenes y tablas de valores para facilitar su consulta.
+
+El frontend consume FastAPI en Render; el backend valida los permisos y guarda los datos en PostgreSQL alojado en Supabase. La regresión lineal se ejecuta en el backend bajo solicitud, con mensajes mediante reglas, sin IA generativa.
+
+La **demo utiliza datos ficticios en memoria**, se reinicia al recargar y muestra una predicción ilustrativa fija. El modo API utiliza cuentas y datos persistentes; no cambia automáticamente a la demo si el servidor falla.
+
+## Ejecutar localmente
+
+Requiere **Node.js 24**; el proyecto admite versiones desde 22.12.
 
 ```bash
 git clone https://github.com/Maxi-ING/Gym-Frontend.git
 cd Gym-Frontend
-git switch dev
 npm ci
 ```
 
-Copia `.env.example` como `.env`. En PowerShell:
-
-```powershell
-Copy-Item .env.example .env
-```
-
-Configura la dirección del backend en `.env`:
+Copia `.env.example` como `.env` y configura el backend:
 
 ```dotenv
 VITE_API_URL=http://localhost:8000
@@ -29,72 +43,23 @@ VITE_API_URL=http://localhost:8000
 npm run dev
 ```
 
-Abre `http://localhost:5173`. Los botones **Explorar demo** y **Explorar demo de administrador** permiten revisar ambos roles sin instalar Python ni tener un backend funcionando.
+Abre [localhost:5173](http://localhost:5173). Puedes usar la demo sin iniciar el backend. `VITE_API_URL` es pública: no debe contener credenciales.
 
-## Funciones
-
-- Registro e inicio de sesión; se muestran los errores del servidor.
-- Modal obligatorio para completar edad, talla, peso y objetivo tras el primer acceso.
-- Perfil editable y nuevas mediciones de peso.
-- Registro de sesiones con varios ejercicios, series, repeticiones y cargas en kg.
-- Inicio con dos gráficos agrupados en escritorio y una columna en móvil; filtros desplegables y más espacio visible para los indicadores. Gráficos primero: evolución filtrable y calendario mensual de entrenamientos; después, IMC orientativo, rendimiento por ejercicio, metas y recomendaciones.
-- Calendario de lunes a domingo, con navegación mensual, días registrados en verde y detalle de sesiones por fecha; no duplica días por varias sesiones.
-- Barra superior fija al desplazarse en las vistas de usuario y administrador.
-- Paleta sobria de azul y acero, con superficies neutras y temas claro y oscuro.
-- Metas de carga y análisis solicitado mediante un botón, con interpretación detallada por estado.
-- Administrador: resumen del gimnasio, gestión de usuarios, revisión de sesiones y metas, catálogo de ejercicios.
-- Menú plegable, perfil desde la cuenta y configuración de tema azul noche/claro, movimiento y espaciado.
-- Filtros numéricos y límites compartidos: hasta 600 kg de carga y 20 registros por sesión.
-- Estados de carga, vacío, error y reintento; navegación adaptable a móvil.
-- Gráficos con resumen y tabla de valores para consultar sin depender del canvas.
-
-## Modo API y demostración
-
-**API** es el modo predeterminado: los datos se solicitan a `VITE_API_URL`. No cambia a datos de ejemplo si falla el servidor. FastAPI debe autorizar cada endpoint y obtener el rol de la cuenta: ocultar una ruta en React no protege por sí solo los datos. El token se conserva en `sessionStorage` en la pestaña; se elimina al cerrar sesión o recibir un 401 autenticado. Las rutas no envían un `usuario_id` como autorización.
-
-**Demo** se activa expresamente desde el acceso. Usa un adaptador local con datos ficticios. Los cambios se reinician al recargar la aplicación; no se envían a PostgreSQL. La predicción de Press de banca es el ejemplo fijo de ocho semanas del informe y no se recalcula al añadir sesiones o metas. Los demás ejercicios muestran un mensaje informativo.
-
-El frontend está implementado; la integración con un backend real se completa cuando FastAPI responda según [el contrato de la API](docs/api-contract.md). Las pruebas HTTP interceptan respuestas de ejemplo y no acreditan un despliegue ni persistencia real en la nube.
-
-## Estructura
-
-```text
-src/
-  main.tsx
-  App.tsx
-  features/
-    users/          # acceso, perfil, modal inicial y userService
-    records/        # RecordForm, historial y recordService
-    dashboard/      # DashboardPage, MetricsCards y ProgressChart
-    predictions/    # PredictionPage, PredictionChart y predictionService
-    admin/          # roles, resumen global, usuarios, sesiones y ejercicios
-    settings/       # preferencias de apariencia por cuenta
-  components/       # Button, Input, Select, navegación y estados
-  hooks/            # consultas cancelables y ciclo de vida de gráficos
-  lib/              # api, sesión, formato y adaptador de demostración
-  types/            # contratos de datos
-```
-
-La raíz del repositorio representa `frontend/` en el esquema del proyecto. No se añade una carpeta duplicada.
-
-## Verificar
+## Verificación
 
 ```bash
+npm run format:check
 npm test
 npm run build
-npm run format:check
 npx playwright install chromium --only-shell
 npm run test:e2e
 ```
 
-Las pruebas incluyen validación y precisión numérica, contrato HTTP, separación de roles, gestión administrativa, configuración, perfil inicial, guardado, encuadre y gráficos en escritorio y móvil. Para revisar una compilación local: `npm run preview` y abre `http://localhost:4173`.
+GitHub Actions verifica formato, pruebas unitarias, compilación y recorridos de navegador en escritorio y móvil. La integración con la API y PostgreSQL reales se verifica también en el repositorio del backend.
 
-## Ramas y commits
+## Documentación
 
-`dev` nace de `main`. Las ramas `feature/base-interfaz`, `feature/usuarios`, `feature/entrenamiento`, `feature/dashboard`, `feature/predicciones` y `feature/verificacion` separan el trabajo. Cada rama se integra mediante un pull request hacia `dev`, conservando los commits individuales y sus descripciones breves en español. Después de integrar las funciones y superar las verificaciones, un pull request de `dev` hacia `main` incorpora la versión estable. La rama `backup/dev-antes-pull-requests` conserva la integración original como respaldo. Los retoques posteriores usan `feature/roles-administracion`, `feature/interfaz-azul`, `feature/resumen-progreso` y `feature/validacion-verificacion`, con PR hacia `dev` y después de `dev` hacia `main`.
+- [Contrato de la API](docs/api-contract.md).
+- [Diseño de interfaz y movimiento](docs/diseno-interfaz.md).
 
-## Publicar en Vercel
-
-Importa este repositorio, selecciona `main` para producción o `dev` para revisar cambios en desarrollo y utiliza el preset Vite: comando `npm run build`, directorio `dist`. Agrega `VITE_API_URL` con la dirección **HTTPS** de FastAPI y vuelve a desplegar si cambias esa variable. `vercel.json` permite abrir directamente las rutas `/perfil`, `/entrenamiento` y `/analisis`.
-
-En FastAPI configura CORS con el origen exacto del frontend. Nunca coloques contraseñas de PostgreSQL, secretos de JWT o claves privadas en variables `VITE_*`: se incluyen en el JavaScript público. El despliegue no se ejecuta como parte de la generación de este repositorio.
+Publicado en **Vercel** desde `main`. El trabajo se integra mediante ramas `feature/*` → `dev` → `main` y commits atómicos en español.
