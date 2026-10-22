@@ -383,6 +383,16 @@ export async function demoRequest<T>(path: string, init: RequestInit): Promise<T
       ],
     };
     result = overview;
+  } else if (url.pathname === '/analisis/disponibilidad') {
+    const exerciseId = Number(url.searchParams.get('ejercicio_id'));
+    result = {
+      ejercicio_id: exerciseId,
+      minimo_semanas: 4,
+      grupos:
+        exerciseId === 1
+          ? [{ repeticiones: 8, registros: 8, semanas: 8, ultima_fecha: dated(0) }]
+          : [],
+    };
   } else if (url.pathname === '/analisis') {
     // Ejemplo fijo del informe. No se entrena ni se ejecuta ML en el navegador.
     const prediction: Prediction =
