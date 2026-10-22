@@ -11,7 +11,7 @@ test('la demo distingue registros cambios y referencia de meta', async ({ page }
     .getByRole('link', { name: 'Análisis', exact: true })
     .click();
   await page.getByLabel('Ejercicio para analizar').selectOption('1');
-  await page.getByRole('button', { name: 'Analizar mi progreso', exact: true }).click();
+  await page.getByRole('button', { name: 'Ver ejemplo de predicción', exact: true }).click();
   await expect(page.getByRole('img', { name: /Historial de/ })).toBeVisible();
   await expect(
     page.getByRole('img', { name: 'Cambios de carga entre semanas observadas' }),
@@ -45,7 +45,7 @@ test('la demo distingue registros cambios y referencia de meta', async ({ page }
   await page.getByLabel('Tema', { exact: true }).selectOption('claro');
   await navigate('Análisis');
   await page.getByLabel('Ejercicio para analizar').selectOption('1');
-  await page.getByRole('button', { name: 'Analizar mi progreso', exact: true }).click();
+  await page.getByRole('button', { name: 'Ver ejemplo de predicción', exact: true }).click();
   const sample = page.locator('.legend-actual');
   await expect(sample).toBeVisible();
   const colors = await sample.evaluate((el) => ({
@@ -105,6 +105,12 @@ test('una tendencia negativa conserva el historial sin mostrar una fecha o predi
     if (path === '/ejercicios') body = [{ id: 1, nombre: 'Press de banca', unidad: 'kg' }];
     if (path === '/metas')
       body = [{ id: 1, ejercicio_id: 1, carga_objetivo_kg: 90, estado: 'pendiente' }];
+    if (path === '/analisis/disponibilidad')
+      body = {
+        ejercicio_id: 1,
+        minimo_semanas: 4,
+        grupos: [{ repeticiones: 8, semanas: 4, registros: 4, ultima_fecha: '2026-10-21' }],
+      };
     if (path === '/analisis')
       body = {
         estado: 'sin_tendencia_positiva',
@@ -143,4 +149,78 @@ test('una tendencia negativa conserva el historial sin mostrar una fecha o predi
   await expect(page.getByText('Siguiente estimación', { exact: true })).toHaveCount(0);
   await expect(page.locator('.legend-projection')).toHaveCount(0);
   await expect(page.getByRole('progressbar')).toHaveAttribute('value', String((64 / 90) * 100));
+});
+
+test('elige las repeticiones del historial y explica las semanas pendientes antes de analizar', async ({
+  page,
+}) => {
+  const headers = {
+    'access-control-allow-origin': '*',
+    'access-control-allow-headers': 'content-type,authorization',
+    'access-control-allow-methods': 'GET,POST,OPTIONS',
+  };
+  let requestBody: { repeticiones?: number } = {};
+  await page.route('http://localhost:8000/**', async (route) => {
+    if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers });
+    const path = new URL(route.request().url()).pathname;
+    let body: unknown = {};
+    if (path === '/auth/login') body = { access_token: 'test-token', token_type: 'bearer' };
+    if (path === '/me')
+      body = {
+        id: 9,
+        nombre: 'Sara',
+        correo: 'sara@example.com',
+        rol: 'usuario',
+        activo: true,
+        perfil_completo: true,
+      };
+    if (path === '/ejercicios') body = [{ id: 1, nombre: 'Sentadilla', unidad: 'kg' }];
+    if (path === '/metas') body = [];
+    if (path === '/analisis/disponibilidad')
+      body = {
+        ejercicio_id: 1,
+        minimo_semanas: 4,
+        grupos: [
+          { repeticiones: 10, semanas: 5, registros: 8, ultima_fecha: '2026-10-21' },
+          { repeticiones: 8, semanas: 1, registros: 4, ultima_fecha: '2026-10-21' },
+        ],
+      };
+    if (path === '/analisis') {
+      requestBody = route.request().postDataJSON();
+      body = {
+        estado: 'historial_insuficiente',
+        mensaje: 'Se necesitan cuatro semanas distintas.',
+        semanas_observadas: 1,
+        repeticiones_analizadas: 8,
+        historial: [{ semana: 0, carga_kg: 40 }],
+        proyeccion: [],
+      };
+    }
+    await route.fulfill({
+      status: 200,
+      headers,
+      contentType: 'application/json',
+      body: JSON.stringify(body),
+    });
+  });
+  await page.goto('/analisis');
+  await page.getByLabel('Correo electrónico').fill('sara@example.com');
+  await page.getByLabel('Contraseña').fill('test-password');
+  await page.getByRole('button', { name: 'Entrar a mi espacio' }).click();
+  await page.getByLabel('Ejercicio para analizar').selectOption('1');
+  await expect(page.getByLabel('Repeticiones comparadas')).toHaveValue('10');
+  await expect(page.getByText('5 semanas comparables disponibles', { exact: true })).toBeVisible();
+  await page.getByLabel('Repeticiones comparadas').selectOption('8');
+  await expect(page.getByText(/Faltan 3 semanas con registros/)).toBeVisible();
+  await expect(page.getByText(/Varias sesiones dentro de una semana/)).toBeVisible();
+  await page.getByRole('button', { name: 'Ver mi historial', exact: true }).click();
+  expect(requestBody.repeticiones).toBe(8);
+  await expect(
+    page.getByRole('heading', { name: '2. Tu historial, sin proyección futura' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('img', { name: 'Historial de 1 semanas sin predicción futura' }),
+  ).toBeVisible();
+  await expect(page.locator('.legend-projection')).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Registrar un entrenamiento →' })).toBeVisible();
 });

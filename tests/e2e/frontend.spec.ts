@@ -33,8 +33,10 @@ test('la demo recorre entrenamiento, progreso y análisis sin usar la API', asyn
   await expect(page.getByRole('heading', { name: 'Evolución de la carga' })).toBeVisible();
   await navigate(page, 'Análisis');
   await page.getByLabel('Ejercicio para analizar').selectOption('1');
-  await page.getByRole('button', { name: 'Analizar mi progreso', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Tu tendencia de carga' })).toBeVisible();
+  await page.getByRole('button', { name: 'Ver ejemplo de predicción', exact: true }).click();
+  await expect(
+    page.getByRole('heading', { name: '2. Historial y predicción disponible' }),
+  ).toBeVisible();
   await expect(page.getByText('48 kg', { exact: true })).toBeVisible();
   const menu = page.getByRole('button', { name: 'Abrir menú', exact: true });
   if (await menu.isVisible()) await menu.click();
@@ -129,6 +131,12 @@ test('completa el perfil, guarda en la API y representa historial insuficiente',
         recomendaciones: [],
       };
     if (path === '/metas') body = [];
+    if (path === '/analisis/disponibilidad')
+      body = {
+        ejercicio_id: 1,
+        minimo_semanas: 4,
+        grupos: [{ repeticiones: 8, semanas: 1, registros: 1, ultima_fecha: '2026-10-21' }],
+      };
     if (path === '/analisis')
       body = {
         estado: 'historial_insuficiente',
@@ -170,7 +178,7 @@ test('completa el perfil, guarda en la API y representa historial insuficiente',
   expect(sessionBody).not.toHaveProperty('usuario_id');
   await navigate(page, 'Análisis');
   await page.getByLabel('Ejercicio para analizar').selectOption('2');
-  await page.getByRole('button', { name: 'Analizar mi progreso', exact: true }).click();
+  await page.getByRole('button', { name: 'Ver mi historial', exact: true }).click();
   await expect(page.getByText('Aún faltan semanas de entrenamiento.')).toBeVisible();
   await expect(page.getByText('Siguiente estimación', { exact: true })).toHaveCount(0);
 });
