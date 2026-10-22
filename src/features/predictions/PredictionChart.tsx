@@ -28,7 +28,7 @@ export default function PredictionChart({
             tension: 0,
           },
           {
-            label: 'Proyección histórica',
+            label: 'Predicción futura',
             data:
               result.estado === 'estimado'
                 ? result.proyeccion.map((p) => ({ x: p.semana, y: p.carga_kg }))
@@ -43,7 +43,7 @@ export default function PredictionChart({
           ...(target != null
             ? [
                 {
-                  label: 'Meta de carga',
+                  label: 'Meta (referencia)',
                   data: [
                     { x: result.historial[0]?.semana ?? 0, y: target },
                     {
@@ -122,18 +122,23 @@ export default function PredictionChart({
       <div className="legend">
         <span className="legend-actual">Carga registrada</span>
         {result.estado === 'estimado' && result.proyeccion.length > 0 && (
-          <span className="legend-projection">Proyección histórica</span>
+          <span className="legend-projection">Predicción futura</span>
         )}
-        {target != null && <span className="legend-goal">Meta de carga</span>}
+        {target != null && <span className="legend-goal">Meta (referencia)</span>}
       </div>
       <div className="chart-container" style={{ marginTop: 20 }}>
         <canvas
           ref={ref}
           role="img"
-          aria-label={`Historial de ${result.semanas_observadas} semanas y proyección de carga`}
+          aria-label={`Historial de ${result.semanas_observadas} semanas${result.estado === 'estimado' ? ' y predicción futura de carga' : ' sin predicción futura'}`}
         />
       </div>
       <figcaption className="chart-summary">
+        <span className="chart-key-explanation">
+          Continua: registros reales.{' '}
+          {result.estado === 'estimado' && 'Discontinua: estimación futura. '}
+          {target != null && 'Punteada horizontal: tu meta, no una predicción.'}
+        </span>
         Las semanas sin registros conservan su separación temporal.
         {result.estado === 'estimado' &&
           ' La línea discontinua es una estimación del historial, no una indicación de cuánto levantar.'}

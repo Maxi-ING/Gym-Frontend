@@ -59,6 +59,7 @@ GitHub Actions verifica formato, pruebas unitarias, compilación y recorridos de
 
 ## Documentación
 
+- [Convenciones y registro de una sesión](docs/convenciones.md).
 - [Contrato de la API](docs/api-contract.md).
 - [Diseño de interfaz y movimiento](docs/diseno-interfaz.md).
 

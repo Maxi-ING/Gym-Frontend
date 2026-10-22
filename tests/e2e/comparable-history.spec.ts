@@ -59,6 +59,12 @@ async function mockApi(page: Page, analysisBody?: Record<string, unknown>) {
           estado: 'pendiente',
         },
       ];
+    if (path === '/analisis/disponibilidad')
+      body = {
+        ejercicio_id: 1,
+        minimo_semanas: 4,
+        grupos: [{ repeticiones: 6, semanas: 4, registros: 4, ultima_fecha: '2026-10-21' }],
+      };
     if (path === '/analisis') {
       captured.push(route.request().postDataJSON());
       body = analysisBody;
