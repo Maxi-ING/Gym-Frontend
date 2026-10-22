@@ -2700,6 +2700,7 @@ html[data-input='keyboard']::view-transition-new(page-content) {
 }
 .analysis-controls .form-grid {
   gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 .prediction-secondary-charts {
   display: grid;
@@ -2871,4 +2872,59 @@ html[data-input='keyboard']::view-transition-new(page-content) {
   font-size: 13px;
   line-height: 1.6;
   margin: 12px 0;
+}
+
+/* Antes de analizar, explicar qué historial se está comparando. */
+.analysis-readiness {
+  margin-top: 18px;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.analysis-readiness-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.analysis-readiness-heading span,
+.analysis-readiness small {
+  color: var(--muted);
+  font-size: 12px;
+}
+.analysis-readiness p {
+  margin: 10px 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.analysis-readiness a {
+  display: block;
+  margin-top: 12px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.analysis-readiness-track {
+  height: 5px;
+  background: var(--line);
+  border-radius: 4px;
+  margin-top: 12px;
+  overflow: hidden;
+}
+.analysis-readiness-track span {
+  display: block;
+  height: 100%;
+  background: var(--ink);
+}
+.analysis-result-summary {
+  border-left: 3px solid var(--ink);
+  padding-left: 14px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.chart-key-explanation {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: var(--ink);
 }
