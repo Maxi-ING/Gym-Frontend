@@ -239,7 +239,7 @@ test('revisa el encuadre y las vistas en móvil y escritorio', async ({ page }, 
   });
   await nav(page, 'Análisis');
   await page.getByLabel('Ejercicio para analizar').selectOption('1');
-  await page.getByRole('button', { name: 'Analizar mi progreso', exact: true }).click();
+  await page.getByRole('button', { name: 'Ver ejemplo de predicción', exact: true }).click();
   await expect(
     page.getByRole('heading', { name: 'Tu historial muestra una dirección favorable' }),
   ).toBeVisible();
@@ -324,7 +324,7 @@ test('prioriza los gráficos y cuenta una fecha solo una vez al registrar otra s
   await width(page);
   await nav(page, 'Análisis');
   await page.getByLabel('Ejercicio para analizar').selectOption('1');
-  await page.getByRole('button', { name: 'Analizar mi progreso' }).click();
+  await page.getByRole('button', { name: 'Ver ejemplo de predicción' }).click();
   const chart = page.getByRole('img', { name: /Historial de/ });
   await expect(chart).toBeVisible();
   const chartTop = await chart.evaluate((el) => el.getBoundingClientRect().top);

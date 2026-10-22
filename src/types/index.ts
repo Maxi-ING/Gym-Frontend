@@ -87,6 +87,17 @@ export interface Prediction {
   error_referencia_kg?: number | null;
   validaciones_temporales?: number;
 }
+export interface ComparableGroup {
+  repeticiones: number;
+  registros: number;
+  semanas: number;
+  ultima_fecha: string;
+}
+export interface AnalysisAvailability {
+  ejercicio_id: number;
+  minimo_semanas: number;
+  grupos: ComparableGroup[];
+}
 export interface AuthInput {
   correo: string;
   clave: string;

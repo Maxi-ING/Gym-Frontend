@@ -11,6 +11,7 @@ import { useAuth } from '../users/AuthProvider';
 import { limits, validRange } from '../../lib/validation';
 import type { Prediction } from '../../types';
 import Select from '../../components/Select';
+import AnalysisReadiness from './AnalysisReadiness';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import Icon from '../../components/Icon';
@@ -19,7 +20,7 @@ export default function PredictionPage() {
   const { demo } = useAuth();
   const [exercise, setExercise] = useState('');
   const [goal, setGoal] = useState('');
-  const [repetitions, setRepetitions] = useState('8');
+  const [repetitionChoice, setRepetitions] = useState('');
   const [result, setResult] = useState<Prediction>();
   const [busy, setBusy] = useState(false);
   const [goalBusy, setGoalBusy] = useState(false);
@@ -34,6 +35,25 @@ export default function PredictionPage() {
       ]);
       return { exercises, goals };
     }, []),
+  );
+  const availability = useResource(
+    useCallback(
+      (signal: AbortSignal) =>
+        exercise
+          ? predictionService.availability(Number(exercise), signal)
+          : Promise.resolve({ ejercicio_id: 0, minimo_semanas: 4, grupos: [] }),
+      [exercise],
+    ),
+  );
+  const selectedGoals =
+    catalog.data?.goals.filter((g) => g.ejercicio_id === Number(exercise)) ?? [];
+  const selectedGoal = selectedGoals.find((g) => g.id === Number(goal));
+  const repetitions =
+    selectedGoal?.repeticiones_objetivo != null
+      ? String(selectedGoal.repeticiones_objetivo)
+      : repetitionChoice || String(availability.data?.grupos[0]?.repeticiones ?? '');
+  const comparable = availability.data?.grupos.find(
+    (group) => String(group.repeticiones) === repetitions,
   );
   async function analyze(e: FormEvent) {
     e.preventDefault();
@@ -89,10 +109,7 @@ export default function PredictionPage() {
       setGoalBusy(false);
     }
   }
-  const selectedGoals =
-    catalog.data?.goals.filter((g) => g.ejercicio_id === Number(exercise)) ?? [];
   const advice = result ? predictionAdvice(result) : null;
-  const selectedGoal = selectedGoals.find((g) => g.id === Number(goal));
   // La demo de banca devuelve siempre el ejemplo documentado de 50 kg.
   const target = demo && exercise === '1' ? 50 : selectedGoal?.carga_objetivo_kg;
   return (
@@ -100,7 +117,9 @@ export default function PredictionPage() {
       <div className="page-heading">
         <div>
           <h1>Análisis y predicción</h1>
-          <p>Observa tus cargas, revisa los cambios y sigue tu meta.</p>
+          <p>
+            Elige un ejercicio, revisa tu historial y comprueba si permite estimar cargas futuras.
+          </p>
         </div>
         <span className="tag">
           <Icon name="trend" size={13} />
@@ -116,10 +135,10 @@ export default function PredictionPage() {
           <section className="panel analysis-controls">
             <div className="panel-header">
               <div>
-                <h2>Selecciona tu ejercicio</h2>
+                <h2>1. Elige qué quieres comparar</h2>
                 <p>
-                  Compara el mismo ejercicio y las mismas repeticiones, con al menos cuatro semanas
-                  registradas.
+                  Las repeticiones se obtienen de tus registros. Se necesitan al menos cuatro
+                  semanas comparables; tener cuatro sesiones no siempre equivale a cuatro semanas.
                 </p>
               </div>
             </div>
@@ -132,7 +151,7 @@ export default function PredictionPage() {
                   onChange={(e) => {
                     setExercise(e.target.value);
                     setGoal('');
-                    setRepetitions('8');
+                    setRepetitions('');
                     setResult(undefined);
                     setError('');
                     setGoalMessage('');
@@ -169,40 +188,69 @@ export default function PredictionPage() {
                     </option>
                   ))}
                 </Select>
-                <Input
+                <Select
                   label="Repeticiones comparadas"
-                  type="number"
-                  min={1}
-                  max={100}
-                  step={1}
                   required
                   value={repetitions}
-                  disabled={selectedGoal?.repeticiones_objetivo != null}
+                  disabled={availability.loading || selectedGoal?.repeticiones_objetivo != null}
                   onChange={(e) => {
                     setRepetitions(e.target.value);
                     setResult(undefined);
                     setError('');
                   }}
-                  hint={
-                    selectedGoal?.repeticiones_objetivo
-                      ? 'Fijadas por la meta seleccionada.'
-                      : 'Solo se analizan registros con este número de repeticiones.'
-                  }
-                />
+                >
+                  <option value="" disabled>
+                    {availability.loading ? 'Consultando registros…' : 'Sin registros comparables'}
+                  </option>
+                  {availability.data?.grupos.map((group) => (
+                    <option key={group.repeticiones} value={String(group.repeticiones)}>
+                      {group.repeticiones} rep. · {group.semanas} semanas
+                    </option>
+                  ))}
+                  {repetitions && !comparable && (
+                    <option value={repetitions}>{repetitions} rep. · Sin registros</option>
+                  )}
+                </Select>
               </fieldset>
               <div className="form-actions">
-                <Button type="submit" loading={busy} disabled={!exercise || goalBusy}>
+                <Button
+                  type="submit"
+                  loading={busy}
+                  disabled={
+                    !exercise ||
+                    !repetitions ||
+                    availability.loading ||
+                    !!availability.error ||
+                    goalBusy
+                  }
+                >
                   <Icon name="trend" size={17} />
-                  Analizar mi progreso
+                  {demo
+                    ? 'Ver ejemplo de predicción'
+                    : comparable && comparable.semanas < 4
+                      ? 'Ver mi historial'
+                      : 'Analizar mi progreso'}
                 </Button>
               </div>
             </form>
+            {exercise &&
+              (availability.loading ? (
+                <LoadingState />
+              ) : availability.error ? (
+                <ErrorState message={availability.error} retry={availability.reload} />
+              ) : (
+                <AnalysisReadiness
+                  group={comparable}
+                  minimum={availability.data?.minimo_semanas ?? 4}
+                  demo={demo}
+                />
+              ))}
             {error && <ErrorState message={error} />}{' '}
             {demo && (
               <div className="notice">
-                La demo muestra un análisis fijo de Press de banca a 8 repeticiones con una meta de
-                ejemplo de 50 kg. No recalcula predicciones al agregar sesiones o metas; los demás
-                ejercicios muestran un estado informativo.
+                Estás en modo demostración. Muestra un análisis fijo de Press de banca a 8
+                repeticiones y una meta de 50 kg. No recalcula predicciones al agregar sesiones o
+                metas; los demás ejercicios muestran un estado informativo.
               </div>
             )}
           </section>
@@ -211,7 +259,8 @@ export default function PredictionPage() {
               <LoadingState />
             ) : !result ? (
               <EmptyState title="Tus datos tienen una historia">
-                Elige un ejercicio y pulsa Analizar mi progreso. La proyección aparecerá aquí.
+                Elige un ejercicio y revisa las semanas disponibles. Verás tu historial; la línea
+                futura aparecerá únicamente si el modelo puede estimarla.
               </EmptyState>
             ) : (
               <>
@@ -219,8 +268,8 @@ export default function PredictionPage() {
                   <div>
                     <h2>
                       {result.estado === 'estimado'
-                        ? 'Tu tendencia de carga'
-                        : 'Resultado del análisis'}
+                        ? '2. Historial y predicción disponible'
+                        : '2. Tu historial, sin proyección futura'}
                     </h2>
                     <p>
                       {catalog.data?.exercises.find((e) => e.id === Number(exercise))?.nombre} ·{' '}
@@ -233,6 +282,15 @@ export default function PredictionPage() {
                     {demo ? 'Ejemplo ilustrativo' : 'Análisis del historial'}
                   </span>
                 </div>
+                <p className="analysis-result-summary" role="status">
+                  {result.estado === 'estimado'
+                    ? 'La línea continua muestra lo registrado; la discontinua estima cargas futuras. La línea de la meta es solo una referencia.'
+                    : result.estado === 'historial_insuficiente'
+                      ? `Faltan ${Math.max(0, 4 - result.semanas_observadas)} semanas comparables para intentar una predicción. Tu historial se conserva.`
+                      : result.estado === 'meta_alcanzada'
+                        ? 'Tu historial ya alcanza esta meta. Se muestra el logro registrado sin estimar una fecha futura.'
+                        : 'El historial no permite una proyección con suficiente fiabilidad. Debajo encontrarás el motivo y los siguientes pasos.'}
+                </p>
                 {result.historial.length > 0 && (
                   <>
                     <PredictionChart result={result} target={target} />
@@ -336,7 +394,7 @@ export default function PredictionPage() {
                   type="submit"
                   variant="secondary"
                   loading={goalBusy}
-                  disabled={!exercise || busy}
+                  disabled={!exercise || !repetitions || busy}
                 >
                   Guardar meta
                 </Button>

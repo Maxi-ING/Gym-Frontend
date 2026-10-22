@@ -1,6 +1,8 @@
 import { api } from '../../lib/api';
-import type { Goal, Prediction } from '../../types';
+import type { AnalysisAvailability, Goal, Prediction } from '../../types';
 export const predictionService = {
+  availability: (exerciseId: number, signal?: AbortSignal) =>
+    api<AnalysisAvailability>(`/analisis/disponibilidad?ejercicio_id=${exerciseId}`, { signal }),
   goals: (signal?: AbortSignal) => api<Goal[]>('/metas', { signal }),
   createGoal: (input: {
     ejercicio_id: number;
